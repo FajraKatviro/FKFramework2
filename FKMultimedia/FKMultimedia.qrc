@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/application">
+        <file>GraphicalBridge.qml</file>
+        <file>UserInterfaceLayer.qml</file>
+    </qresource>
+</RCC>

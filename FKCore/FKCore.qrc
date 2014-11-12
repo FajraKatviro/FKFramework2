@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/application">
+        <file>ConsoleBridge.qml</file>
+        <file>ConsoleUserInterfaceLayer.qml</file>
+    </qresource>
+</RCC>
