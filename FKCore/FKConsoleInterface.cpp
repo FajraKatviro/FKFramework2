@@ -101,13 +101,12 @@ void FKConsoleInterface::printHelp(){
                 QString(tr("%1\tquit application\n")).arg(FKCommands::quit.rightJustified(commandWidth))+
                 QString(tr("%1\tshow this help message\n")).arg(FKCommands::help.rightJustified(commandWidth))+
                 QString(tr("%1\tstart realm infrastructure\n")).arg(FKCommands::startRealm.rightJustified(commandWidth))+
+                QString(tr("%1\tcreate new client record for started realm\n")).arg(FKCommands::createClient.rightJustified(commandWidth))+
                 QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                 QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
                 QString(tr("%1\tdelete existing user for current client\n")).arg(FKCommands::deleteUser.rightJustified(commandWidth))+
                 QString(tr("%1\tshow list of existing users. Use %2 option to show all users registered on realm")).arg(FKCommands::showUsers.rightJustified(commandWidth)).arg(FKCommandOptions::realm)
-                //add create client nelp
-                //add db path creation
                 );
 }
 

@@ -266,8 +266,8 @@ FKClientInfrastructure* FKAbstractCore::clientInfrastructure(){
 
 QString FKAbstractCore::realmDatabasePath() const{
     QDir dir(qApp->applicationDirPath());
-    dir.cd("data");
-    dir.cd("realm");
+    changeDir(dir,QString("data"));
+    changeDir(dir,QString("realm"));
     return dir.canonicalPath();
 }
 
@@ -277,6 +277,16 @@ void FKAbstractCore::waitingForAnswerChanged(FKInfrastructureType t){
     }else if(FKInfrastructureType::Server==t){
         emit waitingForServerAnswerChanged();
     }
+}
+
+QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){
+    if(!dir.cd(name)){
+        if(!dir.mkdir(name)){
+            FK_MLOGV("Path can not be created",dir.canonicalPath()+QString("/")+name)
+        }
+        dir.cd(name);
+    }
+    return dir;
 }
 
 /*!

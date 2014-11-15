@@ -78,6 +78,7 @@ protected:
 private slots:
     void waitingForAnswerChanged(FKInfrastructureType t);
 private:
+    static QDir& changeDir(QDir& dir,const QString& name);
     FKFilesList _appFilesList;
 
     FKRealm* _realm;

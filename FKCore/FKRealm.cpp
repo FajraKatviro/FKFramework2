@@ -279,6 +279,7 @@ void FKRealm::createClientRecord(const QString& clientName, const QString& passw
     }
 
     createNewClientRecord(clientName,password);
+    emit messageRequested(QString(tr("Client record creation success")));
 }
 
 /*!
@@ -407,7 +408,7 @@ void FKRealm::createUser(const QString& clientId, const QString& userName){
     userInd>>userBranch>>userName;
     _db->writeValue(FKDBValue(userNotSelected),clientInd,false);
     _db->writeValue(FKDBValue(clientId),userInd,false);
-    emit messageRequested(QString(tr("New user %1 created for %2 client")).arg(clientId).arg(userName));
+    emit messageRequested(QString(tr("New user %2 created for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deleteUser(const QString& clientId, const QString& userName){
@@ -416,21 +417,21 @@ void FKRealm::deleteUser(const QString& clientId, const QString& userName){
     userInd>>userBranch>>userName;
     _db->removeIndex(clientInd);
     _db->removeIndex(userInd);
-    emit messageRequested(QString(tr("User %1 deleted for %2 client")).arg(clientId).arg(userName));
+    emit messageRequested(QString(tr("User %2 deleted for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::selectUser(const QString& clientId, const QString& userName){
     FKDBIndex clientInd;
     clientInd>>clientBranch>>clientId>>usersNode>>userName;
     _db->writeValue(FKDBValue(userSelected),clientInd,false);
-    emit messageRequested(QString(tr("User %1 selected for %2 client")).arg(clientId).arg(userName));
+    emit messageRequested(QString(tr("User %2 selected for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deselectUser(const QString& clientId, const QString& userName){
     FKDBIndex clientInd;
     clientInd>>clientBranch>>clientId>>usersNode>>userName;
     _db->writeValue(FKDBValue(userNotSelected),clientInd,false);
-    emit messageRequested(QString(tr("User %1 deselected for %2 client")).arg(clientId).arg(userName));
+    emit messageRequested(QString(tr("User %2 deselected for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::createNewClientRecord(const QString& clientName, const QString& password){

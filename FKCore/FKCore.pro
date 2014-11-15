@@ -29,7 +29,8 @@ SOURCES += \
     FKRealmConnectionManager.cpp \
     FKClientInfrastructure.cpp \
     FKClientInfrastructureConnectionManager.cpp \
-    FKInfrastructure.cpp
+    FKInfrastructure.cpp \
+    FKServerInfrastructure.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -58,7 +59,8 @@ HEADERS += \
     FKRealmConnectionManager.h \
     FKClientInfrastructure.h \
     FKClientInfrastructureConnectionManager.h \
-    FKInfrastructure.h
+    FKInfrastructure.h \
+    FKServerInfrastructure.h
 
 include(../FKFramework.pri)
 
