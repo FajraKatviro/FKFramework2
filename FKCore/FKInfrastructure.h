@@ -8,7 +8,8 @@ enum class FKInfrastructureType:qint8{
     Realm,
     Server,
     Client,
-    User
+    User,
+    UserSlot
 };
 
 class FKInfrastructure : public QObject{

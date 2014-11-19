@@ -30,7 +30,9 @@ SOURCES += \
     FKClientInfrastructure.cpp \
     FKClientInfrastructureConnectionManager.cpp \
     FKInfrastructure.cpp \
-    FKServerInfrastructure.cpp
+    FKServerInfrastructure.cpp \
+    FKUserInfrastructureSlot.cpp \
+    FKServerConnectionManager.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -60,7 +62,9 @@ HEADERS += \
     FKClientInfrastructure.h \
     FKClientInfrastructureConnectionManager.h \
     FKInfrastructure.h \
-    FKServerInfrastructure.h
+    FKServerInfrastructure.h \
+    FKUserInfrastructureSlot.h \
+    FKServerConnectionManager.h
 
 include(../FKFramework.pri)
 

@@ -5,6 +5,7 @@
 
 namespace FKBasicEventSubject{
     const QString login=QStringLiteral("lgn"); //guest autentification request
+    const QString createRoom=QStringLiteral("cro"); //create room
     const QString roomList=QStringLiteral("rl"); //refresh avaliable rooms
     const QString roomData=QStringLiteral("rd"); //refresh existing room actual data
     const QString connect=QStringLiteral("cn"); //connection request

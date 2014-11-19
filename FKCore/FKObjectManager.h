@@ -20,6 +20,8 @@ class /*FKCORESHARED_EXPORT*/ FKObjectManager:public QObject{
 public:
     FKObjectManager(QObject* parent=0);
     ~FKObjectManager()=0;
+    void setRootObject(FKObject* obj){_rootObject=obj;}
+    FKObject* rootObject()const{return _rootObject;}
     FKObject* getObject(const qint32 id);
     void regObject(FKObject* obj);
     void freeObject(const qint32 id);
@@ -36,8 +38,6 @@ public:
     FKDataBase* dataBase()const{return _db;}
 protected:
     void genObject(const QString& className,const qint32 id);
-    void setRootObject(FKObject* obj){_rootObject=obj;}
-    FKObject* rootObject()const{return _rootObject;}
 private:
     void addObject(FKObject* obj);
     FKIDGenerator _idGenerator;

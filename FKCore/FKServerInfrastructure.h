@@ -3,8 +3,15 @@
 
 #include "FKInfrastructure.h"
 
+#include "FKIDGenerator.h"
+
 class FKConnector;
 class FKConnectionManager;
+class FKUserInfrastructureSlot;
+class FKClientInfrastructureSlot;
+class FKServerConnectionManager;
+class FKRoom;
+class FKObjectManager;
 
 class FKServerInfrastructure : public FKInfrastructure{
     Q_OBJECT
@@ -18,27 +25,9 @@ public:
     void requestLoginRealm(const qint32 id, const QString& password);
     void submitLoginRealm(const QVariant& value);
 
-    void requestUserCreation(const QString& name);
-    void requestUserDeletion(const QString& name);
-    void requestUserAuthorization(const QString& name);
-    void requestUserDeauthorization(const QString& name);
-    void requestRoomList(/*filters*/);
-    //void requestCreateRoom(/*params*/);
-    //void requestEnterRoom(const qint32 id);
-    //void requestExitRoom();
-
-    void refreshUserList(const QVariant& value);
-    void respondUserCreation(const QVariant& value);
-    void respondUserDeletion(const QVariant& value);
-    void respondUserAuthorization(const QVariant& value);
-    void respondUserDeauthorization(const QVariant& value);
-    void respondRoomList(const QVariant& value);
-    //void respondCreateRoom(const QVariant& value);
-    //void respondEnterRoom(const QVariant& value);
-    //void respondExitRoom(const QVariant& value);
-
-    QStringList userPool()const;
-    QStringList activeUsers()const;
+    void roomCreateRequest(const QVariant& data);
+    void clientInvited(const QVariant& data);
+    void submitLoginUser(const QVariant& data);
 
     void messageFromRealm(const QString& msg);
 public slots:
@@ -48,17 +37,24 @@ signals:
     void connectedToRealm();
     void disconnectedFromRealm();
     void loggedIn();
-    void userPoolChanged();
-    void activeUsersChanged();
-    void roomListChanged();
 private slots:
-    void connectorStatusChanged();
+    void realmConnectorStatusChanged();
 private:
+    bool checkInviteData(const QVariant& data, QString& client, QMap<QString,QString>& userMap);
+    static FKRoom* createRoom(const QString& roomType);
+    static void unloadRoomType(const QString& roomType);
+    static QStringList getRoomTypeList();
     bool _logged;
     FKConnectionManager* _realmConnection;
-    QMap<QString,FKUserInfrastructure*> _users;
-    QStringList _userPool;
-    QStringList _roomList;
+    FKObjectManager* _om;
+    FKRoom* _room;
+    QSet<FKServerConnectionManager*> _guests;
+    QMap<QString,FKClientInfrastructureSlot*> _invitedClients;
+    QMap<QString,FKUserInfrastructureSlot*> _invitedUsers;
+    QMap<QString,FKClientInfrastructureSlot*> _clients;
+    QMap<QString,FKUserInfrastructureSlot*> _users;
+    QMap<qint32,FKUserInfrastructureSlot*> _userObjects;
+    FKIDGenerator _idgenerator;
 };
 
 #endif

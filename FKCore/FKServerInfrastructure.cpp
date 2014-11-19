@@ -1,38 +1,45 @@
 #include "FKServerInfrastructure.h"
 
-#include "FKConnectionManager.h"
-#include "FKServerInfrastructureConnectionManager.h"
+#include "FKUserInfrastructureSlot.h"
+#include "FKServerConnectionManager.h"
 #include "FKBasicEvent.h"
+#include "FKObjectManager.h"
 
 #include "FKAusviceIdentifiers.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
-FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0){
+FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_room(0),_idgenerator(1){
     FK_CBEGIN
+    _om=new FKObjectManager(this);
     FK_CEND
 }
 
-FKClientInfrastructure::~FKClientInfrastructure(){
+FKServerInfrastructure::~FKServerInfrastructure(){
     FK_DBEGIN
     FK_DEND
 }
 
-FKInfrastructureType FKClientInfrastructure::infrastructureType() const{
-    return FKInfrastructureType::Client;
+FKInfrastructureType FKServerInfrastructure::infrastructureType() const{
+    return FKInfrastructureType::Server;
 }
 
-bool FKClientInfrastructure::isConnectedToRealm(){
-    return _realmConnection && _realmConnection->isActive();
+bool FKServerInfrastructure::isConnectedToRealm(){
+    return _logged;
 }
 
-void FKClientInfrastructure::dropInfrastructure(){
-    for(auto i=_users.begin();i!=_users.end();++i){
-        //i.value()->dropUser();
-        //i.value()->deleteLater();
+void FKServerInfrastructure::dropInfrastructure(){
+    for(auto i=_invitedUsers.begin();i!=_invitedUsers.end();++i){
+        i.value()->dropUser();
+        i.value()->deleteLater();
     }
-    _users.clear();
+    _invitedUsers.clear();
+    for(auto i=_clients.begin();i!=_clients.end();++i){
+        i.value()->dropClient();
+        i.value()->deleteLater();
+    }
+    _clients.clear();
     _realmConnection->dropConnection();
     _realmConnection->deleteLater();
     _realmConnection=0;
@@ -40,8 +47,8 @@ void FKClientInfrastructure::dropInfrastructure(){
     cancelAnswer(FKInfrastructureType::Realm);
 }
 
-void FKClientInfrastructure::requestLoginRealm(const QString& id, const QString& password){
-    if(id.isEmpty() || password.isEmpty()){
+void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString& password){
+    if(id<=0 || password.isEmpty()){
         emit messageRequested(QString(tr("Unable login: empty id or password")));
         return;
     }
@@ -62,16 +69,16 @@ void FKClientInfrastructure::requestLoginRealm(const QString& id, const QString&
     }
 
     QMap<QString,QVariant> data;
-    data[FKAusviceIdentifiers::infrastructureType]=FKAusviceIdentifiers::client;
+    data[FKAusviceIdentifiers::infrastructureType]=FKAusviceIdentifiers::server;
     data[FKAusviceIdentifiers::id]=id;
     data[FKAusviceIdentifiers::password]=password;
     FKBasicEvent ev(FKBasicEventSubject::login,data);
     _realmConnection->sendGuestEvent(&ev);
 }
 
-void FKClientInfrastructure::submitLoginRealm(const QVariant& value){
+void FKServerInfrastructure::submitLoginRealm(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::login)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::submitLoginRealm()")
+        FK_MLOG("Unexpected behaivour in FKServerInfrastructure::submitLoginRealm()")
     }
     bool t=value.toBool();
     if(t){
@@ -82,186 +89,107 @@ void FKClientInfrastructure::submitLoginRealm(const QVariant& value){
     }
 }
 
-void FKClientInfrastructure::requestUserCreation(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable create user: name is empty")));
-        return;
+void FKServerInfrastructure::roomCreateRequest(const QVariant& data){
+    bool answer;
+    if(_room){
+        FK_MLOG("Create room request recieved, but room does exists")
+        answer=false;
+    }else{
+        const QString roomType=data.toString();
+        _room=createRoom(roomType);
+        answer=_room;
+        if(!answer){
+            FK_MLOGV("Uncknown room type creation requested",roomType)
+        }
     }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable create user: infrastructure is not logged on realm")));
-        return;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createUser)){
-        emit messageRequested(QString(tr("Unable create user: another request in progress")));
-        return;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::createUser,name);
+    FKBasicEvent ev(FKBasicEventSubject::createRoom,answer);
     _realmConnection->sendBasicEvent(&ev);
 }
 
-void FKClientInfrastructure::requestUserDeletion(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable delete user: name is empty")));
-        return;
+void FKServerInfrastructure::clientInvited(const QVariant& data){
+    QString client;
+    QMap<QString,QString> userMap;
+    bool answer=checkInviteData(data,client,userMap);
+    if(answer){
+        FKClientInfrastructureSlot* clientSlot=new FKClientInfrastructureSlot(this);
+        _invitedClients.insert(client,clientSlot);
+        for(auto u=userMap.constBegin();u!=userMap.constEnd();++u){
+            const qint32 id=_idgenerator.take();
+            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(clientSlot,id,u.value(),clientSlot);
+            clientSlot->addUser(userSlot);
+            _invitedUsers.insert(u.key(),userSlot);
+        }
     }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable delete user: infrastructure is not logged on realm")));
-        return;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deleteUser)){
-        emit messageRequested(QString(tr("Unable delete user: another request in progress")));
-        return;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::deleteUser,name);
+    FKBasicEvent ev(FKBasicEventSubject::userList,answer);
     _realmConnection->sendBasicEvent(&ev);
 }
 
-void FKClientInfrastructure::requestUserAuthorization(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable select user: name is empty")));
-        return;
-    }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable select user: infrastructure is not logged on realm")));
-        return;
-    }
-    if(!_userPool.contains(name)){
-        emit messageRequested(QString(tr("Unable select user: no such name in user pool")));
-        return;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::selectUser)){
-        emit messageRequested(QString(tr("Unable select user: another request in progress")));
-        return;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::selectUser,name);
-    _realmConnection->sendBasicEvent(&ev);
+void FKServerInfrastructure::messageFromRealm(const QString& msg){
+    emit messageRequested(QString(tr("Realm -> server: %1")).arg(msg));
 }
 
-void FKClientInfrastructure::requestUserDeauthorization(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable deselect user: name is empty")));
-        return;
-    }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable deselect user: infrastructure is not logged on realm")));
-        return;
-    }
-    if(!activeUsers().contains(name)){
-        emit messageRequested(QString(tr("Unable deselect user: no such user selected")));
-        return;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
-        emit messageRequested(QString(tr("Unable deselect user: another request in progress")));
-        return;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::deselectUser,name);
-    _realmConnection->sendBasicEvent(&ev);
-}
-
-void FKClientInfrastructure::requestRoomList(/*filters*/){
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable request room list: infrastructure is not logged on realm")));
-        return;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::roomList)){
-        emit messageRequested(QString(tr("Unable request room list: another request in progress")));
-        return;
-    }
-    QVariant filters;
-    FKBasicEvent ev(FKBasicEventSubject::roomList,filters);
-    _realmConnection->sendBasicEvent(&ev);
-}
-
-void FKClientInfrastructure::refreshUserList(const QVariant& value){
-    QStringList lst(value.toStringList());
-    foreach(QString u,_users.keys())lst.removeOne(u);
-    _userPool=lst;
-    emit userPoolChanged();
-}
-
-void FKClientInfrastructure::respondUserCreation(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserCreation()")
-    }
-    if(!name.isEmpty()){
-        _userPool.append(name);
-        emit userPoolChanged();
-    }
-}
-
-void FKClientInfrastructure::respondUserDeletion(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deleteUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserDeletion()")
-    }
-    if(!name.isEmpty()){
-        _userPool.removeOne(name);
-        emit userPoolChanged();
-    }
-}
-
-void FKClientInfrastructure::respondUserAuthorization(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::selectUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserAuthorization()")
-    }
-    if(!name.isEmpty()){
-        _userPool.removeOne(name);
-        //_users.insert(name,new FKUserInfrastructure(this));
-        emit userPoolChanged();
-        emit activeUsersChanged();
-    }
-}
-
-void FKClientInfrastructure::respondUserDeauthorization(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserDeauthorization()")
-    }
-    if(!name.isEmpty()){
-        _userPool.append(name);
-        FKUserInfrastructure* user=_users.take(name);
-        //user->dropInfrastructure();
-        //user->deleteLater();
-        emit userPoolChanged();
-        emit activeUsersChanged();
-    }
-}
-
-void FKClientInfrastructure::respondRoomList(const QVariant& value){
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::roomList)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondRoomList()")
-    }
-    _roomList=value.toStringList();
-    emit roomListChanged();
-}
-
-QStringList FKClientInfrastructure::userPool() const{
-    return _userPool;
-}
-
-QStringList FKClientInfrastructure::activeUsers() const{
-    return _users.keys();
-}
-
-void FKClientInfrastructure::messageFromRealm(const QString& msg){
-    emit messageRequested(QString(tr("Realm -> client: %1")).arg(msg));
-}
-
-void FKClientInfrastructure::realmConnection(FKConnector* connector){
-    _realmConnection=new FKClientInfrastructureConnectionManager(this,connector,this);
+void FKServerInfrastructure::realmConnection(FKConnector* connector){
+    _realmConnection=new FKServerConnectionManagerR(this,connector,this);
     connect(_realmConnection,SIGNAL(connectionStatusChanged()),SLOT(connectorStatusChanged()));
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::realmConnection()")
+        FK_MLOG("Unexpected behaivour in FKServerInfrastructure::realmConnection()")
     }
 }
 
-void FKClientInfrastructure::connectorStatusChanged(){
+bool FKServerInfrastructure::checkInviteData(const QVariant& data, QString& client, QMap<QString, QString>& userMap){
+    QMap<QString,QVariant> clientData=data.toMap();
+    client=clientData.value(FKAusviceIdentifiers::client).toString();
+    if(client.isEmpty()){
+        FK_MLOG("Unexpected empty client name in FKServerInfrastructure::clientInvited()")
+        return false;
+    }
+    if(_clients.contains(client)){
+        FK_MLOG("Unexpected duplicate client invite in FKServerInfrastructure::clientInvited()")
+        return false;
+    }
+    const QList<QVariant> users=clientData.value(FKAusviceIdentifiers::users).toList();
+    if(users.isEmpty()){
+        FK_MLOG("Unexpected empty user list in FKServerInfrastructure::clientInvited()")
+        return false;
+    }
+    const QList<QVariant> passwords=clientData.value(FKAusviceIdentifiers::password);
+    if(users.size()!=passwords.size()){
+        FK_MLOG("Unexpected invalid password list in FKServerInfrastructure::clientInvited()")
+        return false;
+    }
+    for(auto u=users.constBegin(), p=passwords.constBegin();u!=users.constEnd();++u,++p){
+        QString userName=u->toString();
+        if(userName.isEmpty()){
+            FK_MLOG("Unexpected empty user name in FKServerInfrastructure::clientInvited()")
+            return false;
+        }
+        if(userMap.contains(userName)){
+            FK_MLOG("Unexpected duplicate user name in FKServerInfrastructure::clientInvited()")
+            return false;
+        }
+        if(_users.contains(userName)){
+            FK_MLOG("Unexpected duplicate user invite in FKServerInfrastructure::clientInvited()")
+            return false;
+        }
+        QString password=p->toString();
+        if(password.isEmpty()){
+            FK_MLOG("Unexpected empty password in FKServerInfrastructure::clientInvited()")
+            return false;
+        }
+        userMap.insert(userName,password);
+    }
+    if(!newClientAllowed(userMap.size())){
+        FK_MLOGV("New users is not allowed for current room",userMap.size())
+        return false;
+    }
+    return true;
+}
+
+void FKServerInfrastructure::connectorStatusChanged(){
     if(_realmConnection->isActive()){
         emit connectedToRealm();
         if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
-            FK_MLOG("Unexpected behaivour in FKClientInfrastructure::connectorStatusChanged()")
+            FK_MLOG("Unexpected behaivour in FKServerInfrastructure::connectorStatusChanged()")
         }
     }else{
         _logged=false;
@@ -271,17 +199,17 @@ void FKClientInfrastructure::connectorStatusChanged(){
 }
 
 /*!
- * \fn void FKClientInfrastructure::connectedToRealm()
+ * \fn void FKServerInfrastructure::connectedToRealm()
  * \brief Signal emitted when infrastructure successfully connects as guest to realm
  */
 
 /*!
- * \fn void FKClientInfrastructure::disconnectedFromRealm()
+ * \fn void FKServerInfrastructure::disconnectedFromRealm()
  * \brief Signal emitted when infrastructure disconnects from realm
  */
 
 /*!
- * \fn void FKClientInfrastructure::loggedIn()
+ * \fn void FKServerInfrastructure::loggedIn()
  * \brief Signal emitted when infrastructure recieve ausvice submit from realm
  */
 

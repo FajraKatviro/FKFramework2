@@ -9,6 +9,7 @@ namespace FKAusviceIdentifiers{
     const QString server=QStringLiteral("se");
     const QString password=QStringLiteral("pa");
     const QString id=QStringLiteral("id");
+    const QString users=QStringLiteral("us");
 }
 
 #endif // FKAUSVICEIDENTIFIERS_H
