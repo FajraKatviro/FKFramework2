@@ -17,55 +17,55 @@
  * \brief Create manager for \i connector at \i server with \i parent
  */
 
-FKServerConnectionManager::FKServerConnectionManager(FKServerInfrastructure *server, FKConnector *connector, QObject *parent):
-        FKConnectionManager(connector,parent),_server(server){
-    FK_CBEGIN
-    FK_CEND
-}
+//FKServerConnectionManager::FKServerConnectionManager(FKServerInfrastructure *server, FKConnector *connector, QObject *parent):
+//        FKConnectionManager(connector,parent),_server(server){
+//    FK_CBEGIN
+//    FK_CEND
+//}
 
-/*!
- * \brief Deletes manager
- */
+///*!
+// * \brief Deletes manager
+// */
 
-FKServerConnectionManager::~FKServerConnectionManager(){
-    FK_DBEGIN
-    FK_DEND
-}
+//FKServerConnectionManager::~FKServerConnectionManager(){
+//    FK_DBEGIN
+//    FK_DEND
+//}
 
-void FKServerConnectionManager::processMessage(FKMessage* msg){
-    FK_MLOGV("Unexpected message from guest to server",msg->subject())
-    msg->deleteLater();
-    _server->stopGuestConnection(this);
-}
+//void FKServerConnectionManager::processMessage(FKMessage* msg){
+//    FK_MLOGV("Unexpected message from guest to server",msg->subject())
+//    msg->deleteLater();
+//    _server->stopGuestConnection(this);
+//}
 
-void FKServerConnectionManager::processGuestEvent(FKBasicEvent* ev){
-    const QString subject=ev->subject();
-    const QVariant value=ev->value();
-    ev->deleteLater();
-    if(subject==FKBasicEventSubject::login){
-        _server->ausvise(this,value);
-    }else{
-        FK_MLOGV("Unexpected guest event subject from guest to server",subject)
-        _server->stopGuestConnection(this);
-    }
-}
+//void FKServerConnectionManager::processGuestEvent(FKBasicEvent* ev){
+//    const QString subject=ev->subject();
+//    const QVariant value=ev->value();
+//    ev->deleteLater();
+//    if(subject==FKBasicEventSubject::login){
+//        _server->ausvise(this,value);
+//    }else{
+//        FK_MLOGV("Unexpected guest event subject from guest to server",subject)
+//        _server->stopGuestConnection(this);
+//    }
+//}
 
-void FKServerConnectionManager::processBasicEvent(FKBasicEvent* ev){
-    FK_MLOGV("Unexpected basic event from guest to server",ev->subject())
-    ev->deleteLater();
-    _server->stopGuestConnection(this);
-}
+//void FKServerConnectionManager::processBasicEvent(FKBasicEvent* ev){
+//    FK_MLOGV("Unexpected basic event from guest to server",ev->subject())
+//    ev->deleteLater();
+//    _server->stopGuestConnection(this);
+//}
 
-void FKServerConnectionManager::processEvent(FKEvent* ev){
-    FK_MLOGV("Unexpected event from guest to server",ev->subject())
-    ev->deleteLater();
-    _server->stopGuestConnection(this);
-}
+//void FKServerConnectionManager::processEvent(FKEvent* ev){
+//    FK_MLOGV("Unexpected event from guest to server",ev->subject())
+//    ev->deleteLater();
+//    _server->stopGuestConnection(this);
+//}
 
-void FKServerConnectionManager::incomeMessageError(const QString& msgType, const QString& reason){
-    FK_MLOGV(QString("Income message error from guest to server: ")+reason,msgType)
-    _server->stopGuestConnection(this);
-}
+//void FKServerConnectionManager::incomeMessageError(const QString& msgType, const QString& reason){
+//    FK_MLOGV(QString("Income message error from guest to server: ")+reason,msgType)
+//    _server->stopGuestConnection(this);
+//}
 
 /*!
 \class FKServerConnectionManagerR
@@ -96,12 +96,12 @@ void FKServerConnectionManagerR::processMessage(FKMessage* msg){
     msg->deleteLater();
 }
 
-void FKServerConnectionManager::processGuestEvent(FKBasicEvent* ev){
+void FKServerConnectionManagerR::processGuestEvent(FKBasicEvent* ev){
     FK_MLOGV("Unexpected guest event from realm to server",ev->subject())
     ev->deleteLater();
 }
 
-void FKServerConnectionManager::processBasicEvent(FKBasicEvent* ev){
+void FKServerConnectionManagerR::processBasicEvent(FKBasicEvent* ev){
     const QString subject=ev->subject();
     const QVariant value=ev->value();
     ev->deleteLater();
@@ -112,12 +112,12 @@ void FKServerConnectionManager::processBasicEvent(FKBasicEvent* ev){
     }
 }
 
-void FKServerConnectionManager::processEvent(FKEvent* ev){
+void FKServerConnectionManagerR::processEvent(FKEvent* ev){
     FK_MLOGV("Unexpected event from realm to server",ev->subject())
     ev->deleteLater();
 }
 
-void FKServerConnectionManager::incomeMessageError(const QString& msgType, const QString& reason){
+void FKServerConnectionManagerR::incomeMessageError(const QString& msgType, const QString& reason){
     FK_MLOGV(QString("Income message error from realm to server: ")+reason,msgType)
 }
 
@@ -130,50 +130,50 @@ void FKServerConnectionManager::incomeMessageError(const QString& msgType, const
  * \brief Create manager for \i connector at \i userSlot with \i parent
  */
 
-FKServerConnectionManagerU::FKServerConnectionManagerU(FKUserInfrastructureSlot *userSlot, FKConnector *connector, QObject *parent):
-        FKConnectionManager(connector,parent),_user(userSlot){
-    FK_CBEGIN
-    FK_CEND
-}
+//FKServerConnectionManagerU::FKServerConnectionManagerU(FKUserInfrastructureSlot *userSlot, FKConnector *connector, QObject *parent):
+//        FKConnectionManager(connector,parent),_user(userSlot){
+//    FK_CBEGIN
+//    FK_CEND
+//}
 
 /*!
  * \brief Deletes manager
  */
 
-FKServerConnectionManagerU::~FKServerConnectionManagerU(){
-    FK_DBEGIN
-    FK_DEND
-}
+//FKServerConnectionManagerU::~FKServerConnectionManagerU(){
+//    FK_DBEGIN
+//    FK_DEND
+//}
 
-void FKServerConnectionManagerU::processMessage(FKMessage* msg){
-    FK_MLOGV("Unexpected message from user to userSlot",msg->subject())
-    msg->deleteLater();
-    _user->stopConnection();
-}
+//void FKServerConnectionManagerU::processMessage(FKMessage* msg){
+//    FK_MLOGV("Unexpected message from user to userSlot",msg->subject())
+//    msg->deleteLater();
+//    _user->stopConnection();
+//}
 
-void FKServerConnectionManagerU::processGuestEvent(FKBasicEvent* ev){
-    FK_MLOGV("Unexpected guest event from user to userSlot",ev->subject())
-    ev->deleteLater();
-    _user->stopConnection();
-}
+//void FKServerConnectionManagerU::processGuestEvent(FKBasicEvent* ev){
+//    FK_MLOGV("Unexpected guest event from user to userSlot",ev->subject())
+//    ev->deleteLater();
+//    _user->stopConnection();
+//}
 
-void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
-    const QString subject=ev->subject();
-    const QVariant value=ev->value();
-    ev->deleteLater();
-    if(false/*subject==FKBasicEventSubject::_____*/){
-        ;
-    }else{
-        FK_MLOGV("Unexpected basic event subject from user to userSlot",subject)
-        _user->stopConnection();
-    }
-}
+//void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
+//    const QString subject=ev->subject();
+//    const QVariant value=ev->value();
+//    ev->deleteLater();
+//    if(false/*subject==FKBasicEventSubject::_____*/){
+//        ;
+//    }else{
+//        FK_MLOGV("Unexpected basic event subject from user to userSlot",subject)
+//        _user->stopConnection();
+//    }
+//}
 
-void FKServerConnectionManagerU::processEvent(FKEvent* ev){
-    _user->incomeEvent(ev);
-}
+//void FKServerConnectionManagerU::processEvent(FKEvent* ev){
+//    _user->incomeEvent(ev);
+//}
 
-void FKServerConnectionManagerU::incomeMessageError(const QString& msgType, const QString& reason){
-    FK_MLOGV(QString("Income message error from user to userSlot: ")+reason,msgType)
-    _user->stopConnection();
-}
+//void FKServerConnectionManagerU::incomeMessageError(const QString& msgType, const QString& reason){
+//    FK_MLOGV(QString("Income message error from user to userSlot: ")+reason,msgType)
+//    _user->stopConnection();
+//}
