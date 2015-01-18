@@ -75,6 +75,11 @@ void FKUserInterface::requestDeleteUser(QString arg){
  */
 
 /*!
+ * \fn void FKUserInterface::startServerInfrastructureRequested()
+ * \brief Emits when user requested connection to realm as server
+ */
+
+/*!
  * \fn void FKUserInterface::createUserRequested(const QString userName)
  * \brief Emits when new user record creation requested
  */
@@ -90,11 +95,41 @@ void FKUserInterface::requestDeleteUser(QString arg){
  */
 
 /*!
+ * \fn void FKUserInterface::serverLoginRequested(const qint32 clientName,const QString password)
+ * \brief Emits when current server infrastructure realm autentification requested
+ */
+
+/*!
  * \fn void FKUserInterface::createClientRequested(const QString clientName,const QString password)
  * \brief Emits when realm administrator requests new client record creation
  */
 
 /*!
+ * \fn void FKUserInterface::createRoomRequested(const QString roomName,const QString roomType)
+ * \brief Emits when client requests self-side room creation
+ */
+
+/*!
+ * \fn void FKUserInterface::createServerRequested(const QString password)
+ * \brief Emits when realm administrator requests new server record creation
+ */
+
+/*!
+ * \fn void FKUserInterface::createCustomServerRequested()
+ * \brief Emits when client requests custom server starting
+ */
+
+/*!
  * \fn void FKUserInterface::quitApplicationRequested()
  * \brief Signal emitted when quit application command recieved
+ */
+
+/*!
+ * \fn void FKUserInterface::registerRoomTypeRequested(const QString roomType)
+ * \brief Signal emitted when realm administrator requests room type regisration
+ */
+
+/*!
+ * \fn void FKUserInterface::registerServerRoomTypeRequested(const QString roomType)
+ * \brief Signal emitted when server administrator requests room type regisration
  */

@@ -1,6 +1,7 @@
 #include "FKLocalCore.h"
 
 #include "FKRealm.h"
+#include "FKServerInfrastructure.h"
 #include "FKClientInfrastructure.h"
 #include "FKLocalConnector.h"
 
@@ -36,6 +37,25 @@ bool FKLocalCore::startRealm(const int){
     }
     setRealm(new FKRealm(this));
     emit systemMessageRequested(QString(tr("Realm started")));
+    return true;
+}
+
+bool FKLocalCore::startServer(const int, const int, const QString&){
+    if(server()){
+        emit messageRequested(QString(tr("Unable start server becouse it is already started")));
+        return false;
+    }
+    if(!realm()){//this check for local core only
+        emit messageRequested(QString(tr("Unable start server: no realm started")));
+        return false;
+    }
+    setServer(new FKServerInfrastructure(this));
+    FKLocalConnector* realmSideConnector=new FKLocalConnector(realm());
+    FKLocalConnector* serverSideConnector=new FKLocalConnector(server());
+    realm()->incomeConnection(realmSideConnector);
+    server()->realmConnection(serverSideConnector);
+    realmSideConnector->join(serverSideConnector);
+    emit systemMessageRequested(QString(tr("Server started")));
     return true;
 }
 

@@ -11,7 +11,7 @@
  * \brief Creates disconnected infrastructure object
  */
 
-FKInfrastructure::FKInfrastructure(QObject *parent):QObject(parent){
+FKInfrastructure::FKInfrastructure(QObject *parent):QObject(parent),_db(0){
     FK_DBEGIN
     FK_CEND
 }
@@ -105,3 +105,19 @@ void FKInfrastructure::cancelAnswer(FKInfrastructureType t){
  * \fn void FKInfrastructure::waitingForAnswerChanged(FKInfrastructureType infr)
  * \brief This signal emitted when infrastructure creates request or get an answer
  */
+
+/*!
+ * \brief Set database containing infrastructure data
+ */
+
+void FKInfrastructure::setDataBase(FKDataBase* db){
+    _db=db;
+}
+
+/*!
+ * \brief Return previously set database
+ */
+
+void FKInfrastructure::database(){
+    return _db;
+}

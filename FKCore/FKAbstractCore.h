@@ -10,7 +10,7 @@
 #include "FKFilesList.h"
 
 class FKRealm;
-class FKServer;
+class FKServerInfrastructure;
 class FKClientInfrastructure;
 enum class FKInfrastructureType:qint8;
 
@@ -29,6 +29,9 @@ signals:
     void clientConnectedToRealm();
     void clientDisconnectedFromRealm();
     void clientLoggedIn();
+    void serverConnectedToRealm();
+    void serverDisconnectedFromRealm();
+    void serverLoggedIn();
     void waitingForRealmAnswerChanged();
     void waitingForServerAnswerChanged();
     void userPoolChanged();
@@ -38,6 +41,7 @@ public slots:
     virtual bool startServer(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
     virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString())=0;
     void ausviseClientInfrastructure(const QString id, const QString password);
+    void ausviseServerInfrastructure(const qint32 id, const QString password);
     bool createUserRecord(const QString& name);
     bool deleteUserRecord(const QString& name);
     bool startUser(const QString& name);
@@ -63,27 +67,41 @@ public slots:
     QStringList realmUserList()const;
 
     void createClientRecord(const QString clientName, const QString password);
+    void createServerRecord(const QString password);
+    void registerRoomType(const QString roomType);
+    void registerServerRoomType(const QString roomType);
+
+    void createRoomRequest(const QString roomName, const QString roomType);
+    void createCustomServerRequest();
 protected:
     void addPostExecutionCommand(const QString& command);
     virtual FKFilesList buildApplicationFilesList()const;
 
     void setRealm(FKRealm* realm);
-    void setServer(FKServer* server);
+    void setServer(FKServerInfrastructure* server);
     void setClientInfrastructure(FKClientInfrastructure* infr);
     FKRealm* realm();
-    FKServer* server();
+    FKServerInfrastructure* server();
     FKClientInfrastructure* clientInfrastructure();
 
     virtual QString realmDatabasePath()const;
+    virtual QString serverDatabasePath()const;
+    static QDir& changeDir(QDir& dir,const QString& name);
 private slots:
     void waitingForAnswerChanged(FKInfrastructureType t);
+    void createCustomServer(const qint32 id,const QString password);
+    void serverConnectedToRealmSlot();
+    void serverDisconnectedFromRealmSlot();
+    void serverLoggedInSlot();
 private:
-    static QDir& changeDir(QDir& dir,const QString& name);
     FKFilesList _appFilesList;
 
     FKRealm* _realm;
-    FKServer* _server;
+    FKServerInfrastructure* _server;
     FKClientInfrastructure* _infr;
+
+    qint32 _customServerId;
+    QString _customServerPassword;
 };
 
 #endif // FKABSTRACTCORE_H

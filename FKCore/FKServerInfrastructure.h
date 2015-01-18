@@ -27,6 +27,9 @@ public:
     void requestLoginRealm(const qint32 id, const QString& password);
     void submitLoginRealm(const QVariant& value);
 
+    void registerRoomTypeRequest(const QString& roomType);
+    void registerRoomTypeRespond(const QVariant& value);
+
     //void roomCreateRequest(const QVariant& data);
     //void clientInvited(const QVariant& data);
     //void submitLoginUser(const QVariant& data);
@@ -42,6 +45,7 @@ signals:
 private slots:
     void realmConnectorStatusChanged();
 private:
+    bool checkRealm()const;
     //bool checkInviteData(const QVariant& data, QString& client, QMap<QString,QString>& userMap);
     //static FKRoom* createRoom(const QString& roomType);
     //static void unloadRoomType(const QString& roomType);

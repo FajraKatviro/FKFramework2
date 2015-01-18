@@ -73,6 +73,7 @@ public:
     bool setValue(const FKDBValue& value,const FKDBIndex& index,bool recursive=true)const;
     void writeValue(const FKDBValue& value,const FKDBIndex& index,bool recursive)const;
     virtual FKDBIndex findIndex(const FKDBValue& value,const FKDBIndex& parentIndex)const=0;
+    virtual qint32 countValues(const FKDBIndex& ind)const=0;
     virtual QList<FKDBValue> getValues(const FKDBIndex& parentIndex)const=0;
     virtual QStringList getProperties(const FKDBIndex& parentIndex)const=0;
     virtual QMap<QString,FKDBValue> mapValues(const FKDBIndex& parentIndex)const=0;

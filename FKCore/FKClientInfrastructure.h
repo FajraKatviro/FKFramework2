@@ -27,7 +27,8 @@ public:
     void requestUserAuthorization(const QString& name);
     void requestUserDeauthorization(const QString& name);
     void requestRoomList(/*filters*/);
-    //void requestCreateRoom(/*params*/);
+    void requestCustomServer();
+    void requestCreateRoom(const QString& roomName, const QString& roomType);
     //void requestEnterRoom(const qint32 id);
     //void requestExitRoom();
 
@@ -37,9 +38,10 @@ public:
     void respondUserAuthorization(const QVariant& value);
     void respondUserDeauthorization(const QVariant& value);
     void respondRoomList(const QVariant& value);
-    //void respondCreateRoom(const QVariant& value);
+    void respondCreateRoom(const QVariant& value);
     //void respondEnterRoom(const QVariant& value);
     //void respondExitRoom(const QVariant& value);
+    void respondCustomServer(const QVariant& value);
 
     QStringList userPool()const;
     QStringList activeUsers()const;
@@ -54,6 +56,7 @@ signals:
     void userPoolChanged();
     void activeUsersChanged();
     void roomListChanged();
+    void customServerRequested(const qint32 serverId,const QString password);
 private slots:
     void connectorStatusChanged();
 private:

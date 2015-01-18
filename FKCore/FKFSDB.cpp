@@ -58,6 +58,10 @@ FKDBIndex FKFSDB::findIndex(const FKDBValue& value, const FKDBIndex& parentIndex
     return FKDBIndex();
 }
 
+qint32 FKFSDB::countValues(const FKDBIndex& ind) const{
+    return getProperties(ind).count();
+}
+
 QList<FKDBValue> FKFSDB::getValues(const FKDBIndex& parentIndex) const{
     QDir dir(getIndexDirectory(parentIndex));
     QList<FKDBValue> lst;

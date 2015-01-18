@@ -107,6 +107,8 @@ void FKServerConnectionManagerR::processBasicEvent(FKBasicEvent* ev){
     ev->deleteLater();
     if(subject==FKBasicEventSubject::login){
         _server->submitLoginRealm(value);
+    }else if(subject==FKBasicEventSubject::registerRoomType){
+        _server->registerRoomTypeRespond(value);
     }else{
         FK_MLOGV("Unexpected basic event subject from realm to server",subject)
     }

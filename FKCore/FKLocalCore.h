@@ -10,7 +10,7 @@ public:
     ~FKLocalCore();
 
     bool startRealm(const int /*port=0*/);
-    bool startServer(const int /*port=0*/, const int /*realmPort=0*/,const QString& /*realmIP=QString()*/){}
+    bool startServer(const int /*port=0*/, const int /*realmPort=0*/,const QString& /*realmIP=QString()*/);
     bool startClientInfrastructure(const int /*realmPort=0*/,const QString& /*realmIP=QString()*/);
     //bool startUser(const QString& name){}
     bool createRoom(const QMap<QString,QVariant>& roomData){}

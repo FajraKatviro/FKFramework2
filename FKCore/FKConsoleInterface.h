@@ -27,7 +27,11 @@ private:
     static bool hasKey(QString& arg, const QString& key);
     void showUsers(QString& arg);
     void loginClient(const QString& arg);
+    void loginServer(const QString& arg);
     void createClient(const QString& arg);
+    void createServer(const QString& arg);
+    void createRoom(const QString& arg);
+    void registerRoomType(const QString& arg);
     QThread _consoleReaderThread;
     FKConsoleReader* _consoleReader;
 };

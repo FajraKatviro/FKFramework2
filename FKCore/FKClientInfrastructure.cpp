@@ -172,6 +172,45 @@ void FKClientInfrastructure::requestRoomList(/*filters*/){
     _realmConnection->sendBasicEvent(&ev);
 }
 
+void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QString& roomType){
+    QString error;
+    if(roomName.isEmpty()){
+        error=QString(tr("Unable create room: name is empty"));
+    }else if(roomType.isEmpty()){
+        error=QString(tr("Unable create room: roomType is empty"));
+    }else if(!_logged){
+        error=QString(tr("Unable create room: client infrastructure is not logged"));
+    }else if(_users.isEmpty()){
+        error=QString(tr("Unable create room: no users selected"));
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
+        error=QString(tr("Unable create room: another request in progress"));
+    }
+
+    if(error.isEmpty()){
+        QMap<QString,QVariant> data;
+        data[FKAusviceIdentifiers::id]=roomName;
+        data[FKAusviceIdentifiers::roomType]=roomType;
+        FKBasicEvent ev(FKBasicEventSubject::createRoom,data);
+        _realmConnection->sendBasicEvent(&ev);
+    }else{
+        emit messageRequested(error);
+    }
+}
+void FKClientInfrastructure::requestCustomServer(){
+    QString error;
+    if(!_logged){
+        error=QString(tr("Unable create custom server: client infrastructure is not logged"));
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
+        error=QString(tr("Unable create custom room: another request in progress"));
+    }
+    if(error.isEmpty()){
+        FKBasicEvent ev(FKBasicEventSubject::customServer);
+        _realmConnection->sendBasicEvent(&ev);
+    }else{
+        emit messageRequested(error);
+    }
+}
+
 void FKClientInfrastructure::refreshUserList(const QVariant& value){
     QStringList lst(value.toStringList());
     foreach(QString u,_users.keys())lst.removeOne(u);
@@ -237,6 +276,27 @@ void FKClientInfrastructure::respondRoomList(const QVariant& value){
     emit roomListChanged();
 }
 
+void FKClientInfrastructure::respondCustomServer(const QVariant& value){
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCustomServer()")
+    }
+    const QMap<QString,QVariant> data=value.toMap();
+    QString error;
+    qint32 serverId=data.value(FKAusviceIdentifiers::id).toInt();
+    QString password=data.value(FKAusviceIdentifiers::password).toString();
+    if(serverId<=0){
+        error=QString(tr("Unable create custom server: realm provided no server id"));
+    }else if(password.isEmpty()){
+        error=QString(tr("Unable create custom server: realm provided no server password"));
+    }
+
+    if(error.isEmpty()){
+        emit customServerRequested(serverId,password);
+    }else{
+        emit messageRequested(error);
+    }
+}
+
 QStringList FKClientInfrastructure::userPool() const{
     return _userPool;
 }
@@ -247,6 +307,10 @@ QStringList FKClientInfrastructure::activeUsers() const{
 
 void FKClientInfrastructure::messageFromRealm(const QString& msg){
     emit messageRequested(QString(tr("Realm -> client: %1")).arg(msg));
+}
+
+void FKClientInfrastructure::requestCustomRoom(){
+    requestCreateRoom(_customRoomName,_customRoomType);
 }
 
 void FKClientInfrastructure::realmConnection(FKConnector* connector){

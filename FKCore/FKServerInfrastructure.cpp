@@ -4,8 +4,8 @@
 #include "FKServerConnectionManager.h"
 #include "FKBasicEvent.h"
 #include "FKObjectManager.h"
+#include "FKAusviceData.h"
 
-#include "FKAusviceIdentifiers.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
@@ -49,30 +49,18 @@ void FKServerInfrastructure::dropInfrastructure(){
 
 void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString& password){
     if(id<=0 || password.isEmpty()){
-        emit messageRequested(QString(tr("Unable login: empty id or password")));
+        emit messageRequested(QString(tr("Unable login: invalid id or password")));
         return;
     }
 
-    if(!isConnectedToRealm()){
-        emit messageRequested(QString(tr("Unable login: not connected to realm")));
-        return;
-    }
-
-    if(_logged){
-        emit messageRequested(QString(tr("Unable login: already logged")));
-        return;
-    }
+    if(!checkRealm())return;
 
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::login)){
         emit messageRequested(QString(tr("Unable login: another request in progress")));
         return;
     }
 
-    QMap<QString,QVariant> data;
-    data[FKAusviceIdentifiers::infrastructureType]=FKAusviceIdentifiers::server;
-    data[FKAusviceIdentifiers::id]=id;
-    data[FKAusviceIdentifiers::password]=password;
-    FKBasicEvent ev(FKBasicEventSubject::login,data);
+    FKBasicEvent ev(FKBasicEventSubject::login,FKAusviceData(id,password).toVariant());
     _realmConnection->sendGuestEvent(&ev);
 }
 
@@ -86,6 +74,32 @@ void FKServerInfrastructure::submitLoginRealm(const QVariant& value){
         emit loggedIn();
     }else{
         emit messageRequested(QString(tr("Realm declined login command")));
+    }
+}
+
+void FKServerInfrastructure::registerRoomTypeRequest(const QString& roomType){
+    if(roomType.isEmpty()){
+        emit messageRequested(QString(tr("Unable register empty room type")));
+        return;
+    }
+    if(!checkRealm())return;
+    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
+        emit messageRequested(QString(tr("Unable register room type: another request in progress")));
+        return;
+    }
+    FKBasicEvent request(FKBasicEventSubject::registerRoomType,roomType);
+    _realmConnection->sendBasicEvent(&request);
+}
+
+void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value)
+{
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
+        FK_MLOG("Unexpected behavior in FKServerInfrastructure::registerRoomTypeRespond()")
+    }
+    if(value.toBool()){
+        emit messageRequested(QString(tr("Room type registration success")));
+    }else{
+        emit messageRequested(QString(tr("Room type not registered")));
     }
 }
 
@@ -196,6 +210,18 @@ void FKServerInfrastructure::realmConnectorStatusChanged(){
         emit disconnectedFromRealm();
         cancelAnswer(FKInfrastructureType::Realm);
     }
+}
+
+bool FKServerInfrastructure::checkRealm() const{
+    if(!isConnectedToRealm()){
+        emit messageRequested(QString(tr("Unable login: not connected to realm")));
+        return false;
+    }
+    if(_logged){
+        emit messageRequested(QString(tr("Unable login: already logged")));
+        return false;
+    }
+    return true;
 }
 
 /*!

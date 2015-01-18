@@ -347,6 +347,11 @@ void FKDataBase::writeValue(const FKDBValue& value,const FKDBIndex& index,bool r
  */
 
 /*!
+ * \fn qint32 FKDataBase::countValues(const FKDBIndex& ind)const
+ * \brief Returns number of sub-nodes for given index
+ */
+
+/*!
  * \fn QList<FKDBValue> FKDataBase::getValues(const FKDBIndex& parentIndex)const
  * \brief Returns values list for given parent children. Order the same as getProperties() return order.
  */

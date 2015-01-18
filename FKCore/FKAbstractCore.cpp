@@ -4,6 +4,7 @@
 #include <QDir>
 
 #include "FKRealm.h"
+#include "FKServerInfrastructure.h"
 #include "FKClientInfrastructure.h"
 #include "FKFSDB.h"
 
@@ -21,7 +22,7 @@
  */
 
 FKAbstractCore::FKAbstractCore(QObject* parent):QObject(parent),
-        _realm(0),_server(0),_infr(0){
+        _realm(0),_server(0),_infr(0),_customServerId(-1){
     FK_CBEGIN
     FK_CEND
 }
@@ -45,6 +46,18 @@ void FKAbstractCore::ausviseClientInfrastructure(const QString id, const QString
         return;
     }
     clientInfrastructure()->requestLoginRealm(id,password);
+}
+
+/*!
+ * \brief Try identify server infrastructure at realm side
+ */
+
+void FKAbstractCore::ausviseServerInfrastructure(const qint32 id, const QString password){
+    if(!server()){
+        emit messageRequested(QString(tr("Unable login: no server infrastructure")));
+        return;
+    }
+    server()->requestLoginRealm(id,password);
 }
 
 /*!
@@ -217,8 +230,16 @@ void FKAbstractCore::setRealm(FKRealm* realm){
  * \brief Assign started by this core server infrastructure
  */
 
-void FKAbstractCore::setServer(FKServer* server){
+void FKAbstractCore::setServer(FKServerInfrastructure* server){
     _server=server;
+    connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SLOT(waitingForAnswerChanged(FKInfrastructureType)));
+    connect(server,SIGNAL(connectedToRealm()),SLOT(serverConnectedToRealmSlot()));
+    connect(server,SIGNAL(disconnectedFromRealm()),SIGNAL(serverDisconnectedFromRealmSlot()));
+    connect(server,SIGNAL(loggedIn()),SLOT(serverLoggedInSlot()));
+    connect(server,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+    FKDataBase* db=new FKFSDB(_server);
+    db->setPath(serverDatabasePath());
+    _server->setDataBase(db);
 }
 
 /*!
@@ -234,6 +255,7 @@ void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
     connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
     connect(infr,SIGNAL(userPoolChanged()),SIGNAL(userPoolChanged()));
     connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
+    connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
 }
 
 /*!
@@ -248,7 +270,7 @@ FKRealm* FKAbstractCore::realm(){
  * \brief Returns started server or 0
  */
 
-FKServer* FKAbstractCore::server(){
+FKServerInfrastructure* FKAbstractCore::server(){
     return _server;
 }
 
@@ -271,12 +293,57 @@ QString FKAbstractCore::realmDatabasePath() const{
     return dir.canonicalPath();
 }
 
+/*!
+ * \brief Returns path for server database. Default value is data/server subfolder relative to application general folder
+ */
+
+QString FKAbstractCore::serverDatabasePath() const{
+    QDir dir(qApp->applicationDirPath());
+    changeDir(dir,QString("data"));
+    changeDir(dir,QString("server"));
+    return dir.canonicalPath();
+}
+
 void FKAbstractCore::waitingForAnswerChanged(FKInfrastructureType t){
     if(FKInfrastructureType::Realm==t){
         emit waitingForRealmAnswerChanged();
     }else if(FKInfrastructureType::Server==t){
         emit waitingForServerAnswerChanged();
     }
+}
+
+void FKAbstractCore::createCustomServer(const qint32 id, const QString password){
+    QString error;
+    if(server()){
+        error=QString(tr("Unable create custom server: server already exists"));
+    }else if(_customServerId>0 || !_customServerPassword.isEmpty()){
+        error=QString(tr("Unable create custom server: current server data is not empty"));
+    }
+
+    if(error.isEmpty()){
+        _customServerId=id;
+        _customServerPassword=password;
+        startServer(customServerPort(),clientInfrastructure()->realmPort(),clientInfrastructure()->realmIP());
+    }else{
+        emit messageRequested(error);
+    }
+}
+
+void FKAbstractCore::serverConnectedToRealmSlot(){
+    emit serverConnectedToRealm();
+    if(_customServerId>0){
+        ausviseServerInfrastructure(_customServerId,_customServerPassword);
+    }
+}
+
+void FKAbstractCore::serverDisconnectedFromRealmSlot(){
+    emit serverDisconnectedFromRealm();
+    _customServerId=-1;
+    _customServerPassword.clear();
+}
+
+void FKAbstractCore::serverLoggedInSlot(){
+    emit serverLoggedIn();
 }
 
 QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){
@@ -347,6 +414,54 @@ void FKAbstractCore::createClientRecord(const QString clientName, const QString 
         _realm->createClientRecord(clientName,password);
     }else{
         emit messageRequested(QString(tr("Unable create client record: no realm infrastructure")));
+    }
+}
+
+/*!
+ * \brief Try create new server record for started realm
+ */
+
+void FKAbstractCore::createServerRecord(const QString password){
+    if(_realm){
+        _realm->createServerRecord(password);
+    }else{
+        emit messageRequested(QString(tr("Unable create server record: no realm infrastructure")));
+    }
+}
+
+void FKAbstractCore::registerRoomType(const QString roomType){
+    if(_realm){
+        _realm->registerRoomType(roomType);
+    }else{
+        emit messageRequested(QString(tr("Unable register room type: no realm infrastructure")));
+    }
+}
+
+void FKAbstractCore::registerServerRoomType(const QString roomType){
+    if(_server){
+        _server->registerRoomTypeRequest(roomType);
+    }else{
+        emit messageRequested(QString(tr("Unable register room type: no server infrastructure")));
+    }
+}
+
+/*!
+ * \brief Try create request to realm to create custom room at self-side
+ */
+
+void FKAbstractCore::createRoomRequest(const QString roomName, const QString roomType){
+    if(!clientInfrastructure()){
+        emit messageRequested(QString(tr("Unable create room: no client infrastructure")));
+    }else{
+        clientInfrastructure()->createRoomRequest(roomName,roomType);
+    }
+}
+
+void FKAbstractCore::createCustomServerRequest(){
+    if(!clientInfrastructure()){
+        emit messageRequested(QString(tr("Unable start custom server: no client infrastructure")));
+    }else{
+        clientInfrastructure()->requestCustomServer();
     }
 }
 

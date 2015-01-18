@@ -86,6 +86,16 @@ void FKConsoleInterface::processInput(QString input){
         loginClient(input);
     }else if(isCommand(input,FKCommands::createClient)){
         createClient(input);
+    }else if(isCommand(input,FKCommands::createServer)){
+        createServer(input);
+    }else if(isCommand(input,FKCommands::startServer)){
+        emit startServerInfrastructureRequested();
+    }else if(isCommand(input,FKCommands::loginServer)){
+        loginServer(input);
+    }else if(isCommand(input,FKCommands::createRoom)){
+        createRoom(input);
+    }else if(isCommand(input,FKCommands::registerRoomType)){
+        registerRoomType(input);
     }else{
         showMessage(QString(tr("Unknown command")));
     }
@@ -102,10 +112,15 @@ void FKConsoleInterface::printHelp(){
                 QString(tr("%1\tshow this help message\n")).arg(FKCommands::help.rightJustified(commandWidth))+
                 QString(tr("%1\tstart realm infrastructure\n")).arg(FKCommands::startRealm.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate new client record for started realm\n")).arg(FKCommands::createClient.rightJustified(commandWidth))+
+                QString(tr("%1\tcreate new server record for started realm. Use %2 option to create custom server for current user\n")).arg(FKCommands::createServer.rightJustified(commandWidth)).arg(FKCommandOptions::custom)+
+                QString(tr("%1\tregister room type for started realm. Use %2 option to register avaliable room type for current server\n")).arg(FKCommands::registerRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                 QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
+                QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
                 QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
+                QString(tr("%1\tsubmit current server on connected realm\n")).arg(FKCommands::loginServer.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
                 QString(tr("%1\tdelete existing user for current client\n")).arg(FKCommands::deleteUser.rightJustified(commandWidth))+
+                QString(tr("%1\tcreate room for current users\n")).arg(FKCommands::createRoom.rightJustified(commandWidth))+
                 QString(tr("%1\tshow list of existing users. Use %2 option to show all users registered on realm")).arg(FKCommands::showUsers.rightJustified(commandWidth)).arg(FKCommandOptions::realm)
                 );
 }
@@ -149,11 +164,60 @@ void FKConsoleInterface::loginClient(const QString& arg){
     }
 }
 
+void FKConsoleInterface::loginServer(const QString& arg){
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+    if(splitArg.size()==2){
+        emit serverLoginRequested(splitArg.at(0).toInt(),splitArg.at(1));
+    }else{
+        showMessage(QString(tr("You need provide 2 arguments: id and password")));
+    }
+}
+
 void FKConsoleInterface::createClient(const QString& arg){
     QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
     if(splitArg.size()==2){
         emit createClientRequested(splitArg.at(0),splitArg.at(1));
     }else{
         showMessage(QString(tr("You need provide 2 arguments: login and password")));
+    }
+}
+
+void FKConsoleInterface::createServer(const QString& arg){
+    arg=arg.trimmed();
+    if(hasKey(arg,FKCommandOptions::custom)){
+        emit createCustomServerRequested();
+    }else{
+        QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+        if(splitArg.size()==1){
+            emit createServerRequested(splitArg.first());
+        }else{
+            showMessage(QString(tr("You need provide 1 argument: password")));
+        }
+    }
+}
+
+void FKConsoleInterface::createRoom(const QString& arg){
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+    if(splitArg.size()==2){
+        emit createRoomRequested(splitArg.at(0),splitArg.at(1));
+    }else{
+        showMessage(QString(tr("You need provide 2 arguments: name and type")));
+    }
+}
+
+void FKConsoleInterface::registerRoomType(const QString& arg){
+    arg=arg.trimmed();
+    bool server=hasKey(arg,FKCommandOptions::server);
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+    if(splitArg.isEmpty()){
+        showMessage(QString(tr("You need provide room type(s)")));
+    }else{
+        foreach(QString rt,splitArg){
+            if(server){
+                emit registerServerRoomTypeRequested(rt);
+            }else{
+                emit registerRoomTypeRequested(rt);
+            }
+        }
     }
 }

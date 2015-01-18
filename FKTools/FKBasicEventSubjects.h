@@ -6,6 +6,7 @@
 namespace FKBasicEventSubject{
     const QString login=QStringLiteral("lgn"); //guest autentification request
     const QString createRoom=QStringLiteral("cro"); //create room
+    const QString registerRoomType=QStringLiteral("rrt"); //create room
     const QString roomList=QStringLiteral("rl"); //refresh avaliable rooms
     const QString roomData=QStringLiteral("rd"); //refresh existing room actual data
     const QString connect=QStringLiteral("cn"); //connection request
@@ -14,6 +15,7 @@ namespace FKBasicEventSubject{
     const QString deleteUser=QStringLiteral("du"); //delete existing user record
     const QString selectUser=QStringLiteral("su"); //add existing user to active list
     const QString deselectUser=QStringLiteral("dsu"); //remove existing user from active list
+    const QString customServer=QStringLiteral("cus"); //create server for client's custom room
 }
 
 #endif // FKBASICEVENTSUBJECTS_H
