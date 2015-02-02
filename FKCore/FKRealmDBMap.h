@@ -14,9 +14,11 @@ struct FKRealmDBServer:public FKDataBasePath{
     FKRealmDBServer(FKDataBasePath* parent)
         :FKDataBasePath(parent)
         ,room("room",this)
+        ,roomStarted("started",this)
         ,owner("owner",this)
         ,roomTypes("roomTypes",this){}
     FKDataBasePathCommon room;
+    FKDataBasePathCommon roomStarted;
     FKDataBasePathCommon owner;
     FKRealmDBServerRoomTypes roomTypes;
 };
@@ -86,6 +88,7 @@ public:
     FKDBIndex serversIndex();
     FKDBIndex serverIndex(const qint32 serverId);
     FKDBIndex serverRoomIndex(const qint32 serverId);
+    FKDBIndex serverRoomStartedIndex(const qint32 serverId);
     FKDBIndex serverOwnerIndex(const qint32 serverId);
     FKDBIndex serverRoomTypesIndex(const qint32 serverId);
     FKDBIndex serverRoomTypeIndex(const qint32 serverId,const QString& roomType);

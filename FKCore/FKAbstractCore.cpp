@@ -457,6 +457,18 @@ void FKAbstractCore::createRoomRequest(const QString roomName, const QString roo
     }
 }
 
+/*!
+ * \brief Try create room for any avaliable server
+ */
+
+void FKAbstractCore::createRoomRequestRealm(const QString roomName, const QString roomType){
+    if(!realm()){
+        emit messageRequested(QString(tr("Unable create room: no realm started")));
+    }else{
+        realm()->createRoomRealmRequest(roomName,roomType);
+    }
+}
+
 void FKAbstractCore::createCustomServerRequest(){
     if(!clientInfrastructure()){
         emit messageRequested(QString(tr("Unable start custom server: no client infrastructure")));

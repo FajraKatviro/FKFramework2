@@ -3,6 +3,7 @@
 #include "FKRealmConnectionManager.h"
 #include "FKDataBase.h"
 #include "FKBasicEvent.h"
+#include "FKRoomDataFilter.h"
 
 #include "FKAusviceData.h"
 #include "FKBasicEventSubjects.h"
@@ -186,6 +187,7 @@ void FKRealm::stopGuestConnection(FKConnectionManager* guest){
 void FKRealm::stopServerConnection(const qint32 serverId){
     FKConnectionManager* server=_serverConnections.value(serverId,0);
     if(server){
+        roomStopped(serverId);
         _serverConnections.remove(serverId);
         server->dropConnection();
         server->deleteLater();
@@ -228,7 +230,12 @@ void FKRealm::refreshRoomList(const QString& clientId, const QVariant& filters){
  */
 
 void FKRealm::refreshRoomData(const qint32 serverId, const QVariant& data){
-
+    QString roomId=getServerRoom(serverId);
+    if(roomId.isEmpty()){
+        emit messageRequested(QString(tr("Unexpected room data change from %1 server (no room founded)")).arg(QString::number(serverId)));
+        return;
+    }
+    _activeRooms[roomId].change(data);
 }
 
 /*!
@@ -314,6 +321,26 @@ void FKRealm::registerRoomType(const QString& roomType){
     }else{
         emit messageRequested(error);
     }
+}
+
+void FKRealm::createRoomRealmRequest(const QString& roomName, const QString& roomType){
+    QString error;
+    if(roomType.isEmpty()){
+        error=QString(tr("Unable create room: empty type"));
+    }else if(!isRoomTypeName(roomType)){
+        error=QString(tr("Unable create room: invalid type"));
+    }else if(!isRoomTypeRegistered(roomType)){
+        error=QString(tr("Unable create room: type %1 not registered")).arg(roomType);
+    }else if(roomName.isEmpty()){
+        error=QString(tr("Unable create room: empty name"));
+    }else if(isRoomName(roomName)){
+        error=QString(tr("Unable create room: invalid name"));
+    }else if(isRoomExists(roomName)){
+        error=QString(tr("Unable create room: name already in use"));
+    }
+
+    if(error.isEmpty())error=createNewRoomForServer(roomName,roomType);
+    if(!error.isEmpty())emit messageRequested(error);
 }
 
 void FKRealm::registerServerRoomType(const qint32 serverId, const QVariant& data){
@@ -507,35 +534,38 @@ void FKRealm::createRoomRequested(const QString& clientId, const QVariant& data)
         }
     }
 
+    if(error.isEmpty()){
+       error=createNewRoomForServer(roomName,roomType,clientId);
+    }
+
+    if(!error.isEmpty()){
+       FKConnectionManager* clientMgr=_clientConnections.value(clientId);
+       clientMgr->sendMessage(error);
+       FKBasicEvent ev(FKBasicEventSubject::createRoom);
+       clientMgr->sendBasicEvent(&ev);
+    }
+}
+
+QString FKRealm::createNewRoomForServer(const QString& roomName,const QString& roomType,const QString& owner){
     FKConnectionManager* mgr=0;
     qint32 serverId;
     bool custom=false;
-    if(error.isEmpty()){
-        qint32 customServer=getCustomServer(clientId);
-        if(customServer>0){
-            serverId=customServer;
-            custom=true;
-            mgr=_serverConnections.value(serverId,0);
-            if(!mgr)error=QString(tr("Unable create custom room: server not found"));
-        }else{
-            serverId=getFreeServer(roomType);
-            mgr=_serverConnections.value(serverId,0);
-            if(!mgr)error=QString(tr("Unable custom room: no avaliable servers"));
-        }
+    qint32 customServer=getCustomServer(owner);
+    if(customServer>0){
+        serverId=customServer;
+        custom=true;
+        mgr=_serverConnections.value(serverId,0);
+        if(!mgr)return QString(tr("Unable create custom room: server not found"));
+    }else{
+        serverId=getFreeServer(roomType);
+        mgr=_serverConnections.value(serverId,0);
+        if(!mgr)return QString(tr("Unable create room: no avaliable servers"));
     }
 
-    if(error.isEmpty()){
-        setServerRoomData(serverId,roomName,roomType,clientId);
-        QMap<QString,QVariant> outData(data);
-        if(custom)outData[FKAusviceIdentifiers::client]=clientId;
-        FKBasicEvent ev(FKBasicEventSubject::createRoom,outData);
-        mgr->sendBasicEvent(&ev);
-    }else{
-        FKConnectionManager* clientMgr=_clientConnections.value(clientId);
-        clientMgr->sendMessage(error);
-        FKBasicEvent ev(FKBasicEventSubject::createRoom);
-        clientMgr->sendBasicEvent(&ev);
-    }
+    QVariant outData=setServerRoomData(serverId,roomName,roomType,owner,custom).toVariant();
+    FKBasicEvent ev(FKBasicEventSubject::createRoom,outData);
+    mgr->sendBasicEvent(&ev);
+    return QString();
 }
 
 void FKRealm::enterRoomRequested(const QString& clientId, const QVariant& data){
@@ -551,19 +581,20 @@ void FKRealm::enterRoomRequested(const QString& clientId, const QVariant& data){
 }
 
 void FKRealm::createRoomRespond(const qint32 serverId, const QVariant& data){
-    if(!wasRoomRequested(serverId)){
+    QString room=getServerRoom(serverId);
+    if(room.isEmpty()){
         emit messageRequested(QString(tr("Unexpected room creation respond from %1 server")).arg(QString::number(serverId)));
         return;
     }
-
     bool success=data==QVariant(true);
-    QString room=getPendingRoom(serverId);
-    QString client=getRoomRequester(room);
+    QString client=_activeRooms[room].owner();
     FKConnectionManager* mgr=_clientConnections.value(client,0);
 
-    if(success)submitServerRoomData(serverId);
-    resetServerRoomData(serverId);
-
+    if(success){
+        submitRoomData(room);
+    }else{
+        abortRoomData(serverId,room);
+    }
     if(mgr){
         FKBasicEvent creation(FKBasicEventSubject::createRoom,success);
         mgr->sendBasicEvent(&creation);
@@ -573,6 +604,40 @@ void FKRealm::createRoomRespond(const qint32 serverId, const QVariant& data){
     }else{
         emit messageRequested(QString(tr("Unable respond creating room client %1: connection not found")).arg(client));
     }
+}
+
+void FKRealm::roomStarted(const qint32 serverId, const QVariant& data){
+    Q_UNUSED(data)
+    QString room=getServerRoom(serverId);
+    auto i=_activeRooms.find(room);
+    if(i!=_activeRooms.end()){
+        database()->writeValue(FKDBValue(true),_dbPath.serverRoomStartedIndex(serverId));
+        _activeRooms.erase(i);
+    }else{
+        emit messageRequested(QString(tr("Unexpected room started event from %1 server: no room found")).arg(QString::number(serverId)));
+    }
+}
+
+void FKRealm::roomStopped(const qint32 serverId, const QVariant& data){
+    Q_UNUSED(data)
+    roomStopped(serverId);
+}
+
+void FKRealm::roomStopped(const qint32 serverId){
+    FKDBIndex roomStartedInd=_dbPath.serverRoomStartedIndex(serverId);
+    bool wasStarted=database()->getValue(roomStartedInd,false).boolean();
+    if(wasStarted){
+        database()->removeIndex(roomStartedInd);
+    }else{
+        QString room=getServerRoom(serverId);
+        auto i=_activeRooms.find(room);
+        if(i!=_activeRooms.end()){
+            _activeRooms.erase(i);
+        }else{
+            emit messageRequested(QString(tr("Unable stop room for %1 server: no room found")).arg(QString::number(serverId)));
+        }
+    }
+    database()->removeIndex(_dbPath.serverRoomIndex(serverId));
 }
 
 /*!
@@ -622,9 +687,18 @@ void FKRealm::createNewClientRecord(const QString& clientName, const QString& pa
 }
 
 qint32 FKRealm::createNewServerRecord(const QString& password){
-    qint32 id=database()->countValues(_dbPath.serversIndex())+1;
+    qint32 id=nextServerId();
     database()->writeValue(FKDBValue(password),_dbPath.serverIndex(id),false);
     return id;
+}
+
+qint32 FKRealm::getFreeServer(const QString& roomType) const{
+    FKDBIndex ind=database()->findIndex(FKDBValue(),_dbPath.roomTypeIndex(roomType),true);
+    if(ind.isValid()){
+        return ind.property().toInt();
+    }else{
+        return 0;
+    }
 }
 
 void FKRealm::registerNewRoomType(const QString& roomType){
@@ -633,14 +707,22 @@ void FKRealm::registerNewRoomType(const QString& roomType){
 
 void FKRealm::registerNewRoomType(const qint32 serverId, const QString& roomType){
     database()->addIndex(_dbPath.serverRoomTypeIndex(serverId,roomType));
-    database()->addIndex(_dbPath.roomTypeServerIndex(roomType,serverId));
+    database()->writeValue(FKDBValue(_dbPath.serverRoomIndex(serverId)),_dbPath.roomTypeServerIndex(roomType,serverId),false);
 }
 
 QStringList FKRealm::getRoomList(const QVariant& filters) const{
-    Q_UNUSED(filters)
     QStringList lst;
-    lst<<"Room one"<<"Room next";
+    FKRoomDataFilter f(filters);
+    for(auto i=_activeRooms.constBegin();i!=_activeRooms.constEnd();++i){
+        if(i.value().fit(f)){
+            lst.append(i.key());
+        }
+    }
     return lst;
+}
+
+QString FKRealm::getServerRoom(const qint32 serverId) const{
+    return database()->getValue(_dbPath.serverRoomIndex(serverId),false).string();
 }
 
 qint32 FKRealm::getUserStatus(const QString& clientId, const QString& userName){
@@ -656,29 +738,24 @@ bool FKRealm::hasSelectedUser(const QString& clientId){
 }
 
 qint32 FKRealm::nextServerId() const{
-    FKDBIndex ind;
-    ind>>serverBranch;
-    return _db->countValues(ind);
+    return _db->countValues(_dbPath.serversIndex())+1;
 }
 
-QMap<QString,QVariant> FKRealm::customServerPreserve(const QString& clientId){
+FKServerData FKRealm::customServerPreserve(const QString& clientId){
     qint32 serverId;
     QString serverPassword;
 
-    FKDBIndex ind;
-    ind>>clientBranch>>clientId>>customServerNode;
+    FKDBIndex ind=_dbPath.clientCustomServerIndex(clientId);
     if(_db->hasIndex(ind)){
         serverId=_db->getValue(ind).number();
-        FKDBIndex serverIndex;
-        serverIndex>>serverBranch>>serverId;
-        serverPassword=_db->getValue(serverIndex).string();
+        serverPassword=_db->getValue(_dbPath.serverIndex(serverId).string();
     }else{
         serverPassword=generateServerPassword();
         serverId=createServerRecord(serverPassword);
         _db->writeValue(FKDBValue(serverId),ind,false);
     }
 
-    FKDBIndex pendingClientIndex;
+    FKDBIndex pendingClientIndex=_dbPath;//from room data
     pendingClientIndex>>serverBranch>>serverId>>customServerNode;
     if(_db->hasIndex(pendingClientIndex)){
         serverId=-1;
@@ -703,15 +780,18 @@ QString FKRealm::generateServerPassword(){
     return QString("myRandomPassword");
 }
 
-void FKRealm::setServerRoomData(const qint32 serverId, const QString& roomName, const QString& roomType, const QString& clientId){
-    FKDBIndex room;
-    room>>roomBranch>>creatingRoomsBranch>>roomName;
-    _db->writeValue(FKDBValue(roomType),room,false);
-    room>>usersNode;
-    _db->writeValue(FKDBValue(clientId),room,false);
-    FKDBIndex server;
-    server>>serverBranch>>serverId>>roomNameNode;
-    _db->writeValue(FKDBValue(roomName),server,false);
+const FKRoomData& FKRealm::setServerRoomData(const qint32 serverId, const QString& roomName, const QString& roomType, const QString& clientId, const bool custom){
+    _db->writeValue(FKDBValue(roomName),_dbPath.serverRoomIndex(serverId),false);
+    return _activeRooms.insert(roomName,FKRoomData(serverId,roomType,clientId,QDateTime::currentDateTime(),custom)).value();
+}
+
+void FKRealm::submitRoomData(const QString& roomId){
+    _activeRooms[roomId].setReady(true);
+}
+
+void FKRealm::abortRoomData(const qint32 serverId, const QString& roomId){
+    _activeRooms.remove(roomId);
+    _db->setValue(FKDBValue(),_dbPath.serverRoomIndex(serverId),false);
 }
 
 /*!
@@ -783,7 +863,7 @@ bool FKRealm::isUserExists(const QString& userName, const QString& clientId) con
 }
 
 bool FKRealm::isRoomExists(const QString& roomName){
-
+    return _activeRooms.contains(roomName);
 }
 
 bool FKRealm::isClientExists(const QString& id) const{

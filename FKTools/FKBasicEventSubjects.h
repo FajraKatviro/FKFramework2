@@ -6,6 +6,8 @@
 namespace FKBasicEventSubject{
     const QString login=QStringLiteral("lgn"); //guest autentification request
     const QString createRoom=QStringLiteral("cro"); //create room
+    const QString startRoom=QStringLiteral("sro"); //create room
+    const QString stopRoom=QStringLiteral("str"); //room desttoyed at server side
     const QString registerRoomType=QStringLiteral("rrt"); //create room
     const QString roomList=QStringLiteral("rl"); //refresh avaliable rooms
     const QString roomData=QStringLiteral("rd"); //refresh existing room actual data

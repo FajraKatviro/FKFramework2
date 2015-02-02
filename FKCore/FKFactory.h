@@ -16,6 +16,12 @@ public:
         QString className=m->className();
         _metaObjects.insert(className,m);
     }
+    template<class E> void removeClass(){
+        const QMetaObject* m=&E::staticMetaObject;
+        QString className=m->className();
+        _metaObjects.remove(className);
+    }
+
 
     D* create(const QString& className)const{
         const QMetaObject* m=_metaObjects.value(className,0);

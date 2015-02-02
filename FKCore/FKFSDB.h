@@ -16,7 +16,7 @@ public:
     void reset();
     bool hasIndex(const FKDBIndex& index)const;
     void removeIndex(const FKDBIndex& index);
-    FKDBIndex findIndex(const FKDBValue& value,const FKDBIndex& parentIndex)const;
+    FKDBIndex findIndex(const FKDBValue& value,const FKDBIndex& parentIndex,bool recursive=false)const;
     qint32 countValues(const FKDBIndex& ind) const;
     QList<FKDBValue> getValues(const FKDBIndex& parentIndex)const;
     QStringList getProperties(const FKDBIndex& parentIndex)const;

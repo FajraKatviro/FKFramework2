@@ -6,13 +6,14 @@
 #include <QSet>
 
 #include "FKIDGenerator.h"
+#include "FKRoomData.h"
 
 class FKConnector;
 class FKConnectionManager;
 class FKUserInfrastructureSlot;
 class FKClientInfrastructureSlot;
 class FKServerConnectionManager;
-class FKRoom;
+//class FKRoom;
 class FKObjectManager;
 
 class FKServerInfrastructure : public FKInfrastructure{
@@ -30,7 +31,8 @@ public:
     void registerRoomTypeRequest(const QString& roomType);
     void registerRoomTypeRespond(const QVariant& value);
 
-    //void roomCreateRequest(const QVariant& data);
+    void createRoomRequested(const QVariant& data);
+
     //void clientInvited(const QVariant& data);
     //void submitLoginUser(const QVariant& data);
 
@@ -44,8 +46,12 @@ signals:
     void loggedIn();
 private slots:
     void realmConnectorStatusChanged();
+    void roomDataChanged(const qint32 maxActors, const qint32 actors, const qint32 maxUsers, const qint32 users);
+    void roomStarted();
+    void roomStopped();
 private:
     bool checkRealm()const;
+    bool createRoom(const FKRoomData& roomData);
     //bool checkInviteData(const QVariant& data, QString& client, QMap<QString,QString>& userMap);
     //static FKRoom* createRoom(const QString& roomType);
     //static void unloadRoomType(const QString& roomType);
@@ -53,7 +59,8 @@ private:
     bool _logged;
     FKConnectionManager* _realmConnection;
     FKObjectManager* _om;
-    FKRoom* _room;
+    //FKRoom* _room;
+    FKRoomData _roomData;
     QSet<FKServerConnectionManager*> _guests;
     QMap<QString,FKClientInfrastructureSlot*> _invitedClients;
     QMap<QString,FKUserInfrastructureSlot*> _invitedUsers;

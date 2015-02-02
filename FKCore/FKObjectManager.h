@@ -8,7 +8,6 @@
 #include "FKIDGenerator.h"
 
 #include <QHash>
-#include <QMutex>
 
 class FKObject;
 class FKEvent;
@@ -42,7 +41,6 @@ private:
     void addObject(FKObject* obj);
     FKIDGenerator _idGenerator;
     QHash<qint32,FKObject*> _objects;
-    QMutex _mutex;
     FKObject* _rootObject;
     FKDataBase* _db;
 };

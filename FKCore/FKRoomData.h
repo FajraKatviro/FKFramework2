@@ -5,12 +5,14 @@
 #include <QDateTime>
 
 class FKRoomDataFilter;
+class QVariant;
 
 class FKRoomData{
 public:
     FKRoomData(const qint32 server, const QString& newRoomType, const QString& ownerId, const QDateTime& roomCreationTime, const bool isCustom);
     FKRoomData(const QVariant& data);
     FKRoomData(const FKRoomData& other);
+    bool isValid()const;
     QVariant toVariant()const;
     static QVariant createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange);
     void change(const QVariant& delta);

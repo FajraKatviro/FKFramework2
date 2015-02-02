@@ -72,6 +72,7 @@ public slots:
     void registerServerRoomType(const QString roomType);
 
     void createRoomRequest(const QString roomName, const QString roomType);
+    void createRoomRequestRealm(const QString roomName, const QString roomType);
     void createCustomServerRequest();
 protected:
     void addPostExecutionCommand(const QString& command);

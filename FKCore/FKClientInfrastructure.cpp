@@ -4,7 +4,7 @@
 #include "FKClientInfrastructureConnectionManager.h"
 #include "FKBasicEvent.h"
 
-#include "FKAusviceIdentifiers.h"
+#include "FKAusviceData.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
@@ -61,11 +61,8 @@ void FKClientInfrastructure::requestLoginRealm(const QString& id, const QString&
         return;
     }
 
-    QMap<QString,QVariant> data;
-    data[FKAusviceIdentifiers::infrastructureType]=FKAusviceIdentifiers::client;
-    data[FKAusviceIdentifiers::id]=id;
-    data[FKAusviceIdentifiers::password]=password;
-    FKBasicEvent ev(FKBasicEventSubject::login,data);
+    FKAusviceData data(id,password);
+    FKBasicEvent ev(FKBasicEventSubject::login,data.toVariant());
     _realmConnection->sendGuestEvent(&ev);
 }
 

@@ -5,6 +5,7 @@
 #include "FKBasicEvent.h"
 #include "FKObjectManager.h"
 #include "FKAusviceData.h"
+#include "FKRoomData.h"
 
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
@@ -103,22 +104,23 @@ void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value)
     }
 }
 
-//void FKServerInfrastructure::roomCreateRequest(const QVariant& data){
-//    bool answer;
-//    if(_room){
-//        FK_MLOG("Create room request recieved, but room does exists")
-//        answer=false;
-//    }else{
-//        const QString roomType=data.toString();
-//        _room=createRoom(roomType);
-//        answer=_room;
-//        if(!answer){
-//            FK_MLOGV("Uncknown room type creation requested",roomType)
-//        }
-//    }
-//    FKBasicEvent ev(FKBasicEventSubject::createRoom,answer);
-//    _realmConnection->sendBasicEvent(&ev);
-//}
+void FKServerInfrastructure::createRoomRequested(const QVariant& data){
+    bool answer;
+    if(hasRoom()){
+        FK_MLOG("Create room request recieved, but room does exists")
+        answer=false;
+    }else{
+        const FKRoomData roomData(data);
+        answer=roomData.isValid();
+        if(!answer){
+            FK_MLOG("Invalid create room request recieved")
+        }else{
+            answer=createRoom(roomData);
+        }
+    }
+    FKBasicEvent ev(FKBasicEventSubject::createRoom,answer);
+    _realmConnection->sendBasicEvent(&ev);
+}
 
 //void FKServerInfrastructure::clientInvited(const QVariant& data){
 //    QString client;
@@ -210,6 +212,40 @@ void FKServerInfrastructure::realmConnectorStatusChanged(){
         emit disconnectedFromRealm();
         cancelAnswer(FKInfrastructureType::Realm);
     }
+}
+
+void FKServerInfrastructure::roomDataChanged(const qint32 maxActors, const qint32 actors, const qint32 maxUsers, const qint32 users){
+    if(!_logged){
+        FK_MLOG("Warning! Unable send room data delta to realm: server is not logged in")
+        return;
+    }
+
+    QVariant delta=FKRoomData::createDelta(maxActors    -_roomData.maximumActors(),
+                                           actors       -_roomData.actors(),
+                                           maxUsers     -_roomData.maximumUsers(),
+                                           users        -_roomData.users());
+    if(delta.isValid()){
+        FKBasicEvent ev(FKBasicEventSubject::roomData,delta);
+        _realmConnection->sendBasicEvent(&ev);
+    }
+}
+
+void FKServerInfrastructure::roomStarted(){
+    if(!_logged){
+        FK_MLOG("Warning! Unable send room started event to realm: server is not logged in")
+        return;
+    }
+    FKBasicEvent ev(FKBasicEventSubject::startRoom);
+    _realmConnection->sendBasicEvent(&ev);
+}
+
+void FKServerInfrastructure::roomStopped(){
+    if(!_logged){
+        FK_MLOG("Warning! Unable send room stopped event to realm: server is not logged in")
+        return;
+    }
+    FKBasicEvent ev(FKBasicEventSubject::stopRoom);
+    _realmConnection->sendBasicEvent(&ev);
 }
 
 bool FKServerInfrastructure::checkRealm() const{

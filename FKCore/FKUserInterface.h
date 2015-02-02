@@ -21,6 +21,7 @@ signals:
     void startServerInfrastructureRequested();
     void createClientRequested(const QString clientName,const QString password);
     void createRoomRequested(const QString roomName,const QString roomType);
+    void createRoomRequestedRealm(const QString roomName,const QString roomType);
     void createServerRequested(const QString password);
     void createCustomServerRequested();
     void clientLoginRequested(const QString clientName,const QString password);

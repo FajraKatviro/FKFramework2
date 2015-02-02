@@ -45,11 +45,13 @@ void FKFSDB::removeIndex(const FKDBIndex& index){
     }
 }
 
-FKDBIndex FKFSDB::findIndex(const FKDBValue& value, const FKDBIndex& parentIndex) const{
+FKDBIndex FKFSDB::findIndex(const FKDBValue& value, const FKDBIndex& parentIndex,bool recursive) const{
     QDir dir(getIndexDirectory(parentIndex));
     foreach (QString nodeName,dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
         dir.cd(nodeName);
-        if(readValueFromDirectory(dir)==value){
+        FKDBValue val=readValueFromDirectory(dir);
+        if(recursive && val.valueType()==FKDBValue::Index)val=getValue(val.index(),true);
+        if(val==value){
             FKDBIndex index(parentIndex);
             return index>>nodeName;
         }

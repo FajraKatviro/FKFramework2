@@ -8,10 +8,10 @@ FKRoomData::Identifiers FKRoomData::identifiers=FKRoomData::identifiers();
 
 FKRoomData::FKRoomData(const qint32 server,const QString& newRoomType,const QString& ownerId,const QDateTime& roomCreationTime,const bool isCustom):
         _roomType(newRoomType),_owner(ownerId),_creationTime(roomCreationTime),_custom(isCustom),
-        _maximumUsers(0),_users(0),_maximumActors(0),_actors(0),_server(server){
+        _maximumUsers(0),_users(0),_maximumActors(0),_actors(0),_server(server),_ready(false){
 }
 
-FKRoomData::FKRoomData(const QVariant &data):_server(-1){
+FKRoomData::FKRoomData(const QVariant &data):_server(-1),_ready(false){
     const QMap<QString,QVariant> map=data.toMap();
     _roomType=map.value(identifiers.roomType).toString();
     _owner=map.value(identifiers.owner).toString();
@@ -36,6 +36,10 @@ FKRoomData::FKRoomData(const FKRoomData& other)
     ,_ready(other._ready)
 {}
 
+bool FKRoomData::isValid() const{
+    return !_roomType.isEmpty();
+}
+
 QVariant FKRoomData::toVariant() const{
     QMap<QString,QVariant> data;
     data.insert(identifiers.roomType,_roomType);
@@ -55,7 +59,7 @@ QVariant FKRoomData::createDelta(const qint32 maxActorsChange, const qint32 acto
     if(usersChange)data[identifiers.users]=usersChange;
     if(maxActorsChange)data[identifiers.maximumActors]=maxActorsChange;
     if(actorsChange)data[identifiers.actors]=actorsChange;
-    return data;
+    return data.isEmpty() ? QVariant() : data;
 }
 
 void FKRoomData::change(const QVariant& delta){

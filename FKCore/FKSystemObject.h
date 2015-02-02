@@ -17,6 +17,20 @@ public:
     static void allowConstructing(){
         _factory.addClass<D>();
     }
+    template<class D,class D1,class...Other>
+    static void allowConstructing(){
+        allowConstructing<D>();
+        allowConstructing<D1,Other...>();
+    }
+    template<class D>
+    static void forbidConstructing(){
+        _factory.removeClass<D>();
+    }
+    template<class D,class D1,class...Other>
+    static void forbidConstructing(){
+        forbidConstructing<D>();
+        forbidConstructing<D1,Other...>();
+    }
     virtual FKSystemObject* clone()const=0;
 private:
     virtual bool packObject(QDataStream& stream)const=0;

@@ -19,12 +19,14 @@ ConsoleUserInterfaceLayer{
     onRegisterRoomTypeRequested: app.registerRoomType(roomType)
     onRegisterServerRoomTypeRequested: app.registerServerRoomType(roomType)
     onCreateRoomRequested: app.createRoomRequest(roomName,roomType)
+    onCreateRoomRequestedRealm: app.createRoomRequestRealm(roomName,roomType)
     onCreateCustomServerRequested: app.createCustomServerRequest()
 
     Core{
         id: app
         onMessageRequested: ui.showMessage(msg)
         onSystemMessageRequested: ui.showMessage("::"+msg)
+        onClientLoggedIn: {}
     }
     Component.onCompleted:show()
 }

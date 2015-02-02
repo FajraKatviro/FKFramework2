@@ -14,6 +14,11 @@ FKDBIndex FKRealmDBMap::serverRoomIndex(const qint32 serverId){
     return _servers.instance.room.path();
 }
 
+FKDBIndex FKRealmDBMap::serverRoomStartedIndex(const qint32 serverId){
+    bindServer(serverId);
+    return _servers.instance.roomStarted.path();
+}
+
 FKDBIndex FKRealmDBMap::serverOwnerIndex(const qint32 serverId){
     bindServer(serverId);
     return _servers.instance.owner.path();

@@ -33,11 +33,13 @@ struct FKDBValue{
     FKDBValue(const FKDBValue& other):_valueType(other._valueType),_value(other._value){}
     FKDBValue(const QVariant& value,ValueType t):_valueType(t),_value(value){}
     FKDBValue(const qreal value=0.0):_valueType(Number),_value(value){}
+    FKDBValue(const bool value):FKDBValue(qreal(value)){}
     FKDBValue(const QString& value):_valueType(String),_value(value){}
     FKDBValue(const FKDBIndex& value):_valueType(Index),_value(value._nodeNames){}
     ValueType valueType()const{return _valueType;}
     QVariant value()const{return _value;}
     qreal number()const{return _valueType==Number ? _value.toReal() : 0.0;}
+    bool boolean()const{return _valueType==Number && _value.toReal();}
     QString string()const{return _valueType==String ? _value.toString() : QString();}
     FKDBIndex index()const{return _valueType==Index ? FKDBIndex(_value.toStringList()) : QStringList();}
     bool operator==(const FKDBValue& other)const;
@@ -72,7 +74,7 @@ public:
     FKDBValue getValue(const QList<FKDBIndex>& indexes)const;
     bool setValue(const FKDBValue& value,const FKDBIndex& index,bool recursive=true)const;
     void writeValue(const FKDBValue& value,const FKDBIndex& index,bool recursive)const;
-    virtual FKDBIndex findIndex(const FKDBValue& value,const FKDBIndex& parentIndex)const=0;
+    virtual FKDBIndex findIndex(const FKDBValue& value,const FKDBIndex& parentIndex,bool recursive=false)const=0;
     virtual qint32 countValues(const FKDBIndex& ind)const=0;
     virtual QList<FKDBValue> getValues(const FKDBIndex& parentIndex)const=0;
     virtual QStringList getProperties(const FKDBIndex& parentIndex)const=0;
