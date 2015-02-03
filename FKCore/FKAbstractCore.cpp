@@ -81,8 +81,7 @@ void FKAbstractCore::ausviseServerInfrastructure(const qint32 id, const QString 
 
 bool FKAbstractCore::createUserRecord(const QString& name){
     if(clientInfrastructure()){
-        clientInfrastructure()->requestUserCreation(name);
-        return true;
+        return clientInfrastructure()->requestUserCreation(name);
     }else{
         emit messageRequested(QString(tr("Unable create user record: no client infrastructure")));
         return false;
@@ -95,8 +94,7 @@ bool FKAbstractCore::createUserRecord(const QString& name){
 
 bool FKAbstractCore::deleteUserRecord(const QString& name){
     if(clientInfrastructure()){
-        clientInfrastructure()->requestUserDeletion(name);
-        return true;
+        return clientInfrastructure()->requestUserDeletion(name);
     }else{
         emit messageRequested(QString(tr("Unable delete user record: no client infrastructure")));
         return false;

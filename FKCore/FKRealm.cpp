@@ -9,9 +9,6 @@
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
-const qint32 FKRealm::userSelected=1;
-const qint32 FKRealm::userNotSelected=2;
-
 /*!
 \class FKRealm
 \brief This class represents realm infrastructure. Realm manages multiple other infrastructures and make login validation.
@@ -404,7 +401,7 @@ void FKRealm::deleteUser(const QString& clientId, const QVariant& userName){
         errorMessage=QString(tr("Unable delete user: invalid username"));
     }else if(!isUserExists(name,clientId)){
         errorMessage=QString(tr("Unable delete user: no such user found"));
-    }else if(getUserStatus(clientId,name)!=userNotSelected){
+    }else if(getUserStatus(clientId,name)){
         errorMessage=QString(tr("Unable delete user. Please check user not active"));
     }
 
@@ -645,26 +642,18 @@ void FKRealm::roomStopped(const qint32 serverId){
  */
 
 QStringList FKRealm::userList() const{
-    FKDBIndex ind;
-    ind>>userBranch;
-    return _db->getProperties(ind);
+    return _db->getProperties(_dbPath.usersIndex());
 }
 
 void FKRealm::createUser(const QString& clientId, const QString& userName){
-    FKDBIndex clientInd, userInd;
-    clientInd>>clientBranch>>clientId>>usersNode>>userName;
-    userInd>>userBranch>>userName;
-    _db->writeValue(FKDBValue(userNotSelected),clientInd,false);
-    _db->writeValue(FKDBValue(clientId),userInd,false);
+    _db->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
+    _db->writeValue(FKDBValue(clientId),_dbPath.userIndex(userName),false);
     emit messageRequested(QString(tr("New user %2 created for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deleteUser(const QString& clientId, const QString& userName){
-    FKDBIndex clientInd, userInd;
-    clientInd>>clientBranch>>clientId>>usersNode>>userName;
-    userInd>>userBranch>>userName;
-    _db->removeIndex(clientInd);
-    _db->removeIndex(userInd);
+    _db->removeIndex(_dbPath.clientUserIndex(clientId,userName));
+    _db->removeIndex(_dbPath.userIndex(userName));
     emit messageRequested(QString(tr("User %2 deleted for %1 client")).arg(clientId).arg(userName));
 }
 

@@ -22,8 +22,8 @@ public:
     void requestLoginRealm(const QString& id, const QString& password);
     void submitLoginRealm(const QVariant& value);
 
-    void requestUserCreation(const QString& name);
-    void requestUserDeletion(const QString& name);
+    bool requestUserCreation(const QString& name);
+    bool requestUserDeletion(const QString& name);
     void requestUserAuthorization(const QString& name);
     void requestUserDeauthorization(const QString& name);
     void requestRoomList(/*filters*/);

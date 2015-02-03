@@ -79,38 +79,40 @@ void FKClientInfrastructure::submitLoginRealm(const QVariant& value){
     }
 }
 
-void FKClientInfrastructure::requestUserCreation(const QString& name){
+bool FKClientInfrastructure::requestUserCreation(const QString& name){
     if(name.isEmpty()){
         emit messageRequested(QString(tr("Unable create user: name is empty")));
-        return;
+        return false;
     }
     if(!_logged){
         emit messageRequested(QString(tr("Unable create user: infrastructure is not logged on realm")));
-        return;
+        return false;
     }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createUser)){
         emit messageRequested(QString(tr("Unable create user: another request in progress")));
-        return;
+        return false;
     }
     FKBasicEvent ev(FKBasicEventSubject::createUser,name);
     _realmConnection->sendBasicEvent(&ev);
+    return true;
 }
 
-void FKClientInfrastructure::requestUserDeletion(const QString& name){
+bool FKClientInfrastructure::requestUserDeletion(const QString& name){
     if(name.isEmpty()){
         emit messageRequested(QString(tr("Unable delete user: name is empty")));
-        return;
+        return false;
     }
     if(!_logged){
         emit messageRequested(QString(tr("Unable delete user: infrastructure is not logged on realm")));
-        return;
+        return false;
     }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deleteUser)){
         emit messageRequested(QString(tr("Unable delete user: another request in progress")));
-        return;
+        return false;
     }
     FKBasicEvent ev(FKBasicEventSubject::deleteUser,name);
     _realmConnection->sendBasicEvent(&ev);
+    return true;
 }
 
 void FKClientInfrastructure::requestUserAuthorization(const QString& name){

@@ -90,8 +90,6 @@ private:
     QHash<qint32,FKConnectionManager*> _serverConnections;
     QHash<QString,FKConnectionManager*> _clientConnections;
     QHash<QString,FKRoomData> _activeRooms;
-    static const qint32 userSelected;
-    static const qint32 userNotSelected;
     FKRealmDBMap _dbPath;
 };
 
