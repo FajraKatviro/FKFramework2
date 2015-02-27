@@ -11,7 +11,7 @@
 #include "FKLogger.h"
 
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_room(0),_idgenerator(1){
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_room(0),_idgenerator(1),_id(-1){
     FK_CBEGIN
     //_om=new FKObjectManager(this);
     FK_CEND
@@ -62,6 +62,7 @@ void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString& p
     }
 
     FKBasicEvent ev(FKBasicEventSubject::login,FKAusviceData(id,password).toVariant());
+    _id=id;
     _realmConnection->sendGuestEvent(&ev);
 }
 
@@ -142,6 +143,10 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
 
 void FKServerInfrastructure::messageFromRealm(const QString& msg){
     emit messageRequested(QString(tr("Realm -> server: %1")).arg(msg));
+}
+
+qint32 FKServerInfrastructure::serverId() const{
+    return _id;
 }
 
 void FKServerInfrastructure::realmConnection(FKConnector* connector){

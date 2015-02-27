@@ -37,6 +37,8 @@ public:
     //void submitLoginUser(const QVariant& data);
 
     void messageFromRealm(const QString& msg);
+
+    qint32 serverId()const;
 public slots:
     void realmConnection(FKConnector* connector);
     //void userConnection(FKConnector* connector);
@@ -68,6 +70,7 @@ private:
     QMap<QString,FKUserInfrastructureSlot*> _users;
     QMap<qint32,FKUserInfrastructureSlot*> _userObjects;
     FKIDGenerator _idgenerator;
+    qint32 _id;
 };
 
 #endif

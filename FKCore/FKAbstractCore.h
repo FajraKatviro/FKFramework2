@@ -32,6 +32,7 @@ signals:
     void serverConnectedToRealm();
     void serverDisconnectedFromRealm();
     void serverLoggedIn();
+    void customServerReady(qint32 serverId);
     void waitingForRealmAnswerChanged();
     void waitingForServerAnswerChanged();
     void userPoolChanged();

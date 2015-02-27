@@ -9,6 +9,8 @@ ConsoleUserInterfaceLayer{
     onStartClientInfrastructureRequested: app.startClientInfrastructure()
     onCreateUserRequested: app.createUserRecord(userName)
     onDeleteUserRequested: app.deleteUserRecord(userName)
+    onSelectUserRequested: app.startUser(userName)
+    onDeselectUserRequested: app.stopUser(userName)
     onClientUsersRequested: {showMessage(app.userPool); showMessage(app.userList)}
     onRealmUsersRequested: showMessage(app.realmUserList())
     onClientLoginRequested: app.ausviseClientInfrastructure(clientName,password)
@@ -27,6 +29,7 @@ ConsoleUserInterfaceLayer{
         onMessageRequested: ui.showMessage(msg)
         onSystemMessageRequested: ui.showMessage("::"+msg)
         onClientLoggedIn: {}
+        onCustomServerReady: ui.showMessage(qsTr("Custom server sucessfully started"))
     }
     Component.onCompleted:show()
 }

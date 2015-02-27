@@ -28,11 +28,15 @@ signals:
     void serverLoginRequested(const qint32 serverId,const QString password);
     void createUserRequested(const QString userName);
     void deleteUserRequested(const QString userName);
+    void selectUserRequested(const QString userName);
+    void deselectUserRequested(const QString userName);
     void registerRoomTypeRequested(const QString roomType);
     void registerServerRoomTypeRequested(const QString roomType);
 protected:
     void requestCreateUser(const QString& arg);
-    void requestDeleteUser(QString arg);
+    void requestDeleteUser(const QString& arg);
+    void requestSelectUser(const QString& arg);
+    void requestDeselectUser(const QString& arg);
 };
 
 #endif

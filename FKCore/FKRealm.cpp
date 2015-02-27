@@ -74,6 +74,7 @@ root
 
 FKRealm::FKRealm(QObject *parent):FKInfrastructure(parent){
     FK_CBEGIN
+    qsrand(QTime::currentTime().msec());
     FK_CEND
 }
 
@@ -401,7 +402,7 @@ void FKRealm::deleteUser(const QString& clientId, const QVariant& userName){
         errorMessage=QString(tr("Unable delete user: invalid username"));
     }else if(!isUserExists(name,clientId)){
         errorMessage=QString(tr("Unable delete user: no such user found"));
-    }else if(getUserStatus(clientId,name)){
+    }else if(getUserActive(clientId,name)){
         errorMessage=QString(tr("Unable delete user. Please check user not active"));
     }
 
@@ -429,7 +430,7 @@ void FKRealm::selectUser(const QString& clientId, const QVariant& userName){
         errorMessage=QString(tr("Unable select user: invalid username"));
     }else if(!isUserExists(name,clientId)){
         errorMessage=QString(tr("Unable select user: no such user found"));
-    }else if(getUserStatus(clientId,name)!=userNotSelected){
+    }else if(getUserActive(clientId,name)){
         errorMessage=QString(tr("Unable select user. Please check user not active"));
     }
 
@@ -457,7 +458,7 @@ void FKRealm::deselectUser(const QString& clientId, const QVariant& userName){
         errorMessage=QString(tr("Unable deselect user: invalid username"));
     }else if(!isUserExists(name,clientId)){
         errorMessage=QString(tr("Unable deselect user: no such user found"));
-    }else if(getUserStatus(clientId,name)!=userSelected){
+    }else if(!getUserActive(clientId,name)){
         errorMessage=QString(tr("Unable deselect user. Please check user is active"));
     }
 
@@ -482,14 +483,16 @@ void FKRealm::customServerRequested(const QString& clientId, const QVariant& dat
         error=QString(tr("Custom server request declined: unexpected data provided"));
     }else if(isClientInRoom(clientId)){
         error=QString(tr("Custom server request declined: client is in room"));
+    }else if(isCustomServerRequested(clientId)){
+        error=QString(tr("Custom server request declined: already requested"));
     }
 
     FKConnectionManager* mgr=_clientConnections.value(clientId);
-    QMap<QString,QVariant> ret;
+    QVariant ret;
     if(error.isEmpty()){
-        ret=customServerPreserve(clientId,roomName,roomType);
+        ret=customServerPreserve(clientId).toVariant();
     }else{
-        ret[FKAusviceIdentifiers::id]=-1;
+        ret=FKAusviceData().toVariant();
         mgr->sendMessage(error);
     }
     FKBasicEvent ev(FKBasicEventSubject::customServer,ret);
@@ -658,16 +661,12 @@ void FKRealm::deleteUser(const QString& clientId, const QString& userName){
 }
 
 void FKRealm::selectUser(const QString& clientId, const QString& userName){
-    FKDBIndex clientInd;
-    clientInd>>clientBranch>>clientId>>usersNode>>userName;
-    _db->writeValue(FKDBValue(userSelected),clientInd,false);
+    _db->writeValue(FKDBValue(true),_dbPath.clientUserIndex(clientId,userName),false);
     emit messageRequested(QString(tr("User %2 selected for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deselectUser(const QString& clientId, const QString& userName){
-    FKDBIndex clientInd;
-    clientInd>>clientBranch>>clientId>>usersNode>>userName;
-    _db->writeValue(FKDBValue(userNotSelected),clientInd,false);
+    _db->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
     emit messageRequested(QString(tr("User %2 deselected for %1 client")).arg(clientId).arg(userName));
 }
 
@@ -714,10 +713,8 @@ QString FKRealm::getServerRoom(const qint32 serverId) const{
     return database()->getValue(_dbPath.serverRoomIndex(serverId),false).string();
 }
 
-qint32 FKRealm::getUserStatus(const QString& clientId, const QString& userName){
-    FKDBIndex ind;
-    ind>>clientBranch>>clientId>>usersNode>>userName;
-    return _db->getValue(ind).number();
+qint32 FKRealm::getUserActive(const QString& clientId, const QString& userName){
+    return _db->getValue(_dbPath.clientUserIndex(clientId,userName)).boolean();
 }
 
 bool FKRealm::hasSelectedUser(const QString& clientId){
@@ -730,43 +727,50 @@ qint32 FKRealm::nextServerId() const{
     return _db->countValues(_dbPath.serversIndex())+1;
 }
 
-FKServerData FKRealm::customServerPreserve(const QString& clientId){
+bool FKRealm::isCustomServerRequested(const QString& clientId) const{
+    return _customServerRequestedClients.contains(clientId);
+}
+
+FKAusviceData FKRealm::customServerPreserve(const QString& clientId){
     qint32 serverId;
     QString serverPassword;
 
     FKDBIndex ind=_dbPath.clientCustomServerIndex(clientId);
     if(_db->hasIndex(ind)){
-        serverId=_db->getValue(ind).number();
-        serverPassword=_db->getValue(_dbPath.serverIndex(serverId).string();
+        serverId=_db->getValue(ind,false).number();
+        serverPassword=_db->getValue(_dbPath.serverIndex(serverId),false).string();
     }else{
         serverPassword=generateServerPassword();
         serverId=createServerRecord(serverPassword);
         _db->writeValue(FKDBValue(serverId),ind,false);
     }
-
-    FKDBIndex pendingClientIndex=_dbPath;//from room data
-    pendingClientIndex>>serverBranch>>serverId>>customServerNode;
-    if(_db->hasIndex(pendingClientIndex)){
-        serverId=-1;
-        serverPassword.clear();
-        emit messageRequested(QString(tr("Failed preserve custom server: pending client is not empty")));
-    }else if(isServerConnected(serverId)){
-        serverId=-1;
-        serverPassword.clear();
-        emit messageRequested(QString(tr("Failed preserve custom server: client already connected")));
-    }
-    if(serverId>0 && !serverPassword.isEmpty()){
-        _db->writeValue(FKDBValue(clientId),pendingClientIndex,false);
-    }
-
-    QMap<QString,QVariant> data;
-    data[FKAusviceIdentifiers::id]=serverId;
-    data[FKAusviceIdentifiers::password]=serverPassword;
-    return data;
+    _customServerRequestedClients.insert(clientId);
+    _db->writeValue(FKDBValue(clientId),_dbPath.serverOwnerIndex(serverId),false);
+    return FKAusviceData(serverId,serverPassword);
 }
 
 QString FKRealm::generateServerPassword(){
-    return QString("myRandomPassword");
+    const int minLen=10;
+    const int maxLen=20;
+
+    static QString letters;
+    static qint32 size;
+    if(letters.isEmpty()){
+        for(char i='a';i<='z';++i){
+            letters.append(QChar(i));
+        }
+        for(char i='A';i<='Z';++i){
+            letters.append(QChar(i));
+        }
+        size=letters.size();
+    }
+
+    qint32 len=qrand()%(maxLen-minLen+1)+minLen;
+    QString password;
+    for(qint32 i=0;i<len;++i){
+        password.append(letters.at(qrand()%(size+1)));
+    }
+    return password;
 }
 
 const FKRoomData& FKRealm::setServerRoomData(const qint32 serverId, const QString& roomName, const QString& roomType, const QString& clientId, const bool custom){

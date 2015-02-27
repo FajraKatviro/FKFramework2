@@ -108,8 +108,7 @@ bool FKAbstractCore::deleteUserRecord(const QString& name){
 
 bool FKAbstractCore::startUser(const QString &name){
     if(clientInfrastructure()){
-        clientInfrastructure()->requestUserAuthorization(name);
-        return true;
+        return clientInfrastructure()->requestUserAuthorization(name);
     }else{
         emit messageRequested(QString(tr("Unable start user: no client infrastructure")));
         return false;
@@ -122,8 +121,7 @@ bool FKAbstractCore::startUser(const QString &name){
 
 bool FKAbstractCore::stopUser(const QString& name){
     if(clientInfrastructure()){
-        clientInfrastructure()->requestUserDeauthorization(name);
-        return true;
+        return clientInfrastructure()->requestUserDeauthorization(name);
     }else{
         emit messageRequested(QString(tr("Unable stop user: no client infrastructure")));
         return false;
@@ -342,6 +340,10 @@ void FKAbstractCore::serverDisconnectedFromRealmSlot(){
 
 void FKAbstractCore::serverLoggedInSlot(){
     emit serverLoggedIn();
+    if(_customServerId>0){
+        clientInfrastructure()->setCustomServer(_customServerId);
+        emit customServerReady(_customServerId);
+    }
 }
 
 QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){

@@ -24,8 +24,8 @@ public:
 
     bool requestUserCreation(const QString& name);
     bool requestUserDeletion(const QString& name);
-    void requestUserAuthorization(const QString& name);
-    void requestUserDeauthorization(const QString& name);
+    bool requestUserAuthorization(const QString& name);
+    bool requestUserDeauthorization(const QString& name);
     void requestRoomList(/*filters*/);
     void requestCustomServer();
     void requestCreateRoom(const QString& roomName, const QString& roomType);
@@ -47,6 +47,8 @@ public:
     QStringList activeUsers()const;
 
     void messageFromRealm(const QString& msg);
+
+    void setCustomServerId(const qint32 serverId);
 public slots:
     void realmConnection(FKConnector* connector);
 signals:
@@ -65,6 +67,7 @@ private:
     QMap<QString,FKUserInfrastructure*> _users;
     QStringList _userPool;
     QStringList _roomList;
+    qint32 _customServerId;
 };
 
 #endif // FKCLIENTINFRASTRUCTURE_H

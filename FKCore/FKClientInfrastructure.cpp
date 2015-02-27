@@ -9,7 +9,7 @@
 #include "FKLogger.h"
 
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0){
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_customServerId(-1){
     FK_CBEGIN
     FK_CEND
 }
@@ -115,39 +115,40 @@ bool FKClientInfrastructure::requestUserDeletion(const QString& name){
     return true;
 }
 
-void FKClientInfrastructure::requestUserAuthorization(const QString& name){
+bool FKClientInfrastructure::requestUserAuthorization(const QString& name){
     if(name.isEmpty()){
         emit messageRequested(QString(tr("Unable select user: name is empty")));
-        return;
+        return false;
     }
     if(!_logged){
         emit messageRequested(QString(tr("Unable select user: infrastructure is not logged on realm")));
-        return;
+        return false;
     }
     if(!_userPool.contains(name)){
         emit messageRequested(QString(tr("Unable select user: no such name in user pool")));
-        return;
+        return false;
     }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::selectUser)){
         emit messageRequested(QString(tr("Unable select user: another request in progress")));
-        return;
+        return false;
     }
     FKBasicEvent ev(FKBasicEventSubject::selectUser,name);
     _realmConnection->sendBasicEvent(&ev);
+    return true;
 }
 
-void FKClientInfrastructure::requestUserDeauthorization(const QString& name){
+bool FKClientInfrastructure::requestUserDeauthorization(const QString& name){
     if(name.isEmpty()){
         emit messageRequested(QString(tr("Unable deselect user: name is empty")));
-        return;
+        return false;
     }
     if(!_logged){
         emit messageRequested(QString(tr("Unable deselect user: infrastructure is not logged on realm")));
-        return;
+        return false;
     }
     if(!activeUsers().contains(name)){
         emit messageRequested(QString(tr("Unable deselect user: no such user selected")));
-        return;
+        return false;
     }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
         emit messageRequested(QString(tr("Unable deselect user: another request in progress")));
@@ -246,7 +247,7 @@ void FKClientInfrastructure::respondUserAuthorization(const QVariant& value){
     }
     if(!name.isEmpty()){
         _userPool.removeOne(name);
-        //_users.insert(name,new FKUserInfrastructure(this));
+        _users.insert(name,new FKUserInfrastructure(this));
         emit userPoolChanged();
         emit activeUsersChanged();
     }
@@ -260,8 +261,8 @@ void FKClientInfrastructure::respondUserDeauthorization(const QVariant& value){
     if(!name.isEmpty()){
         _userPool.append(name);
         FKUserInfrastructure* user=_users.take(name);
-        //user->dropInfrastructure();
-        //user->deleteLater();
+        user->dropInfrastructure();
+        user->deleteLater();
         emit userPoolChanged();
         emit activeUsersChanged();
     }
@@ -279,14 +280,20 @@ void FKClientInfrastructure::respondCustomServer(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCustomServer()")
     }
-    const QMap<QString,QVariant> data=value.toMap();
+    const FKAusviceData data(value);
     QString error;
-    qint32 serverId=data.value(FKAusviceIdentifiers::id).toInt();
-    QString password=data.value(FKAusviceIdentifiers::password).toString();
-    if(serverId<=0){
-        error=QString(tr("Unable create custom server: realm provided no server id"));
-    }else if(password.isEmpty()){
-        error=QString(tr("Unable create custom server: realm provided no server password"));
+    qint32 serverId;
+    QString password;
+    if(!data.isValid()){
+        error=QString(tr("Unable create custom server: request rejected by realm"));
+    }else{
+        serverId=data.serverId();
+        password=data.password();
+        if(serverId<=0){
+            error=QString(tr("Unable create custom server: realm provided no server id"));
+        }else if(password.isEmpty()){
+            error=QString(tr("Unable create custom server: realm provided no server password"));
+        }
     }
 
     if(error.isEmpty()){
@@ -306,6 +313,10 @@ QStringList FKClientInfrastructure::activeUsers() const{
 
 void FKClientInfrastructure::messageFromRealm(const QString& msg){
     emit messageRequested(QString(tr("Realm -> client: %1")).arg(msg));
+}
+
+void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
+    _customServerId=serverId;
 }
 
 void FKClientInfrastructure::requestCustomRoom(){

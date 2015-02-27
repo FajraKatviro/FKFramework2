@@ -10,7 +10,7 @@
 
 class FKConnector;
 class FKConnectionManager;
-class FKServerData;
+class FKAusviceData;
 
 class FKRealm : public FKInfrastructure{
     Q_OBJECT
@@ -74,18 +74,20 @@ private:
     void registerNewRoomType(const qint32 serverId,const QString& roomType);
     QStringList getRoomList(const QVariant& filters)const;
     QString getServerRoom(const qint32 serverId)const;
-    qint32 getUserStatus(const QString& clientId, const QString& userName);
+    qint32 getUserActive(const QString& clientId, const QString& userName);
     bool hasSelectedUser(const QString& clientId);
     qint32 nextServerId()const;
     bool isClientInRoom(const QString& clientId)const;
+    bool isCustomServerRequested(const QString& clientId)const;
     qint32 getCustomServer(const QString& clientId)const;
     //qint32 customServerId(const QString& clientId)const;
-    FKServerData customServerPreserve(const QString& clientId);
+    FKAusviceData customServerPreserve(const QString& clientId);
     QString createNewRoomForServer(const QString& roomName,const QString& roomType,const QString& owner=QString());
     static QString generateServerPassword();
     const FKRoomData& setServerRoomData(const qint32 serverId, const QString& roomName, const QString& roomType, const QString& clientId, const bool custom);
     void submitRoomData(const QString& roomId);
     void abortRoomData(const qint32 serverId,const QString& roomId);
+    QSet<QString> _customServerRequestedClients;
     QSet<FKConnectionManager*> _guesConnections;
     QHash<qint32,FKConnectionManager*> _serverConnections;
     QHash<QString,FKConnectionManager*> _clientConnections;

@@ -42,12 +42,30 @@ void FKUserInterface::requestCreateUser(const QString& arg){
  * \brief Check arg is valid and send deleteUserRequested signal
  */
 
-void FKUserInterface::requestDeleteUser(QString arg){
+void FKUserInterface::requestDeleteUser(const QString& arg){
     auto userName=arg.trimmed();
     if(!userName.isEmpty()){
         emit deleteUserRequested(userName);
     }else{
         showMessage(QString(tr("Unable request user deletion: invalid user name")));
+    }
+}
+
+void FKUserInterface::requestSelectUser(const QString& arg){
+    auto userName=arg.trimmed();
+    if(!userName.isEmpty()){
+        emit selectUserRequested(userName);
+    }else{
+        showMessage(QString(tr("Unable request user selection: invalid user name")));
+    }
+}
+
+void FKUserInterface::requestDeselectUser(const QString& arg){
+    auto userName=arg.trimmed();
+    if(!userName.isEmpty()){
+        emit deselectUserRequested(userName);
+    }else{
+        showMessage(QString(tr("Unable request user unselection: invalid user name")));
     }
 }
 
