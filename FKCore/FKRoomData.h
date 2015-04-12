@@ -29,6 +29,8 @@ public:
     qint32 actors()const{return _actors;}
     qint32 server()const{return _server;}
     bool ready()const{return _ready;}
+
+    void changeUsers(const qint32 userCount);
 private:
     const QString _roomType;
     const QString _owner;
@@ -53,6 +55,24 @@ private:
         const QString creationTime;
         const QString custom;
         const QString owner;
+    } identifiers;
+};
+
+class FKRoomCreateData{
+public:
+    FKRoomCreateData(const QString& id,const QString& roomType);
+    FKRoomCreateData(const QVariant& data);
+    FKRoomCreateData(const FKRoomCreateData& other);
+    QVariant toVariant()const;
+    QString roomId()const{return _id;}
+    QString roomType()const{return _roomType;}
+private:
+    QString _id;
+    QString _roomType;
+    static const struct Identifiers{
+        Identifiers():roomType("rt"),roomName("rn"){}
+        const QString roomType;
+        const QString roomName;
     } identifiers;
 };
 

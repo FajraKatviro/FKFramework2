@@ -11,7 +11,7 @@
 struct FKCORESHARED_EXPORT FKDBIndex{
     FKDBIndex(){}
     FKDBIndex(const FKDBIndex& other):_nodeNames(other._nodeNames){}
-    FKDBIndex(const QStringList& nodeNames):_nodeNames(nodeNames){}
+    FKDBIndex(const QStringList& nodeNames):_nodeNames(nodeNames){checkNodeNames();}
     FKDBIndex(const QList<FKDBIndex>& indexList);
     FKDBIndex& operator>>(const QString& offset){_nodeNames.append(offset);return *this;}
     FKDBIndex& operator>>(const FKDBIndex& children){_nodeNames.append(children._nodeNames);return *this;}
@@ -22,6 +22,7 @@ struct FKCORESHARED_EXPORT FKDBIndex{
     bool isValid()const{return !_nodeNames.isEmpty();}
     static bool isNodeName(const QString& nodeName);
 private:
+    void checkNodeNames();
     QStringList _nodeNames;
 
     friend struct FKDBValue;
@@ -78,6 +79,7 @@ public:
     virtual qint32 countValues(const FKDBIndex& ind)const=0;
     virtual QList<FKDBValue> getValues(const FKDBIndex& parentIndex)const=0;
     virtual QStringList getProperties(const FKDBIndex& parentIndex)const=0;
+    virtual QStringList findProperties(const FKDBIndex& parentIndex,const FKDBValue& matchValue)const;
     virtual QMap<QString,FKDBValue> mapValues(const FKDBIndex& parentIndex)const=0;
 signals:
     void dataChanged(const FKDBIndex index,const FKDBValue value);

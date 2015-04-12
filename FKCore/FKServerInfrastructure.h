@@ -11,10 +11,11 @@
 class FKConnector;
 class FKConnectionManager;
 class FKUserInfrastructureSlot;
-class FKClientInfrastructureSlot;
+class FKUserInfrastructureAlias;
 class FKServerConnectionManager;
 //class FKRoom;
 class FKObjectManager;
+class FKRoomInviteData;
 
 class FKServerInfrastructure : public FKInfrastructure{
     Q_OBJECT
@@ -33,7 +34,7 @@ public:
 
     void createRoomRequested(const QVariant& data);
 
-    //void clientInvited(const QVariant& data);
+    void clientInvited(const QVariant& data);
     //void submitLoginUser(const QVariant& data);
 
     void messageFromRealm(const QString& msg);
@@ -54,7 +55,8 @@ private slots:
 private:
     bool checkRealm()const;
     bool createRoom(const FKRoomData& roomData);
-    //bool checkInviteData(const QVariant& data, QString& client, QMap<QString,QString>& userMap);
+    static QString createUserInvitePassword();
+    bool checkInviteData(const FKRoomInviteData& data);
     //static FKRoom* createRoom(const QString& roomType);
     //static void unloadRoomType(const QString& roomType);
     //static QStringList getRoomTypeList();
@@ -64,9 +66,7 @@ private:
     //FKRoom* _room;
     FKRoomData _roomData;
     QSet<FKServerConnectionManager*> _guests;
-    QMap<QString,FKClientInfrastructureSlot*> _invitedClients;
-    QMap<QString,FKUserInfrastructureSlot*> _invitedUsers;
-    QMap<QString,FKClientInfrastructureSlot*> _clients;
+    QMap<QString,FKUserInfrastructureAlias*> _clients;
     QMap<QString,FKUserInfrastructureSlot*> _users;
     QMap<qint32,FKUserInfrastructureSlot*> _userObjects;
     FKIDGenerator _idgenerator;

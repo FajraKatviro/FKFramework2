@@ -111,6 +111,8 @@ void FKServerConnectionManagerR::processBasicEvent(FKBasicEvent* ev){
         _server->registerRoomTypeRespond(value);
     }else if(subject==FKBasicEventSubject::createRoom){
         _server->createRoomRequested(value);
+    }else if(subject==FKBasicEventSubject::joinRoom){
+        _server->clientInvited(value);
     }else{
         FK_MLOGV("Unexpected basic event subject from realm to server",subject)
     }

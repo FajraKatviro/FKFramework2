@@ -34,18 +34,18 @@ private:
     FKServerInfrastructure* _server;
 };
 
-//class FKServerConnectionManagerU:public FKConnectionManager{
-//    Q_OBJECT
-//public:
-//    FKServerConnectionManagerU(FKUserInfrastructureSlot* userSlot,FKConnector* connector,QObject* parent=0);
-//    ~FKServerConnectionManagerU();
-//private:
-//    void processMessage(FKMessage* msg);
-//    void processGuestEvent(FKBasicEvent* ev);
-//    void processBasicEvent(FKBasicEvent* ev);
-//    void processEvent(FKEvent* ev);
-//    void incomeMessageError(const QString& msgType,const QString& reason);
-//    FKUserInfrastructureSlot* _user;
-//};
+class FKServerConnectionManagerU:public FKConnectionManager{
+    Q_OBJECT
+public:
+    FKServerConnectionManagerU(FKUserInfrastructureSlot* userSlot,FKConnector* connector,QObject* parent=0);
+    ~FKServerConnectionManagerU();
+private:
+    void processMessage(FKMessage* msg);
+    void processGuestEvent(FKBasicEvent* ev);
+    void processBasicEvent(FKBasicEvent* ev);
+    void processEvent(FKEvent* ev);
+    void incomeMessageError(const QString& msgType,const QString& reason);
+    FKUserInfrastructureSlot* _user;
+};
 
 #endif

@@ -5,6 +5,7 @@
 #include "FKBasicEvent.h"
 #include "FKObjectManager.h"
 #include "FKAusviceData.h"
+#include "FKRoomInviteData.h"
 #include "FKRoomData.h"
 
 #include "FKBasicEventSubjects.h"
@@ -123,23 +124,30 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
     _realmConnection->sendBasicEvent(&ev);
 }
 
-//void FKServerInfrastructure::clientInvited(const QVariant& data){
-//    QString client;
-//    QMap<QString,QString> userMap;
-//    bool answer=checkInviteData(data,client,userMap);
-//    if(answer){
-//        FKClientInfrastructureSlot* clientSlot=new FKClientInfrastructureSlot(this);
-//        _invitedClients.insert(client,clientSlot);
-//        for(auto u=userMap.constBegin();u!=userMap.constEnd();++u){
-//            const qint32 id=_idgenerator.take();
-//            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(clientSlot,id,u.value(),clientSlot);
-//            clientSlot->addUser(userSlot);
-//            _invitedUsers.insert(u.key(),userSlot);
-//        }
-//    }
-//    FKBasicEvent ev(FKBasicEventSubject::userList,answer);
-//    _realmConnection->sendBasicEvent(&ev);
-//}
+void FKServerInfrastructure::clientInvited(const QVariant& data){
+    FKRoomInviteData invite(data);
+    QVariant ret;
+    if(checkInviteData(invite)){
+        FKRoomInviteData answer(invite.client(),userPort());
+        FKUserInfrastructureAlias* userAlias=new FKUserInfrastructureAlias(invite.client());
+        _clients.insert(invite.client(),userAlias);
+        foreach(QString u,invite.users()){
+            const qint32 id=_idgenerator.take();
+            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(clientSlot,id,createUserInvitePassword(),clientSlot);
+            userAlias->addUser(userSlot);
+            _users.insert(u,userSlot);
+            answer.addUser(u,userSlot->password());
+        }
+        ret=answer.toVariant();
+        _roomData.changeUsers(invite.users().count());
+        roomDataChanged(_roomData.maximumActors(),_roomData.actors(),_roomData.maximumUsers(),_roomData.users());
+    }else{
+        FKRoomInviteData answer(invite.client());
+        ret=answer.toVariant();
+    }
+    FKBasicEvent ev(FKBasicEventSubject::joinRoom,ret);
+    _realmConnection->sendBasicEvent(&ev);
+}
 
 void FKServerInfrastructure::messageFromRealm(const QString& msg){
     emit messageRequested(QString(tr("Realm -> server: %1")).arg(msg));
@@ -156,55 +164,6 @@ void FKServerInfrastructure::realmConnection(FKConnector* connector){
         FK_MLOG("Unexpected behaivour in FKServerInfrastructure::realmConnection()")
     }
 }
-
-//bool FKServerInfrastructure::checkInviteData(const QVariant& data, QString& client, QMap<QString, QString>& userMap){
-//    QMap<QString,QVariant> clientData=data.toMap();
-//    client=clientData.value(FKAusviceIdentifiers::client).toString();
-//    if(client.isEmpty()){
-//        FK_MLOG("Unexpected empty client name in FKServerInfrastructure::clientInvited()")
-//        return false;
-//    }
-//    if(_clients.contains(client)){
-//        FK_MLOG("Unexpected duplicate client invite in FKServerInfrastructure::clientInvited()")
-//        return false;
-//    }
-//    const QList<QVariant> users=clientData.value(FKAusviceIdentifiers::users).toList();
-//    if(users.isEmpty()){
-//        FK_MLOG("Unexpected empty user list in FKServerInfrastructure::clientInvited()")
-//        return false;
-//    }
-//    const QList<QVariant> passwords=clientData.value(FKAusviceIdentifiers::password);
-//    if(users.size()!=passwords.size()){
-//        FK_MLOG("Unexpected invalid password list in FKServerInfrastructure::clientInvited()")
-//        return false;
-//    }
-//    for(auto u=users.constBegin(), p=passwords.constBegin();u!=users.constEnd();++u,++p){
-//        QString userName=u->toString();
-//        if(userName.isEmpty()){
-//            FK_MLOG("Unexpected empty user name in FKServerInfrastructure::clientInvited()")
-//            return false;
-//        }
-//        if(userMap.contains(userName)){
-//            FK_MLOG("Unexpected duplicate user name in FKServerInfrastructure::clientInvited()")
-//            return false;
-//        }
-//        if(_users.contains(userName)){
-//            FK_MLOG("Unexpected duplicate user invite in FKServerInfrastructure::clientInvited()")
-//            return false;
-//        }
-//        QString password=p->toString();
-//        if(password.isEmpty()){
-//            FK_MLOG("Unexpected empty password in FKServerInfrastructure::clientInvited()")
-//            return false;
-//        }
-//        userMap.insert(userName,password);
-//    }
-//    if(!newClientAllowed(userMap.size())){
-//        FK_MLOGV("New users is not allowed for current room",userMap.size())
-//        return false;
-//    }
-//    return true;
-//}
 
 void FKServerInfrastructure::realmConnectorStatusChanged(){
     if(_realmConnection->isActive()){
@@ -263,6 +222,19 @@ bool FKServerInfrastructure::checkRealm() const{
         return false;
     }
     return true;
+}
+
+QString FKServerInfrastructure::createUserInvitePassword(){
+    return createRandomString(8,10);
+}
+
+bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
+    if(data.isValid()){
+        if(_roomData.maximumUsers()-_roomData.users()>=data.users().count()){
+            return true;
+        }
+    }
+    return false;
 }
 
 /*!

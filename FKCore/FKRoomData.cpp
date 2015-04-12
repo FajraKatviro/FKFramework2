@@ -85,5 +85,28 @@ bool FKRoomData::fit(const FKRoomDataFilter& filter)const{
             && (!filter.earliest.isValid() || _creationTime>=filter.earliest)
             && (filter.owner.isEmpty()     || _owner==filter.owner)
             && ((filter.custom && _custom) || (filter.notCustom && !_custom))
-           ));
+                          ));
+}
+
+void FKRoomData::changeUsers(const qint32 userCount){
+    _users+=userCount;
+}
+
+FKRoomCreateData::Identifiers FKRoomCreateData::identifiers=FKRoomCreateData::Identifiers();
+
+FKRoomCreateData::FKRoomCreateData(const QString& id, const QString& roomType):_id(id),_roomType(roomType){}
+
+FKRoomCreateData::FKRoomCreateData(const QVariant& data){
+    auto map=data.toMap();
+    _id=map.value(identifiers.roomName);
+    _roomType=map.value(identifiers.roomType);
+}
+
+FKRoomCreateData::FKRoomCreateData(const FKRoomCreateData& other):_id(other._id),_roomType(other._roomType){}
+
+QVariant FKRoomCreateData::toVariant() const{
+    QMap<QString,QVariant> map;
+    map[identifiers.roomName]=_id;
+    map[identifiers.roomType]=_roomType;
+    return map;
 }

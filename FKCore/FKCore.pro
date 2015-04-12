@@ -43,7 +43,8 @@ SOURCES += \
     FKRoomModule.cpp \
     FKRoomLoader.cpp \
     FKPackage.cpp \
-    FKPackageManager.cpp
+    FKPackageManager.cpp \
+    FKRoomInviteData.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -87,7 +88,8 @@ HEADERS += \
     FKRoomLoader.h \
     FKPackage.h \
     FKPackageManager.h \
-    FKRoomComponents.h
+    FKRoomComponents.h \
+    FKRoomInviteData.h
 
 include(../FKFramework.pri)
 

@@ -194,6 +194,8 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
         realm()->roomStarted(id,value);
     }else if(subject==FKBasicEventSubject::stopRoom){
         realm()->roomStopped(id,value);
+    }else if(subject==FKBasicEventSubject::joinRoom){
+        realm()->enterRoomRespond(id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from server to realm",subject)
         realm()->stopServerConnection(_id);

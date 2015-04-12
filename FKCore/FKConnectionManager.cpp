@@ -100,6 +100,10 @@ void FKConnectionManager::dropConnection(){
     _connector=0;
 }
 
+QString FKConnectionManager::address() const{
+    return _connector ? _connector->address() : QString();
+}
+
 /*!
  * \fn void FKConnectionManager::processMsg(const QString msgType,FKSystemMessage* msg)
  * \brief Process income message from connector

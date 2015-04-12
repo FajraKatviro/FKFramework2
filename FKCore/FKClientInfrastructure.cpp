@@ -5,6 +5,8 @@
 #include "FKBasicEvent.h"
 
 #include "FKAusviceData.h"
+#include "FKRoomInviteData.h"
+#include "FKRoomData.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
@@ -187,10 +189,8 @@ void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QS
     }
 
     if(error.isEmpty()){
-        QMap<QString,QVariant> data;
-        data[FKAusviceIdentifiers::id]=roomName;
-        data[FKAusviceIdentifiers::roomType]=roomType;
-        FKBasicEvent ev(FKBasicEventSubject::createRoom,data);
+        FKRoomCreateData data(roomName,roomType);
+        FKBasicEvent ev(FKBasicEventSubject::createRoom,data.toVariant());
         _realmConnection->sendBasicEvent(&ev);
     }else{
         emit messageRequested(error);
@@ -248,6 +248,7 @@ void FKClientInfrastructure::respondUserAuthorization(const QVariant& value){
     if(!name.isEmpty()){
         _userPool.removeOne(name);
         _users.insert(name,new FKUserInfrastructure(this));
+        todo();//setup user
         emit userPoolChanged();
         emit activeUsersChanged();
     }
@@ -274,6 +275,31 @@ void FKClientInfrastructure::respondRoomList(const QVariant& value){
     }
     _roomList=value.toStringList();
     emit roomListChanged();
+}
+
+void FKClientInfrastructure::respondCreateRoom(const QVariant& value){
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCreateRoom()")
+    }
+    if(value==QVariant(true)){
+        if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+            FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondRoomList() on success")
+        }
+    }else{
+        emit messageRequested(QString(tr("Fail create room")));
+    }
+}
+
+void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondEnterRoom()")
+    }
+    FKRoomInviteData invite(value);
+    if(invite.isValid()){
+        joinServer(invite.passwords(),invite.address(),invite.port());
+    }else{
+        emit messageRequested(QString(tr("Fail enter room")));
+    }
 }
 
 void FKClientInfrastructure::respondCustomServer(const QVariant& value){

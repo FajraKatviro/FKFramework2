@@ -10,8 +10,7 @@ enum class FKInfrastructureType:qint8{
     Realm,
     Server,
     Client,
-    User,
-    UserSlot
+    User
 };
 
 class FKInfrastructure : public QObject{
@@ -22,6 +21,7 @@ public:
     virtual FKInfrastructureType infrastructureType()const=0;
     bool waitingForAnswer(FKInfrastructureType t)const;
     void setDataBase(FKDataBase* db);
+    static QString createRandomString(const qint32 minLen, const qint32 maxLen);
 signals:
     void waitingForAnswerChanged(FKInfrastructureType infr);
     void messageRequested(const QString msg);

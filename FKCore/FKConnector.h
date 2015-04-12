@@ -13,6 +13,7 @@ public:
     virtual void sendMessage(QByteArray data)=0;
     enum Status{Connected,Disconnected};
     FKConnector::Status status()const{return _status;}
+    virtual QString address()const{return QString();}
 signals:
     void gotMessage(const QString msgType, FKSystemObject* msg);
     void statusChanged(FKConnector::Status status);

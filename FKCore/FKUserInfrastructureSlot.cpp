@@ -1,43 +1,90 @@
 #include "FKUserInfrastructureSlot.h"
 
 #include "FKServerConnectionManager.h"
+#include "FKEvent.h"
 
-#include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
-//FKUserInfrastructureSlot::FKUserInfrastructureSlot(FKClientInfrastructureSlot *client, const qint32 id, const QString &password, QObject *parent):
-//        FKInfrastructure(parent),_id(id),_password(password),_connection(0),_client(client){
-//    FK_CBEGIN
-//    FK_CEND
-//}
+FKUserInfrastructureSlot::FKUserInfrastructureSlot(FKUserInfrastructureAlias* alias,const qint32 userObjectId,const QString& invitePassword,QObject* parent):
+        QObject(parent),_id(userObjectId),_password(invitePassword),_connection(0),_client(alias),_active(false){
+    FK_CBEGIN
+    FK_CEND
+}
 
-//FKUserInfrastructureSlot::~FKUserInfrastructureSlot(){
-//    FK_DBEGIN
-//    FK_DEND
-//}
+FKUserInfrastructureSlot::~FKUserInfrastructureSlot(){
+    FK_DBEGIN
+    FK_DEND
+}
 
-//FKInfrastructureType FKUserInfrastructureSlot::infrastructureType() const{
-//    return FKInfrastructureType::UserSlot;
-//}
+QString FKUserInfrastructureSlot::password() const{
+    return _password;
+}
 
-//QString FKUserInfrastructureSlot::password() const{
-//    return _password;
-//}
+bool FKUserInfrastructureSlot::isActive() const{
+    return _active;
+}
 
-//bool FKUserInfrastructureSlot::isActive() const{
-//    return _connection && _connection->isActive();
-//}
+void FKUserInfrastructureSlot::setActive(const bool t){
+    _active=t;
+}
 
-//void FKUserInfrastructureSlot::dropUser(){
-//    if(_connection){
-//        _connection->dropConnection();
-//        _connection->deleteLater();
-//        _connection=0;
-//        cancelAnswer(FKInfrastructureType::User);
-//    }
-//}
+void FKUserInfrastructureSlot::dropUser(){
+    if(_connection){
+        _connection->dropConnection();
+        _connection->deleteLater();
+        _connection=0;
+        _active=false;
+    }
+}
 
-//void FKUserInfrastructureSlot::setUserConnector(FKConnector* connector){
-//    _connection=new FKServerConnectionManagerU(this,connector,this);
-//    connect(_connection,SIGNAL(connectionStatusChanged()),SLOT(connectorStatusChanged()));
-//}
+void FKUserInfrastructureSlot::setUserConnector(FKConnector* connector){
+    _connection=new FKServerConnectionManagerU(this,connector,this);
+}
+
+void FKUserInfrastructureSlot::sendMessage(const QString msg){
+    _connection->sendMessage(msg);
+}
+
+void FKUserInfrastructureSlot::sendEvent(FKEvent* event){
+    _connection->sendEvent(event);
+}
+
+void FKUserInfrastructureSlot::sendData(const QByteArray& data){
+    _connection->sendData(data);
+}
+
+void FKUserInfrastructureSlot::incomeAction(FKEvent* action){
+    if(_client->isActive()){
+        emit gotAction(action);
+    }else{
+        action->deleteLater();
+    }
+}
+
+
+FKUserInfrastructureAlias::FKUserInfrastructureAlias(const QString& clientId):_id(clientId){}
+
+FKUserInfrastructureAlias::FKUserInfrastructureAlias(const FKUserInfrastructureAlias& other)
+    :_id(other._id),_users(other._users){}
+
+FKUserInfrastructureAlias::~FKUserInfrastructureAlias(){
+    dropAlias();
+}
+
+bool FKUserInfrastructureAlias::isActive() const{
+    for(auto i=_users.constBegin();i!=_users.constEnd();++i){
+        if(!(*i)->isActive())return false;
+    }
+    return true;
+}
+
+void FKUserInfrastructureAlias::addUser(FKUserInfrastructureSlot* user){
+    _users.append(user);
+}
+
+void FKUserInfrastructureAlias::dropAlias(){
+    for(auto i=_users.constBegin();i!=_users.constEnd();++i){
+        (*i)->dropUser();
+    }
+}
+

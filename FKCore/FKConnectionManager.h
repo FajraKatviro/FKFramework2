@@ -23,6 +23,7 @@ public:
     void sendGuestEvent(FKBasicEvent* event);
     void sendBasicEvent(FKBasicEvent* event);
     void dropConnection();
+    QString address()const;
 signals:
     void connectionStatusChanged();
 private slots:

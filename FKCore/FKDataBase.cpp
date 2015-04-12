@@ -342,6 +342,19 @@ void FKDataBase::writeValue(const FKDBValue& value,const FKDBIndex& index,bool r
 }
 
 /*!
+ * \brief Returns list of properties within given node, that has value matching \i matchValue
+ */
+
+QStringList FKDataBase::findProperties(const FKDBIndex& parentIndex, const FKDBValue& matchValue) const{
+    auto data=mapValues(parentIndex);
+    QStringList lst;
+    for(auto i=data.constBegin();i!=data.constEnd();++i){
+        if(i.value()==matchValue)lst.append(i.key());
+    }
+    return lst;
+}
+
+/*!
  * \fn FKDBIndex FKDataBase::findIndex(const FKDBValue& value,const FKDBIndex& parentIndex)const
  * \brief Returns index for child of given parent that has given value. If there are more than 1 value, returns the first. If there is no equal value or given index, returns invalid index.
  */

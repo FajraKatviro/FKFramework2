@@ -451,9 +451,9 @@ void FKAbstractCore::registerServerRoomType(const QString roomType){
 
 void FKAbstractCore::createRoomRequest(const QString roomName, const QString roomType){
     if(!clientInfrastructure()){
-        emit messageRequested(QString(tr("Unable create room: no client infrastructure")));
+        emit messageRequested(QString(tr("Unable create room: no client infrastructure started")));
     }else{
-        clientInfrastructure()->createRoomRequest(roomName,roomType);
+        clientInfrastructure()->requestCreateRoom(roomName,roomType);
     }
 }
 

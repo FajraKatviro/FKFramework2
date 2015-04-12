@@ -10,7 +10,6 @@ namespace FKAusviceIdentifiers{
     const QString password=QStringLiteral("pa");
     const QString id=QStringLiteral("id");
     const QString users=QStringLiteral("us");
-    const QString roomType=QStringLiteral("rt");
 }
 
 #endif // FKAUSVICEIDENTIFIERS_H

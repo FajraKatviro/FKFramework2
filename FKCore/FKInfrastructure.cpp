@@ -114,6 +114,27 @@ void FKInfrastructure::setDataBase(FKDataBase* db){
     _db=db;
 }
 
+QString FKInfrastructure::createRandomString(const qint32 minLen, const qint32 maxLen){
+    static QString letters;
+    static qint32 size;
+    if(letters.isEmpty()){
+        for(char i='a';i<='z';++i){
+            letters.append(QChar(i));
+        }
+        for(char i='A';i<='Z';++i){
+            letters.append(QChar(i));
+        }
+        size=letters.size();
+    }
+
+    qint32 len=qrand()%(maxLen-minLen+1)+minLen;
+    QString str;
+    for(qint32 i=0;i<len;++i){
+        str.append(letters.at(qrand()%(size+1)));
+    }
+    return str;
+}
+
 /*!
  * \brief Return previously set database
  */

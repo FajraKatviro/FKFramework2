@@ -39,7 +39,7 @@ public:
     void respondUserDeauthorization(const QVariant& value);
     void respondRoomList(const QVariant& value);
     void respondCreateRoom(const QVariant& value);
-    //void respondEnterRoom(const QVariant& value);
+    void respondEnterRoom(const QVariant& value);
     //void respondExitRoom(const QVariant& value);
     void respondCustomServer(const QVariant& value);
 
