@@ -10,7 +10,7 @@ FKDBIndex FKDataBasePath::path() const{
     return ind;
 }
 
-void FKDataBasePath::bindNode(const QString& nodeName){
+void FKDataBasePath::bindNode(const QString& nodeName) const{
     _nodeName=nodeName;
 }
 

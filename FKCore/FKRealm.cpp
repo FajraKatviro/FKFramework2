@@ -114,7 +114,7 @@ void FKRealm::ausvise(FKConnectionManager* source, const QVariant loginData){
 
         const QString clientPassword=getClientPassword(data.clientId());
         if(clientPassword.isEmpty()){
-            FK_MLOGV("Client id provided by guest is not registered",strId)
+            FK_MLOGV("Client id provided by guest is not registered",data.clientId())
             FKBasicEvent deny(FKBasicEventSubject::login,false);
             source->sendBasicEvent(&deny);
             const QString message(tr("Invalid client id"));
@@ -343,7 +343,7 @@ void FKRealm::createRoomRealmRequest(const QString& roomName, const QString& roo
 }
 
 void FKRealm::registerServerRoomType(const qint32 serverId, const QVariant& data){
-    QString error;
+    QString error, roomType(data.toString());
     if(roomType.isEmpty()){
         error=QString(tr("Unable register room type: empty type"));
     }else if(!isRoomTypeName(roomType)){
@@ -360,7 +360,7 @@ void FKRealm::registerServerRoomType(const qint32 serverId, const QVariant& data
         connector->sendMessage(error);
         result=false;
     }
-    FKBasicEvent answer(FKBasicEventSubject,result);
+    FKBasicEvent answer(FKBasicEventSubject::registerRoomType,result);
     connector->sendBasicEvent(&answer);
 }
 
@@ -516,7 +516,7 @@ void FKRealm::createRoomRequested(const QString& clientId, const QVariant& data)
     FKRoomCreateData roomData(data);
     QString error, roomName(roomData.roomId()), roomType(roomData.roomType());
     if(getClientRoomState(clientId)!=FKClientRoomState::NotInRoom){
-        errorMessage=QString(tr("Unable select user: invalid client state"));
+        error=QString(tr("Unable select user: invalid client state"));
     }else if(roomName.isEmpty()){
         error=QString(tr("Room request declined: empty room name provided"));
     }else if(roomType.isEmpty()){
@@ -662,9 +662,7 @@ void FKRealm::enterRoomRespond(const qint32 serverId, const QVariant& data){
         }
     }
     if(!success){
-        removeClientFromRoom(invite.client(),roomId);
-        database()->writeValue(FKDBValue(),_dbPath.clientRoomIndex(invite.client()),false);
-        setClientRoomState(invite.client(),FKClientRoomState::NotInRoom);
+        removeClientFromRoom(serverId,invite.client());
         FKRoomInviteData fail;
         ret=fail.toVariant();
     }
@@ -681,7 +679,7 @@ void FKRealm::roomStarted(const qint32 serverId, const QVariant& data){
     QString room=getServerRoom(serverId);
     auto i=_activeRooms.find(room);
     if(i!=_activeRooms.end()){
-        database()->writeValue(FKDBValue(true),_dbPath.serverRoomStartedIndex(serverId));
+        database()->writeValue(FKDBValue(true),_dbPath.serverRoomStartedIndex(serverId),false);
         _activeRooms.erase(i);
     }else{
         emit messageRequested(QString(tr("Unexpected room started event from %1 server: no room found")).arg(QString::number(serverId)));
@@ -708,7 +706,7 @@ void FKRealm::roomStopped(const qint32 serverId){
         }
     }
     database()->removeIndex(_dbPath.serverRoomIndex(serverId));
-    todo();//remove clients from room
+    //todo();//remove clients from room
 }
 
 /*!
@@ -716,28 +714,28 @@ void FKRealm::roomStopped(const qint32 serverId){
  */
 
 QStringList FKRealm::userList() const{
-    return _db->getProperties(_dbPath.usersIndex());
+    return database()->getProperties(_dbPath.usersIndex());
 }
 
 void FKRealm::createUser(const QString& clientId, const QString& userName){
-    _db->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
-    _db->writeValue(FKDBValue(clientId),_dbPath.userIndex(userName),false);
+    database()->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
+    database()->writeValue(FKDBValue(clientId),_dbPath.userIndex(userName),false);
     emit messageRequested(QString(tr("New user %2 created for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deleteUser(const QString& clientId, const QString& userName){
-    _db->removeIndex(_dbPath.clientUserIndex(clientId,userName));
-    _db->removeIndex(_dbPath.userIndex(userName));
+    database()->removeIndex(_dbPath.clientUserIndex(clientId,userName));
+    database()->removeIndex(_dbPath.userIndex(userName));
     emit messageRequested(QString(tr("User %2 deleted for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::selectUser(const QString& clientId, const QString& userName){
-    _db->writeValue(FKDBValue(true),_dbPath.clientUserIndex(clientId,userName),false);
+    database()->writeValue(FKDBValue(true),_dbPath.clientUserIndex(clientId,userName),false);
     emit messageRequested(QString(tr("User %2 selected for %1 client")).arg(clientId).arg(userName));
 }
 
 void FKRealm::deselectUser(const QString& clientId, const QString& userName){
-    _db->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
+    database()->writeValue(FKDBValue(false),_dbPath.clientUserIndex(clientId,userName),false);
     emit messageRequested(QString(tr("User %2 deselected for %1 client")).arg(clientId).arg(userName));
 }
 
@@ -790,17 +788,15 @@ QString FKRealm::getClientRoom(const QString& clientId) const{
 }
 
 qint32 FKRealm::getUserActive(const QString& clientId, const QString& userName){
-    return _db->getValue(_dbPath.clientUserIndex(clientId,userName)).boolean();
+    return database()->getValue(_dbPath.clientUserIndex(clientId,userName)).boolean();
 }
 
-bool FKRealm::hasSelectedUser(const QString& clientId){
-    FKDBIndex ind;
-    ind>>clientBranch>>clientId>>usersNode>>userName;
-    return _db->findIndex(FKDBValue(userSelected),ind).isValid();
+bool FKRealm::hasSelectedUser(const QString& clientId) const{
+    return database()->findIndex(FKDBValue(true),_dbPath.clientUsersIndex(clientId)).isValid();
 }
 
 qint32 FKRealm::nextServerId() const{
-    return _db->countValues(_dbPath.serversIndex())+1;
+    return database()->countValues(_dbPath.serversIndex())+1;
 }
 
 FKClientRoomState FKRealm::getClientRoomState(const QString& clientId) const{
@@ -808,7 +804,7 @@ FKClientRoomState FKRealm::getClientRoomState(const QString& clientId) const{
 }
 
 void FKRealm::setClientRoomState(const QString& clientId, FKClientRoomState state) const{
-    database()->writeValue(FKDBValue(static_cast<qint32>(state)),_dbPath.clientRoomStateIndex(clientId),false)
+    database()->writeValue(FKDBValue(qreal(state)),_dbPath.clientRoomStateIndex(clientId),false);
 }
 
 bool FKRealm::isCustomServerRequested(const QString& clientId) const{
@@ -833,16 +829,16 @@ FKAusviceData FKRealm::customServerPreserve(const QString& clientId){
     QString serverPassword;
 
     FKDBIndex ind=_dbPath.clientCustomServerIndex(clientId);
-    if(_db->hasIndex(ind)){
-        serverId=_db->getValue(ind,false).number();
-        serverPassword=_db->getValue(_dbPath.serverIndex(serverId),false).string();
+    if(database()->hasIndex(ind)){
+        serverId=database()->getValue(ind,false).number();
+        serverPassword=database()->getValue(_dbPath.serverIndex(serverId),false).string();
     }else{
         serverPassword=generateServerPassword();
         serverId=createServerRecord(serverPassword);
-        _db->writeValue(FKDBValue(serverId),ind,false);
+        database()->writeValue(FKDBValue(qreal(serverId)),ind,false);
     }
     _customServerRequestedClients.insert(clientId);
-    _db->writeValue(FKDBValue(clientId),_dbPath.serverOwnerIndex(serverId),false);
+    database()->writeValue(FKDBValue(clientId),_dbPath.serverOwnerIndex(serverId),false);
     return FKAusviceData(serverId,serverPassword);
 }
 
@@ -871,7 +867,7 @@ QString FKRealm::generateServerPassword(){
 }
 
 const FKRoomData& FKRealm::setServerRoomData(const qint32 serverId, const QString& roomName, const QString& roomType, const QString& clientId, const bool custom){
-    _db->writeValue(FKDBValue(roomName),_dbPath.serverRoomIndex(serverId),false);
+    database()->writeValue(FKDBValue(roomName),_dbPath.serverRoomIndex(serverId),false);
     return _activeRooms.insert(roomName,FKRoomData(serverId,roomType,clientId,QDateTime::currentDateTime(),custom)).value();
 }
 
@@ -881,7 +877,7 @@ void FKRealm::submitRoomData(const QString& roomId){
 
 void FKRealm::abortRoomData(const qint32 serverId, const QString& roomId){
     _activeRooms.remove(roomId);
-    _db->setValue(FKDBValue(),_dbPath.serverRoomIndex(serverId),false);
+    database()->setValue(FKDBValue(),_dbPath.serverRoomIndex(serverId),false);
 }
 
 void FKRealm::enterRoomRequested(const QString& clientId, const QString& roomId){
@@ -890,7 +886,7 @@ void FKRealm::enterRoomRequested(const QString& clientId, const QString& roomId)
     if(i==_activeRooms.constEnd()){
         error=QString(tr("Unable join room %1: room not found")).arg(roomId);
     }else{
-        FKRoomData& roomData=i.value();
+        const FKRoomData& roomData=i.value();
         QStringList activeUsers(getActiveUsers(clientId));
         qint32 newUsersCount=activeUsers.count();
         if(roomData.users()+newUsersCount>roomData.maximumUsers()){
@@ -900,8 +896,7 @@ void FKRealm::enterRoomRequested(const QString& clientId, const QString& roomId)
             if(!server){
                 error=QString(tr("Unable join room %1: server not found")).arg(roomId);
             }else{
-                database()->writeValue(FKDBValue(roomId),_dbPath.clientRoomIndex(clientId),false);
-                addClientToRoom(clientId,roomId); //this call to remove client from room on room stopped later
+                addClientToRoom(roomData.server(),clientId,roomId); //this call to remove client from room on room stopped later
                 setClientRoomState(clientId,FKClientRoomState::EnterRoomRequested);
                 FKRoomInviteData invite(clientId);
                 foreach(QString user,activeUsers)invite.addUser(user);
@@ -916,6 +911,17 @@ void FKRealm::enterRoomRequested(const QString& clientId, const QString& roomId)
         FKBasicEvent fail(FKBasicEventSubject::joinRoom,false);
         client->sendBasicEvent(&fail);
     }
+}
+
+void FKRealm::addClientToRoom(const qint32 server, const QString& client,const QString& room){
+    database()->writeValue(FKDBValue(room),_dbPath.clientRoomIndex(client),false);
+    database()->addIndex(_dbPath.serverRoomClientIndex(server,client));
+}
+
+void FKRealm::removeClientFromRoom(const qint32 server, const QString& client){
+    database()->writeValue(FKDBValue(),_dbPath.clientRoomIndex(client),false);
+    database()->removeIndex(_dbPath.serverRoomClientIndex(server,client));
+    setClientRoomState(client,FKClientRoomState::NotInRoom);
 }
 
 /*!
@@ -934,10 +940,6 @@ bool FKRealm::isServerConnected(const qint32 id)const{
 
 bool FKRealm::isClientConnected(const QString& id)const{
     return _clientConnections.contains(id);
-}
-
-bool FKRealm::isClientId(const QString& id)const{
-    return FKDBIndex::isNodeName(id);
 }
 
 void FKRealm::incomeServer(const qint32 id, FKConnector* connector){

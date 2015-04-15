@@ -96,6 +96,7 @@ private slots:
     void serverDisconnectedFromRealmSlot();
     void serverLoggedInSlot();
 private:
+    virtual qint32 customServerPort()const;
     FKFilesList _appFilesList;
 
     FKRealm* _realm;

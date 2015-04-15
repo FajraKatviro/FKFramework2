@@ -49,6 +49,9 @@ public:
     void messageFromRealm(const QString& msg);
 
     void setCustomServerId(const qint32 serverId);
+
+    qint32 realmPort()const;
+    QString realmIP()const;
 public slots:
     void realmConnection(FKConnector* connector);
 signals:

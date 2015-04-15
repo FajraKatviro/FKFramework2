@@ -1,5 +1,7 @@
 #include "FKInfrastructure.h"
 
+#include "FKDataBase.h"
+
 #include "FKLogger.h"
 
 /*!
@@ -135,10 +137,26 @@ QString FKInfrastructure::createRandomString(const qint32 minLen, const qint32 m
     return str;
 }
 
+bool FKInfrastructure::isClientId(const QString& client){
+    return FKDBIndex::isNodeName(client);
+}
+
+bool FKInfrastructure::isUserName(const QString& user){
+    return FKDBIndex::isNodeName(user);
+}
+
+bool FKInfrastructure::isRoomName(const QString& room){
+    return FKDBIndex::isNodeName(room);
+}
+
+bool FKInfrastructure::isRoomTypeName(const QString& roomType){
+    return FKDBIndex::isNodeName(roomType);
+}
+
 /*!
  * \brief Return previously set database
  */
 
-void FKInfrastructure::database(){
+void FKInfrastructure::database()const{
     return _db;
 }

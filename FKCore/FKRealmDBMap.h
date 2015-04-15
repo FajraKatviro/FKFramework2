@@ -10,17 +10,26 @@ struct FKRealmDBServerRoomTypes:public FKDataBasePathCommon{
     FKDataBasePath instance;
 };
 
+struct FKRealmDBServerRoomClients:public FKDataBasePathCommon{
+    FKRealmDBServerRoomClients(const QString& path,FKDataBasePath* parent)
+        :FKDataBasePathCommon(path,parent)
+        ,instance(this){}
+    FKDataBasePath instance;
+};
+
 struct FKRealmDBServer:public FKDataBasePath{
     FKRealmDBServer(FKDataBasePath* parent)
         :FKDataBasePath(parent)
         ,room("room",this)
         ,roomStarted("started",this)
         ,owner("owner",this)
-        ,roomTypes("roomTypes",this){}
+        ,roomTypes("roomTypes",this)
+        ,roomClients("roomClients",this){}
     FKDataBasePathCommon room;
     FKDataBasePathCommon roomStarted;
     FKDataBasePathCommon owner;
     FKRealmDBServerRoomTypes roomTypes;
+    FKRealmDBServerRoomClients roomClients;
 };
 
 struct FKRealmDBServers:public FKDataBasePathCommon{
@@ -41,9 +50,11 @@ struct FKRealmDBClient:public FKDataBasePath{
     FKRealmDBClient(FKDataBasePath* parent)
         :FKDataBasePath(parent)
         ,currentRoom("room",this)
+        ,roomState("state",this)
         ,customServer("custom",this)
         ,users("users",this){}
     FKDataBasePathCommon currentRoom;
+    FKDataBasePathCommon roomState;
     FKDataBasePathCommon customServer;
     FKRealmDBClientUsers users;
 };
@@ -57,7 +68,7 @@ struct FKRealmDBClients:public FKDataBasePathCommon{
 
 struct FKRealmDBUsers:public FKDataBasePathCommon{
     FKRealmDBUsers(const QString& path,FKDataBasePath* parent)
-        :FKDataBasePathCommon(path,this)
+        :FKDataBasePathCommon(path,parent)
         ,instance(this){}
     FKDataBasePath instance;
 };
@@ -69,12 +80,13 @@ struct FKRealmDBRoomTypeServers:public FKDataBasePath{
     FKDataBasePath server;
 };
 
-struct FKRealmDBRooms:public FKDataBasePathCommon{
-    FKRealmDBRooms(const QString& path,FKDataBasePath* parent)
+struct FKRealmDBRoomTypes:public FKDataBasePathCommon{
+    FKRealmDBRoomTypes(const QString& path,FKDataBasePath* parent)
         :FKDataBasePathCommon(path,parent)
         ,roomType(this){}
     FKRealmDBRoomTypeServers roomType;
 };
+
 
 class FKRealmDBMap:public FKDataBasePath{
 public:
@@ -83,38 +95,41 @@ public:
       ,_servers("servers",this)
       ,_clients("clients",this)
       ,_users("users",this)
-      ,_rooms("rooms",this){}
+      ,_roomTypes("roomTypes",this){}
 
-    FKDBIndex serversIndex();
-    FKDBIndex serverIndex(const qint32 serverId);
-    FKDBIndex serverRoomIndex(const qint32 serverId);
-    FKDBIndex serverRoomStartedIndex(const qint32 serverId);
-    FKDBIndex serverOwnerIndex(const qint32 serverId);
-    FKDBIndex serverRoomTypesIndex(const qint32 serverId);
-    FKDBIndex serverRoomTypeIndex(const qint32 serverId,const QString& roomType);
+    FKDBIndex serversIndex()const;
+    FKDBIndex serverIndex(const qint32 serverId)const;
+    FKDBIndex serverRoomIndex(const qint32 serverId)const;
+    FKDBIndex serverRoomClientsIndex(const qint32 serverId)const;
+    FKDBIndex serverRoomClientIndex(const qint32 serverId,const QString& clientId)const;
+    FKDBIndex serverRoomStartedIndex(const qint32 serverId)const;
+    FKDBIndex serverOwnerIndex(const qint32 serverId)const;
+    FKDBIndex serverRoomTypesIndex(const qint32 serverId)const;
+    FKDBIndex serverRoomTypeIndex(const qint32 serverId,const QString& roomType)const;
 
-    FKDBIndex clientsIndex();
-    FKDBIndex clientIndex(const QString& clientId);
-    FKDBIndex clientRoomIndex(const QString& clientId);
-    FKDBIndex clientCustomServerIndex(const QString& clientId);
-    FKDBIndex clientUsersIndex(const QString& clientId);
-    FKDBIndex clientUserIndex(const QString& clientId,const QString& userId);
+    FKDBIndex clientsIndex()const;
+    FKDBIndex clientIndex(const QString& clientId)const;
+    FKDBIndex clientRoomIndex(const QString& clientId)const;
+    FKDBIndex clientRoomStateIndex(const QString& clientId)const;
+    FKDBIndex clientCustomServerIndex(const QString& clientId)const;
+    FKDBIndex clientUsersIndex(const QString& clientId)const;
+    FKDBIndex clientUserIndex(const QString& clientId,const QString& userId)const;
 
-    FKDBIndex usersIndex();
-    FKDBIndex userIndex(const QString& userId);
+    FKDBIndex usersIndex()const;
+    FKDBIndex userIndex(const QString& userId)const;
 
-    FKDBIndex roomTypesIndex();
-    FKDBIndex roomTypeIndex(const QString& roomType);
-    FKDBIndex roomTypeServerIndex(const QString& roomType,const qint32 serverId);
+    FKDBIndex roomTypesIndex()const;
+    FKDBIndex roomTypeIndex(const QString& roomType)const;
+    FKDBIndex roomTypeServerIndex(const QString& roomType,const qint32 serverId)const;
 private:
-    void bindServer(const qint32 serverId);
-    void bindClient(const QString& clientId);
-    void bindUser(const QString& userId);
-    void bindRoomType(const QString& roomType);
-    FKRealmDBServers _servers;
-    FKRealmDBClients _clients;
-    FKRealmDBUsers _users;
-    FKRealmDBRooms _rooms;
+    void bindServer(const qint32 serverId)const;
+    void bindClient(const QString& clientId)const;
+    void bindUser(const QString& userId)const;
+    void bindRoomType(const QString& roomType)const;
+    const FKRealmDBServers _servers;
+    const FKRealmDBClients _clients;
+    const FKRealmDBUsers _users;
+    const FKRealmDBRoomTypes _roomTypes;
 };
 
 #endif // FKREALMDBMAP_H

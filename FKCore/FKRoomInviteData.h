@@ -4,7 +4,7 @@
 class QString;
 class QStringList;
 class QVariant;
-class QMap;
+//class QMap;
 
 class FKRoomInviteData{
 public:
@@ -37,7 +37,8 @@ private:
     bool _isValid;
 
     static const struct Identifiers{
-        Identifiers():roomType("rt"),roomName("rn"){}
+        Identifiers():client("cl"),users("us"),passwords("pw"),
+            address("ad"),port("pr"){}
         const QString client;
         const QString users;
         const QString passwords;

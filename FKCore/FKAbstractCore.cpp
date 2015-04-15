@@ -181,6 +181,7 @@ void FKAbstractCore::quitApplication(){
  */
 
 void FKAbstractCore::addPostExecutionCommand(const QString& command){
+    //todo();
 //    std::cout<<'@'<<QString::number(command.size()).rightJustified(4,'0').toStdString()<<command.toStdString();
 }
 
@@ -341,9 +342,13 @@ void FKAbstractCore::serverDisconnectedFromRealmSlot(){
 void FKAbstractCore::serverLoggedInSlot(){
     emit serverLoggedIn();
     if(_customServerId>0){
-        clientInfrastructure()->setCustomServer(_customServerId);
+        clientInfrastructure()->setCustomServerId(_customServerId);
         emit customServerReady(_customServerId);
     }
+}
+
+qint32 FKAbstractCore::customServerPort() const{
+    return 0;
 }
 
 QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){

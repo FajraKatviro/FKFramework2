@@ -11,6 +11,7 @@ class FKRoomData{
 public:
     FKRoomData(const qint32 server, const QString& newRoomType, const QString& ownerId, const QDateTime& roomCreationTime, const bool isCustom);
     FKRoomData(const QVariant& data);
+    FKRoomData();
     FKRoomData(const FKRoomData& other);
     bool isValid()const;
     QVariant toVariant()const;

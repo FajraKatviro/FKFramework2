@@ -125,7 +125,7 @@ void FKConsoleInterface::printHelp(){
                 QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
                 QString(tr("%1\tdelete existing user for current client\n")).arg(FKCommands::deleteUser.rightJustified(commandWidth))+
                 QString(tr("%1\tselect existing user for current client\n")).arg(FKCommands::selectUser.rightJustified(commandWidth))+
-                QString(tr("%1\unselect selected user for current client\n")).arg(FKCommands::deselectUser.rightJustified(commandWidth))+
+                QString(tr("%1\tunselect selected user for current client\n")).arg(FKCommands::deselectUser.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate room for current users. Realm admin should use %2 option to create empty room for random server\n")).arg(FKCommands::createRoom.rightJustified(commandWidth)).arg(FKCommandOptions::realm)+
                 QString(tr("%1\tshow list of existing users. Use %2 option to show all users registered on realm")).arg(FKCommands::showUsers.rightJustified(commandWidth)).arg(FKCommandOptions::realm)
                 );
@@ -188,7 +188,7 @@ void FKConsoleInterface::createClient(const QString& arg){
     }
 }
 
-void FKConsoleInterface::createServer(const QString& arg){
+void FKConsoleInterface::createServer(QString arg){
     arg=arg.trimmed();
     if(hasKey(arg,FKCommandOptions::custom)){
         emit createCustomServerRequested();
@@ -202,7 +202,7 @@ void FKConsoleInterface::createServer(const QString& arg){
     }
 }
 
-void FKConsoleInterface::createRoom(const QString& arg){
+void FKConsoleInterface::createRoom(QString arg){
     QString argTrimmed=arg.trimmed();
     bool realm=hasKey(argTrimmed,FKCommandOptions::realm);
     QStringList splitArg=argTrimmed.split(' ',QString::SkipEmptyParts);
@@ -217,7 +217,7 @@ void FKConsoleInterface::createRoom(const QString& arg){
     }
 }
 
-void FKConsoleInterface::registerRoomType(const QString& arg){
+void FKConsoleInterface::registerRoomType(QString arg){
     arg=arg.trimmed();
     bool server=hasKey(arg,FKCommandOptions::server);
     QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);

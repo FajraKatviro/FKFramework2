@@ -1,7 +1,5 @@
 #include "FKObjectManager.h"
 
-#include <QMutexLocker>
-
 #include "FKLogger.h"
 #include "FKEvent.h"
 #include "FKMessage.h"
@@ -16,7 +14,7 @@
  * \brief Constructs object with given parent
  */
 
-FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_mutex(QMutex::Recursive),_rootObject(0),_db(0){
+FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_rootObject(0),_db(0){
     FK_CBEGIN
     FK_CEND
 }
@@ -34,7 +32,7 @@ FKObjectManager::~FKObjectManager(){
  */
 
 FKObject* FKObjectManager::getObject(const qint32 id){
-    QMutexLocker m(&_mutex);
+    //QMutexLocker m(&_mutex);
     return _objects.value(id,0);
 }
 
@@ -62,7 +60,7 @@ void FKObjectManager::addObject(FKObject* obj){
  */
 
 void FKObjectManager::regObject(FKObject* obj){
-    QMutexLocker m(&_mutex);
+    //QMutexLocker m(&_mutex);
     obj->setId(_idGenerator.take());
     addObject(obj);
 }
@@ -76,9 +74,9 @@ void FKObjectManager::genObject(const QString &className,const qint32 id){
     if(obj){
         obj->setId(id);
         obj->setObjectManager(this);
-        _mutex.lock();
+        //_mutex.lock();
         addObject(obj);
-        _mutex.unlock();
+        //_mutex.unlock();
         obj->totalInitialization();
     }
 }
@@ -88,7 +86,7 @@ void FKObjectManager::genObject(const QString &className,const qint32 id){
  */
 
 void FKObjectManager::freeObject(const qint32 id){
-    QMutexLocker m(&_mutex);
+    //QMutexLocker m(&_mutex);
     _objects.remove(id);
     _idGenerator.back(id);
 }

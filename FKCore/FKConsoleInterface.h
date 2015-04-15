@@ -29,9 +29,9 @@ private:
     void loginClient(const QString& arg);
     void loginServer(const QString& arg);
     void createClient(const QString& arg);
-    void createServer(const QString& arg);
-    void createRoom(const QString& arg);
-    void registerRoomType(const QString& arg);
+    void createServer(QString arg);
+    void createRoom(QString arg);
+    void registerRoomType(QString arg);
     QThread _consoleReaderThread;
     FKConsoleReader* _consoleReader;
 };

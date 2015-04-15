@@ -13,14 +13,14 @@ public:
     bool startServer(const int /*port=0*/, const int /*realmPort=0*/,const QString& /*realmIP=QString()*/);
     bool startClientInfrastructure(const int /*realmPort=0*/,const QString& /*realmIP=QString()*/);
     //bool startUser(const QString& name){}
-    bool createRoom(const QMap<QString,QVariant>& roomData){}
-    bool joinRoom(const qint32 id){}
+    bool createRoom(const QMap<QString,QVariant>& roomData){return true;/*todo*/}
+    bool joinRoom(const qint32 id){return true;/*todo*/}
 
     bool stopRealm();
-    bool stopServer(){}
-    bool stopClientManager(){}
-    bool stopClient(const qint32 number){}
-    bool quitRoom(){}
+    bool stopServer(){return true;/*todo*/}
+    bool stopClientManager(){return true;/*todo*/}
+    bool stopClient(const qint32 number){return true;/*todo*/}
+    bool quitRoom(){return true;/*todo*/}
 };
 
 #endif // FKLOCALCORE_H

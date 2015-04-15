@@ -1,2 +1,6 @@
 *.pro.user
 FKFramework.pro.user.3.3-pre1
+*.o
+makefile*
+*.debug
+*.release

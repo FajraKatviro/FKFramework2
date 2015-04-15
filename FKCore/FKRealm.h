@@ -86,7 +86,7 @@ private:
     QString getServerRoom(const qint32 serverId)const;
     QString getClientRoom(const QString& clientId)const;
     qint32 getUserActive(const QString& clientId, const QString& userName);
-    bool hasSelectedUser(const QString& clientId);
+    bool hasSelectedUser(const QString& clientId)const;
     qint32 nextServerId()const;
     FKClientRoomState getClientRoomState(const QString& clientId)const;
     void setClientRoomState(const QString& clientId, FKClientRoomState state)const;
@@ -101,12 +101,14 @@ private:
     void submitRoomData(const QString& roomId);
     void abortRoomData(const qint32 serverId,const QString& roomId);
     void enterRoomRequested(const QString& clientId, const QString& roomId);
+    void addClientToRoom(const qint32 server, const QString& client, const QString& room);
+    void removeClientFromRoom(const qint32 server, const QString& client);
     QSet<QString> _customServerRequestedClients;
     QSet<FKConnectionManager*> _guesConnections;
     QHash<qint32,FKConnectionManager*> _serverConnections;
     QHash<QString,FKConnectionManager*> _clientConnections;
     QHash<QString,FKRoomData> _activeRooms;
-    FKRealmDBMap _dbPath;
+    const FKRealmDBMap _dbPath;
 };
 
 #endif // FKREALM_H

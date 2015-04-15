@@ -23,6 +23,8 @@ FKRoomData::FKRoomData(const QVariant &data):_server(-1),_ready(false){
     _actors=map.value(identifiers.actors).toInt();
 }
 
+FKRoomData::FKRoomData():FKRoomData(QVariant()){}
+
 FKRoomData::FKRoomData(const FKRoomData& other)
     :_roomType(other._roomType)
     ,_owner(other._owner)

@@ -9,10 +9,10 @@ class FKDataBasePath{
 public:
     FKDataBasePath(FKDataBasePath* parent=0);
     FKDBIndex path()const;
-    void bindNode(const QString& nodeName);
+    void bindNode(const QString& nodeName)const;
 private:
     virtual FKDBIndex index()const;
-    QString _nodeName;
+    mutable QString _nodeName;
     FKDataBasePath* _parent;
 };
 
