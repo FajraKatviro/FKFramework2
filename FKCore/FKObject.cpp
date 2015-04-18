@@ -6,8 +6,6 @@
 
 #include "FKLogger.h"
 
-FKFactory<FKObject> FKObject::_factory;
-
 /*!
  * \class FKObject
  * \inmodule FKObjects
@@ -86,18 +84,14 @@ FK_EVENTS(FKCilent){
  * \brief Use this macro at the end of class body if there is no servant needed by class
  */
 
+FKObjectFactory FKObject::_factory(20);
+
 /*!
  * \brief Constructs new object and register it for creator's object manager. Creator should be always passed for new objects in code. Null passed by system when constructing new objects for client-side. Use FK_CONSTRUCTOR macro when implementing new classes
  */
 
-FKObject::FKObject(FKObject* creator):FKSystemObject(){
+FKObject::FKObject():FKSystemObject(),servant(0){
     FK_CBEGIN
-    if(creator){
-        servant=new Servant();
-        creator->_om->regObject(this);
-    }else{
-        servant=0;
-    }
     FK_CEND
 }
 
@@ -128,8 +122,7 @@ void FKObject::deleteObject(){
         forbidTotalWatching();
     }
     emit deletedFKObject(this);
-    _om->freeObject(_id);
-    deleteLater();
+    _om->deleteObject(this);
 }
 
 /*!
@@ -492,6 +485,48 @@ bool FKObject::forbidEmitBy(FKObject* user){
     return false;
 }
 
+void FKObject::servantInitialization(){
+    servant->updateCommon.fill(false,commonPropertyCount());
+    servant->updateCustom.fill(false,customPropertyCount());
+}
+
+void FKObject::servantDeinitialization(){
+    servant->watchers.clear();
+    servant->watcheds.clear();
+    servant->sharedWatchers.clear();
+    servant->sharedWatcheds.clear();
+    servant->actors.clear();
+    servant->controlled.clear();
+    servant->emitters.clear();
+    servant->sharedVisors.clear();
+    servant->updateCommon.fill(false);
+    servant->updateCustom.fill(false);
+    servant->active=true;
+}
+
+void FKObject::installServant(){
+    if(!servant){
+        servant=new Servant();
+        FKObject::servantInitialization();
+    }
+}
+
+void FKObject::resetServant(){
+    if(servant){
+        FKObject::servantDeinitialization();
+    }
+}
+
+void FKObject::logConstructor(){
+    FK_CBEGIN
+    FK_CEND
+}
+
+void FKObject::logDestructor(){
+    FK_DBEGIN
+    FK_DEND
+}
+
 /*!
  * \brief Change binded size of common propety vector used by watching system. Called by FK_CONSTRUCTOR macro
  */
@@ -592,6 +627,10 @@ QString FKObject::readSlowPropertyStr(const QString& propertyName) const{
 
 FKDBIndex FKObject::readSlowPropertyRef(const QString& propertyName) const{
     return _om->dataBase()->getValue(selfIndex()>>propertyName,false).index();
+}
+
+FKObject* FKObject::createObject(const QString& className) const{
+    return _om->genObject(className);
 }
 
 /*!
@@ -727,10 +766,6 @@ void FKObject::updateCustom(const QString& propertyName){
  * \fn void executeAction(FKEvent* ac)
  * \brief This function created by FK_OBJECT macro for internal calls of actions and shouldn't be used in code
  */
-
-FKObject* FKObject::create(const QString& className){
-    return _factory.create(className);
-}
 
 void FKObject::processFKAction(FKEvent* action){
     if(servant){

@@ -8,9 +8,10 @@
 #include "fkcore_global.h"
 
 template<class D>
-class /*FKCORESHARED_EXPORT*/ FKFactory{
+class /*FKCORESHARED_EXPORT*/ FKFactoryBase{
     QMap<QString,const QMetaObject*> _metaObjects;
 public:
+    virtual ~FKFactoryBase()=0{}
     template<class E> void addClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
@@ -21,9 +22,9 @@ public:
         QString className=m->className();
         _metaObjects.remove(className);
     }
-
-
-    D* create(const QString& className)const{
+protected:
+    FKFactoryBase(){}
+    virtual D* create(const QString& className){
         const QMetaObject* m=_metaObjects.value(className,0);
         if(m){
             QObject* q=m->newInstance();
@@ -34,6 +35,15 @@ public:
             }
         }
         return 0;
+    }
+};
+
+template<class D>
+class FKFactory:public FKFactoryBase<D>{
+public:
+    FKFactory(){}
+    virtual D* create(const QString& className)override{
+        return FKFactoryBase<D>::create(className);
     }
 };
 

@@ -89,7 +89,8 @@ HEADERS += \
     FKPackage.h \
     FKPackageManager.h \
     FKRoomComponents.h \
-    FKRoomInviteData.h
+    FKRoomInviteData.h \
+    FKObjectFactory.h
 
 include(../FKFramework.pri)
 

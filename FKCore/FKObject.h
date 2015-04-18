@@ -3,6 +3,8 @@
 
 #include "FKSystemObject.h"
 
+#include "FKObjectFactory.h"
+
 #include <QVariant>
 #include <QSet>
 #include <QVector>
@@ -26,43 +28,62 @@ derivedClass : public parentClass{ \
     } _eventKeeper;\
     struct Servant;\
     Servant* servant;\
-    void customInitialization();\
-    void customDeinitialization();\
 protected:\
-    void totalInitialization(){\
+    derivedClass():servant(0){logConstructor();}\
+    ~derivedClass(){delete servant; logDestructor();}\
+    virtual void customInitialization()override;\
+    virtual void customDeinitialization()override;\
+    virtual void totalInitialization()override{\
         parentClass::totalInitialization();\
         derivedClass::customInitialization();\
     }\
-    virtual void executeEvent(FKEvent* ev){\
+    virtual void totalDeinitialization()override{\
+        derivedClass::customDeinitialization();\
+        parentClass::customDeinitialization();\
+    }\
+    virtual void servantInitialization()override;\
+    virtual void servantDeinitialization()override;\
+    virtual void installServant()override{\
+        if(!servant){\
+            parentClass::installServant();\
+            servant=new Servant();\
+            derivedClass::servantInitialization();\
+        }\
+    }\
+    virtual void resetServant(){\
+        if(servant){\
+            derivedClass::servantDeinitialization();\
+            parentClass::resetServant();\
+        }\
+    }\
+    virtual void executeEvent(FKEvent* ev)override{\
         derivedClass::fkfPtr p=_eventKeeper.eventList().value(ev->subject(),0);\
         if(p)(this->*p)(ev); else parentClass::executeEvent(ev);\
     }\
-    virtual void executeAction(FKEvent* ac){\
+    virtual void executeAction(FKEvent* ac)override{\
         derivedClass::fkfPtr p=_eventKeeper.actionList().value(ac->subject(),0);\
         if(p)(this->*p)(ac); else parentClass::executeAction(ac);\
     }\
-    virtual qint32 commonPropertyCount()const{\
+    virtual qint32 commonPropertyCount()const override{\
         static qint32 count=commonPropertyList().count();\
         return count;}\
-    virtual qint32 customPropertyCount()const{\
+    virtual qint32 customPropertyCount()const override{\
         static qint32 count=customPropertyList().count();\
         return count;}\
-    virtual qint32 actionsCount()const{\
+    virtual qint32 actionsCount()const override{\
         static qint32 count=actionList().count();\
         return count;}\
 public:\
-    derivedClass(FKObject* creator=0);\
-    ~derivedClass();\
-    virtual const QStringList eventList()const{\
+    virtual const QStringList eventList()const override{\
         static const QStringList p(_eventKeeper.eventList().keys()<<parentClass::eventList());\
         return p;} \
-    virtual const QStringList actionList()const{ \
+    virtual const QStringList actionList()const override{ \
         static const QStringList p(_eventKeeper.actionList().keys()<<parentClass::actionList()); \
         return p;} \
-    virtual const QStringList commonPropertyList()const{ \
+    virtual const QStringList commonPropertyList()const override{ \
         static const QStringList p(_eventKeeper.commonPropertyList()<<parentClass::commonPropertyList()); \
         return p;} \
-    virtual const QStringList customPropertyList()const{ \
+    virtual const QStringList customPropertyList()const override{ \
         static const QStringList p(_eventKeeper.customPropertyList()<<parentClass::customPropertyList()); \
         return p;} \
 private:
@@ -71,33 +92,18 @@ private:
 className::Events className::_eventKeeper=className::Events(); \
 void className::Events::initEvents()
 
-#define FK_CONSTRUCTOR \
-    if(creator){\
-        submitCommonPropertiesCount(commonPropertyCount);\
-        submitCustomPropertiesCount(customPropertyCount);\/*
-                Unfortunatly this 2 calls would come from each instance hierarchy level
-                and discards all previos bindings and it is bad for performance.
-                So, the really important call comes from final class constructor,
-                but C++ do not allow implement virtual fuctionality in constructors.
-                This is not too much cost for convinient subclassing*/\
-        servant=new Servant;\
-        customInitialization();\
-    }else{\
-        servant=0;\
-    }
+#define FK_NO_SERVANT(className) \
+struct className::Servant{};\
+void className::servantInitialization(){}\
+void className::servantDeinitialization(){}\
 
-#define FK_DESTRUCTOR \
-    customDeinitialization();\
-    if(servant)delete servant;\
-
-#define FK_NO_SERVANT \
-struct Servant{};
 
 class FKCORESHARED_EXPORT FKObject:public FKSystemObject{
     Q_OBJECT
 public:
-    FKObject(FKObject* creator);
+    FKObject();
     ~FKObject();
+    FK_OBJECT_FACTORY
     qint32 getId()const{return _id;}
     void deleteObject();
     QString getClassName()const{return metaObject()->className();}
@@ -132,12 +138,19 @@ public slots:
 signals:
     void deletedFKObject(FKObject* obj);
 protected:
-//This section used by FK_OBJECT, FK_OBJECT_CONSTUCTOR and FK_OBJECT_DESTRUCTOR macro to properly load inherited objects
-    virtual void customInitialization(){}
+//This section used by FK_OBJECT macro to properly load inherited objects
+    virtual void customInitialization(){}   //initialize inheritence level, must be implemented
     virtual void customDeinitialization(){}
-    virtual void totalInitialization(){}
-    void submitCommonPropertiesCount(const qint32 count);
-    void submitCustomPropertiesCount(const qint32 count);
+    virtual void totalInitialization(){}    //initialize object
+    virtual void totalDeinitialization(){}
+
+    virtual void servantInitialization();   //initialize servant inheritence level
+    virtual void servantDeinitialization();
+    virtual void installServant();          //create all level servants and initialize them
+    virtual void resetServant();
+
+    void logConstructor();
+    void logDestructor();
 
 //This is reimplemented functions (FKSystemObject)
 //    bool packObject(QDataStream &stream)const;
@@ -153,6 +166,9 @@ protected:
     FKDBIndex readSlowPropertyRef(const QString& propertyName)const;
 
 //General operational requests
+    template<class D> D* createObject()const{return static_cast<D*>(createObject(D::staticMetaObject.className()));}
+    FKObject* createObject(const QString& className)const;
+    void deleteObject();
     void showMessage(const QString& msg,FKObject* reciever=0);
     void doEvent(FKObject* target,const QString& subject,const QVariant& value=QVariant(),FKObject* reciever=0);
     void doEvent(FKObject* target, const QString& subject, FKObject* reciever);
@@ -189,8 +205,6 @@ private:
 //This section used by object manager
     void setId(const qint32 id){_id=id;}
     void setObjectManager(FKObjectManager* om){_om=om;}
-    static FKObject* create(const QString &className);
-    template<class D> static void allowConstructing(){_factory.addClass<D>();}
     void processFKAction(FKEvent* action);
     void processFKEvent(FKEvent* event);
     friend class FKObjectManager;
@@ -236,8 +250,7 @@ private:
 
     qint32 _id;
     FKObjectManager* _om;
-
-    static FKFactory<FKObject> _factory;
+    static FKObjectFactory _factory;
 };
 
 #endif // FKOBJECT_H
