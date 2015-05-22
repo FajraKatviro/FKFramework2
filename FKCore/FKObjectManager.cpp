@@ -14,7 +14,7 @@
  * \brief Constructs object with given parent
  */
 
-FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_rootObject(0),_db(0){
+FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_db(0){
     FK_CBEGIN
     FK_CEND
 }
@@ -27,68 +27,42 @@ FKObjectManager::~FKObjectManager(){
     foreach(FKObject* obj,_objects)obj->deleteObject();
 }
 
+FKObject* FKObjectManager::genObject(const QString& className){
+    qint32 id=_idGenerator.take();
+    FKObject* obj=genObject(className,id);
+    obj->servantInitialization();
+    return obj;
+}
+
 /*!
  * \brief Get object by id. If target object is not managed by this manager, null would be reterned
  */
 
 FKObject* FKObjectManager::getObject(const qint32 id){
-    //QMutexLocker m(&_mutex);
     return _objects.value(id,0);
 }
 
-/*!
- * \brief Add object to managed hash
- */
-
-void FKObjectManager::addObject(FKObject* obj){
-    qint32 id=obj->getId();
-#ifdef FK_DEBUG
-    if(id==-1){
-        FK_MLOG("requested managing object has invalid id")
-        return;
-    }
-    if(_objects.contains(id)){
-        FK_MLOGV("requested managing object has already managed id",id)
-        return;
-    }
-#endif
-    _objects.insert(id,obj);
-}
-
-/*!
- * \brief Assign new id to object and add object to managed hash
- */
-
-void FKObjectManager::regObject(FKObject* obj){
-    //QMutexLocker m(&_mutex);
-    obj->setId(_idGenerator.take());
-    addObject(obj);
+void FKObjectManager::deleteObject(FKObject* obj){
+    obj->totalDeinitialization();
+    obj->resetServant();
+    _objects.remove(obj->getId());
+    _idGenerator.back(obj->getId());
+    FKObject::_factory.deleteObject(obj);
 }
 
 /*!
  * \brief Create uninitialized object of given class, add to managed hash with given id and run initialization
  */
 
-void FKObjectManager::genObject(const QString &className,const qint32 id){
-    FKObject* obj=FKObject::create(className);
+FKObject* FKObjectManager::genObject(const QString &className,const qint32 id){
+    FKObject* obj=FKObject::_factory.create(className);
     if(obj){
         obj->setId(id);
         obj->setObjectManager(this);
-        //_mutex.lock();
-        addObject(obj);
-        //_mutex.unlock();
+        _objects.insert(id,obj);
         obj->totalInitialization();
     }
-}
-
-/*!
- * \brief Remove object from managed hash
- */
-
-void FKObjectManager::freeObject(const qint32 id){
-    //QMutexLocker m(&_mutex);
-    _objects.remove(id);
-    _idGenerator.back(id);
+    return obj;
 }
 
 /*!
@@ -149,6 +123,10 @@ void FKObjectManager::shareObject(FKObject* obj, const QList<qint32>& recievers)
     FK_MLOGV("Share object requested",obj->getId())
 }
 
+void FKObjectManager::createObject(const QVariant& data){
+    FK_MLOGV("Create object request recieved",data)
+}
+
 /*!
  * \brief Notify to delete object at side of recievers. This function should be overriden, basic implementation does nothing
  */
@@ -156,6 +134,10 @@ void FKObjectManager::shareObject(FKObject* obj, const QList<qint32>& recievers)
 void FKObjectManager::unshareObject(FKObject* obj,const QList<qint32>& recievers){
     Q_UNUSED(recievers)
     FK_MLOGV("Unshare object requested",obj->getId())
+}
+
+void FKObjectManager::deleteObject(const QVariant& data){
+    FK_MLOGV("Delete object request recieved",data)
 }
 
 /*!
@@ -171,14 +153,4 @@ void FKObjectManager::unshareObject(FKObject* obj,const QList<qint32>& recievers
 /*!
  * \fn FKDataBase* dataBase()const
  * \brief Returns previousli setted database
- */
-
-/*!
- * \fn void FKObjectManager::setRootObject(FKObject* obj)
- * \brief Set manager's root object
- */
-
-/*!
- * \fn FKObject* FKObjectManager::rootObject()const
- * \brief Returns previously setted root object
  */

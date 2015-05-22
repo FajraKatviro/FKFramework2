@@ -5,6 +5,26 @@
 
 #include "fkcore_global.h"
 
+#define FK_OBJECT_FACTORY\
+template<class D>\
+static void allowConstructing(){\
+    _factory.addClass<D>();\
+}\
+template<class D,class D1,class...Other>\
+static void allowConstructing(){\
+    allowConstructing<D>();\
+    allowConstructing<D1,Other...>();\
+}\
+template<class D>\
+static void forbidConstructing(){\
+    _factory.removeClass<D>();\
+}\
+template<class D,class D1,class...Other>\
+static void forbidConstructing(){\
+    forbidConstructing<D>();\
+    forbidConstructing<D1,Other...>();\
+}
+
 class /*FKCORESHARED_EXPORT*/ FKSystemObject:public QObject{
     Q_OBJECT
 public:
@@ -13,25 +33,8 @@ public:
     bool pack(QDataStream& stream)const;
     bool load(QDataStream& stream);
     static FKSystemObject* create(const QString& className);
-    template<class D>
-    static void allowConstructing(){
-        _factory.addClass<D>();
-    }
-    template<class D,class D1,class...Other>
-    static void allowConstructing(){
-        allowConstructing<D>();
-        allowConstructing<D1,Other...>();
-    }
-    template<class D>
-    static void forbidConstructing(){
-        _factory.removeClass<D>();
-    }
-    template<class D,class D1,class...Other>
-    static void forbidConstructing(){
-        forbidConstructing<D>();
-        forbidConstructing<D1,Other...>();
-    }
     virtual FKSystemObject* clone()const=0;
+    FK_OBJECT_FACTORY
 private:
     virtual bool packObject(QDataStream& stream)const=0;
     virtual bool loadObject(QDataStream& stream)=0;

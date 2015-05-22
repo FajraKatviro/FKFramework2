@@ -12,8 +12,8 @@ class RoomClass ## Loader:public QObject,FKRoomLoader{\
 public:\
     virtual QString version()const{return Version;}\
     virtual QString className()const{return #RoomClass;}\
-    virtual void registerObjects()const{FKSystemObject::allowConstructing<RoomClass>();FKSystemObject::allowConstructing<UsedObjects>();}\
-    virtual void unregisterObjects()const{FKSystemObject::forbidConstructing<RoomClass>();FKSystemObject::forbidConstructing<UsedObjects>();}\
+    virtual void registerObjects()const{FKObject::allowConstructing<RoomClass>();FKObject::allowConstructing<UsedObjects>();}\
+    virtual void unregisterObjects()const{FKObject::forbidConstructing<RoomClass>();FKObject::forbidConstructing<UsedObjects>();}\
     virtual FKPackageManager* createPackageManager(){return new PackageManagerClass(this);}\
 };
 
