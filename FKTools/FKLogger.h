@@ -52,8 +52,8 @@ class FKLogger{ //статический класс для специально�
     static QMap<QString,int> objects; //переменная, хранящая количество созданных объектов
 #endif
 public:
-    static void writeLog(QString description, QVariant value){ //функция, непосредственно выводящая информацию
-        qDebug()<<description<<":\t\t"<<value;
+    static void writeLog(const char* fileName,int line,QString description, QVariant value){ //функция, непосредственно выводящая информацию
+        qDebug()<<fileName<<" line "<<line<<". "<<description<<":\t\t"<<value;
      }
     static bool existTest(QObject* obj){ //функция, проверяющая существование объекта по ссылке
         if(obj==0)return false;
@@ -86,8 +86,8 @@ public:
 #define FK_DEND ;
 #endif
 
-#define FK_MLOGV(description, value) FKLogger::writeLog(QString(description), value);
-#define FK_MLOG(description) FKLogger::writeLog(QString(description), QVariant());
+#define FK_MLOGV(description, value) FKLogger::writeLog(__FILE__,__LINE__,QString(description), value);
+#define FK_MLOG(description) FKLogger::writeLog(__FILE__,__LINE__,QString(description), QVariant());
 #define FK_ELOG(description, object) FKLogger::writeLog(QString(description), FKLogger::existTest(object));
 
 #else //если режим специальной отладки выключен, отладочный код будет полностью исключен (в т.ч. исключены инклюды). Ниже приведено описание макросов.

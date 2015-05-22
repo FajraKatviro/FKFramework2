@@ -8,7 +8,7 @@ FKInfrastructureState::FKInfrastructureState(const QString stateName, QObject* p
         QObject(parent),_current(FKInfrastructureStateValueIdentifier::ValuesCount){
     FK_CBEGIN
     setObjectName(stateName);
-    for(char i=0;i<FKInfrastructureStateValueIdentifier::ValuesCount;++i){
+    for(qint32 i=0;i<(qint32)FKInfrastructureStateValueIdentifier::ValuesCount;++i){
         _states[i]=new FKInfrastructureStateValue(this);
     }
     FK_CEND
@@ -21,7 +21,7 @@ FKInfrastructureState::~FKInfrastructureState(){
 
 bool FKInfrastructureState::accept(const qint32 val) const{
     if(!decline(val)){
-        for(char i=0;i<FKInfrastructureStateValueIdentifier::ValuesCount;++i){
+        for(qint32 i=0;i<(qint32)FKInfrastructureStateValueIdentifier::ValuesCount;++i){
             if(_states[i]->accept(val))return true;
         }
     }
@@ -29,7 +29,7 @@ bool FKInfrastructureState::accept(const qint32 val) const{
 }
 
 bool FKInfrastructureState::decline(const qint32 val) const{
-    for(char i=0;i<FKInfrastructureStateValueIdentifier::ValuesCount;++i){
+    for(qint32 i=0;i<(qint32)FKInfrastructureStateValueIdentifier::ValuesCount;++i){
         if(_states[i]->decline(val))return true;
     }
     return false;
@@ -38,7 +38,7 @@ bool FKInfrastructureState::decline(const qint32 val) const{
 void FKInfrastructureState::setState(const FKInfrastructureStateValueIdentifier state){
     if(state!=FKInfrastructureStateValueIdentifier::ValuesCount && state!=_current){
         _current=state;
-        _states[state]->initState();
+        _states[(qint32)state]->initState();
         emit stateChanged();
     }
 }
@@ -51,5 +51,5 @@ void FKInfrastructureState::setState(const QString& childName, const FKInfrastru
 
 FKInfrastructureStateValue* FKInfrastructureState::state(FKInfrastructureStateValueIdentifier s){
     if(FKInfrastructureStateValueIdentifier::ValuesCount<=s)return 0;
-    return _states[s];
+    return _states[(qint32)s];
 }

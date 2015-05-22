@@ -5,8 +5,8 @@
 
 #include "FKLogger.h"
 
-FKUserInfrastructureSlot::FKUserInfrastructureSlot(FKUserInfrastructureAlias* alias,const qint32 userObjectId,const QString& invitePassword,QObject* parent):
-        QObject(parent),_id(userObjectId),_password(invitePassword),_connection(0),_client(alias),_active(false){
+FKUserInfrastructureSlot::FKUserInfrastructureSlot(FKUserInfrastructureAlias* alias,const qint32 userObjectId,const QString& invitePassword):
+        QObject(),_id(userObjectId),_password(invitePassword),_connection(0),_client(alias),_active(false){
     FK_CBEGIN
     FK_CEND
 }
@@ -85,6 +85,7 @@ void FKUserInfrastructureAlias::addUser(FKUserInfrastructureSlot* user){
 void FKUserInfrastructureAlias::dropAlias(){
     for(auto i=_users.constBegin();i!=_users.constEnd();++i){
         (*i)->dropUser();
+        (*i)->deleteLater();
     }
 }
 

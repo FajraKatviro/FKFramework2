@@ -27,6 +27,7 @@ private:
     FKDBValue readValueFromDirectory(const QDir& path)const;
     void writeValueToDirectory(const FKDBValue& value, const QDir& path)const;
     QDir getIndexDirectory(const FKDBIndex& index)const;
+    void cutNode(const FKDBIndex& finalIndex) override;
     QDir _root;
 };
 

@@ -23,7 +23,7 @@ public:
     FKServerInfrastructure(QObject* parent=0);
     ~FKServerInfrastructure();
     FKInfrastructureType infrastructureType()const;
-    bool isConnectedToRealm();
+    bool isConnectedToRealm()const;
 
     void dropInfrastructure();
     void requestLoginRealm(const qint32 id, const QString& password);
@@ -40,6 +40,8 @@ public:
     void messageFromRealm(const QString& msg);
 
     qint32 serverId()const;
+
+    virtual qint32 userPort()const{return 0;}
 public slots:
     void realmConnection(FKConnector* connector);
     //void userConnection(FKConnector* connector);
@@ -53,7 +55,8 @@ private slots:
     void roomStarted();
     void roomStopped();
 private:
-    bool checkRealm()const;
+    bool checkRealm();
+    bool hasRoom()const;
     bool createRoom(const FKRoomData& roomData);
     static QString createUserInvitePassword();
     bool checkInviteData(const FKRoomInviteData& data);

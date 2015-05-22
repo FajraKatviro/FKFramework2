@@ -4,7 +4,7 @@
 
 #include "FKRoomDataFilter.h"
 
-FKRoomData::Identifiers FKRoomData::identifiers=FKRoomData::identifiers();
+const FKRoomData::Identifiers FKRoomData::identifiers;
 
 FKRoomData::FKRoomData(const qint32 server,const QString& newRoomType,const QString& ownerId,const QDateTime& roomCreationTime,const bool isCustom):
         _roomType(newRoomType),_owner(ownerId),_creationTime(roomCreationTime),_custom(isCustom),
@@ -37,6 +37,20 @@ FKRoomData::FKRoomData(const FKRoomData& other)
     ,_server(other._server)
     ,_ready(other._ready)
 {}
+
+FKRoomData& FKRoomData::operator=(const FKRoomData& other){
+    _roomType=other._roomType;
+    _owner=other._owner;
+    _creationTime=other._creationTime;
+    _custom=other._custom;
+    _maximumUsers=other._maximumUsers;
+    _users=other._users;
+    _maximumActors=other._maximumActors;
+    _actors=other._maximumActors;
+    _server=other._server;
+    _ready=other._ready;
+    return *this;
+}
 
 bool FKRoomData::isValid() const{
     return !_roomType.isEmpty();
@@ -73,20 +87,20 @@ void FKRoomData::change(const QVariant& delta){
 }
 
 bool FKRoomData::fit(const FKRoomDataFilter& filter)const{
-    return _ready && (filter.empty || (
-               (filter.roomType.isEmpty()  || _roomType==filter.roomType)
-            && (filter.maximumUsersMax==0  || _maximumUsers<=filter.maximumUsersMax)
-            && (                              _maximumUsers>=filter.maximumUsersMin)
-            && (filter.usersMax==0         || _users<=filter.usersMax)
-            && (                              _users>=filter.usersMin)
-            && (filter.maximumActorsMax==0 || _maximumActors<=filter.maximumActorsMax)
-            && (                              _maximumActors>=filter.maximumActorsMin)
-            && (filter.actorsMax==0        || _actors<=filter.actorsMax)
-            && (                              _actors>=filter.actorsMin)
-            && (!filter.latest.isValid()   || _creationTime<=filter.latest)
-            && (!filter.earliest.isValid() || _creationTime>=filter.earliest)
-            && (filter.owner.isEmpty()     || _owner==filter.owner)
-            && ((filter.custom && _custom) || (filter.notCustom && !_custom))
+    return _ready && (filter._empty || (
+               (filter._roomType.isEmpty()  || _roomType==filter._roomType)
+            && (filter._maximumUsersMax==0  || _maximumUsers<=filter._maximumUsersMax)
+            && (                              _maximumUsers>=filter._maximumUsersMin)
+            && (filter._usersMax==0         || _users<=filter._usersMax)
+            && (                              _users>=filter._usersMin)
+            && (filter._maximumActorsMax==0 || _maximumActors<=filter._maximumActorsMax)
+            && (                              _maximumActors>=filter._maximumActorsMin)
+            && (filter._actorsMax==0        || _actors<=filter._actorsMax)
+            && (                              _actors>=filter._actorsMin)
+            && (!filter._latest.isValid()   || _creationTime<=filter._latest)
+            && (!filter._earliest.isValid() || _creationTime>=filter._earliest)
+            && (filter._owner.isEmpty()     || _owner==filter._owner)
+            && ((filter._custom && _custom) || (filter._notCustom && !_custom))
                           ));
 }
 
@@ -94,14 +108,14 @@ void FKRoomData::changeUsers(const qint32 userCount){
     _users+=userCount;
 }
 
-FKRoomCreateData::Identifiers FKRoomCreateData::identifiers=FKRoomCreateData::Identifiers();
+const FKRoomCreateData::Identifiers FKRoomCreateData::identifiers;
 
 FKRoomCreateData::FKRoomCreateData(const QString& id, const QString& roomType):_id(id),_roomType(roomType){}
 
 FKRoomCreateData::FKRoomCreateData(const QVariant& data){
     auto map=data.toMap();
-    _id=map.value(identifiers.roomName);
-    _roomType=map.value(identifiers.roomType);
+    _id=map.value(identifiers.roomName).toString();
+    _roomType=map.value(identifiers.roomType).toString();
 }
 
 FKRoomCreateData::FKRoomCreateData(const FKRoomCreateData& other):_id(other._id),_roomType(other._roomType){}

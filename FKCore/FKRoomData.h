@@ -13,6 +13,7 @@ public:
     FKRoomData(const QVariant& data);
     FKRoomData();
     FKRoomData(const FKRoomData& other);
+    FKRoomData& operator=(const FKRoomData& other);
     bool isValid()const;
     QVariant toVariant()const;
     static QVariant createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange);
@@ -33,15 +34,15 @@ public:
 
     void changeUsers(const qint32 userCount);
 private:
-    const QString _roomType;
-    const QString _owner;
-    const QDateTime _creationTime;
-    const bool _custom;
+    QString _roomType;
+    QString _owner;
+    QDateTime _creationTime;
+    bool _custom;
     qint32 _maximumUsers;
     qint32 _users;
     qint32 _maximumActors;
     qint32 _actors;
-    const qint32 _server;
+    qint32 _server;
     bool _ready;
 
     static const struct Identifiers{

@@ -2,19 +2,20 @@
 
 #include "FKLogger.h"
 
+#include <QSharedPointer>
 #include <QFile>
 
 //these are bit-flags
-qint8 FKPackageObject::Resource::cacheEnabled=1;
-qint8 FKPackageObject::Resource::cached=2;
+const qint8 FKPackageObject::Resource::cacheEnabled=1;
+const qint8 FKPackageObject::Resource::cached=2;
 
-FKPackageObject::FKPackage(const QString& source):_enabled(false),_source(source){
+FKPackageObject::FKPackageObject(const QString& source):_enabled(false),_source(source){
     if(source.isEmpty()){
         FK_MLOG("Warning! Invalid package object constructed")
     }
 }
 
-FKPackageObject::FKPackage(const FKPackageObject& other):_offset(other._offset),_enabled(other._enabled),_source(other._source),_resources(other._resources){
+FKPackageObject::FKPackageObject(const FKPackageObject& other):_enabled(other._enabled),_source(other._source),_resources(other._resources){
     if(_source.isEmpty()){
         FK_MLOG("Warning! Invalid package object copied")
     }
@@ -24,6 +25,7 @@ bool FKPackageObject::setEnabled(const bool t){
     if(t!=_enabled){
         if(t){
             QVariantMap data=readData(0).toMap();
+            if(data.isEmpty())return false;
             for(auto i=data.constBegin();i!=data.constEnd();++i){
                 if(_resources.contains(i.key())){
                     FK_MLOGV("Warning! Resource already exists",i.key())
@@ -40,15 +42,16 @@ bool FKPackageObject::setEnabled(const bool t){
             _resources.clear();
         }
     }
+    return true;
 }
 
 void FKPackageObject::setCacheEnabled(const bool enabled){
     if(enabled){
-        for(auto i=_resources.begin();_resources.end();++i){
+        for(auto i=_resources.begin();i!=_resources.end();++i){
             i.value()->setCacheEnabled();
         }
     }else{
-        for(auto i=_resources.begin();_resources.end();++i){
+        for(auto i=_resources.begin();i!=_resources.end();++i){
             i.value()->setCacheDisabled();
         }
     }
@@ -68,9 +71,9 @@ void FKPackageObject::setCacheEnabled(const QString& resource, const bool enable
 }
 
 void FKPackageObject::preload(){
-    for(auto i=_resources.begin();_resources.end();++i){
+    for(auto i=_resources.begin();i!=_resources.end();++i){
         if(i.value()->isCacheEnabled()){
-            i.value()->preload();
+            preload(i.value());
         }else{
             FK_MLOGV("Unable preload resource if cache is not enabled",i.key())
         }
@@ -81,9 +84,9 @@ void FKPackageObject::preload(const QString& resource){
     auto i=_resources.find(resource);
     if(i!=_resources.end()){
         if(i.value()->isCacheEnabled()){
-            i.value()->preload();
+            preload(i.value());
         }else{
-            FK_MLOGV("Unable preload resource if cache is not enabled",i.key())
+            FK_MLOGV("Unable preload resource: cache is not enabled",i.key())
         }
     }else{
         FK_MLOGV("Resource not found for preload",resource)
@@ -91,7 +94,7 @@ void FKPackageObject::preload(const QString& resource){
 }
 
 void FKPackageObject::clearCache(){
-    for(auto i=_resources.begin();_resources.end();++i){
+    for(auto i=_resources.begin();i!=_resources.end();++i){
         i.value()->clearCache();
     }
 }
@@ -116,19 +119,7 @@ QVariant FKPackageObject::resourceData(const QString& resource){
         return target.value()->value;
     }
 
-    if(!target.value()->offset){
-        FK_MLOGV("Warning! Unable get resource offset",target.value().value)
-        return QVariant();
-    }
-
-    QVariant data=readData(target.value()->offset);
-
-    if(target.value()->isCacheEnabled()){
-        target.value()->value=data;
-        target.value()->setCached();
-    }
-
-    return data;
+    return preload(target.value());
 }
 
 QVariant FKPackageObject::readData(const qint64 offset){
@@ -142,5 +133,21 @@ QVariant FKPackageObject::readData(const qint64 offset){
     }else{
         FK_MLOGV("unable read resource file",_source)
     }
+    return data;
+}
+
+QVariant FKPackageObject::preload(FKPackageObject::FKPackageResource& resource){
+    if(!resource->offset){
+        FK_MLOG("Warning! Unable get resource offset")
+        return QVariant();
+    }
+
+    QVariant data=readData(resource->offset);
+
+    if(resource->isCacheEnabled()){
+        resource->value=data;
+        resource->setCached();
+    }
+
     return data;
 }

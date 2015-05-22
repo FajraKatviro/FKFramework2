@@ -154,10 +154,11 @@ bool FKClientInfrastructure::requestUserDeauthorization(const QString& name){
     }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
         emit messageRequested(QString(tr("Unable deselect user: another request in progress")));
-        return;
+        return false;
     }
     FKBasicEvent ev(FKBasicEventSubject::deselectUser,name);
     _realmConnection->sendBasicEvent(&ev);
+    return true;
 }
 
 void FKClientInfrastructure::requestRoomList(/*filters*/){
@@ -247,10 +248,12 @@ void FKClientInfrastructure::respondUserAuthorization(const QVariant& value){
     }
     if(!name.isEmpty()){
         _userPool.removeOne(name);
-        _users.insert(name,new FKUserInfrastructure(this));
-        todo();//setup user
+        FK_MLOGV("Unable create user: feature incomplete",name)
+        //_users.insert(name,new FKUserInfrastructure(this));
+        //todo();//setup user
         emit userPoolChanged();
         emit activeUsersChanged();
+        //emit message("done");
     }
 }
 
@@ -262,10 +265,13 @@ void FKClientInfrastructure::respondUserDeauthorization(const QVariant& value){
     if(!name.isEmpty()){
         _userPool.append(name);
         FKUserInfrastructure* user=_users.take(name);
-        user->dropInfrastructure();
-        user->deleteLater();
+        FK_MLOGV("Unable deselect user: feature incomplete",name)
+        //user->dropInfrastructure();
+        //user->deleteLater();
+        //todo
         emit userPoolChanged();
         emit activeUsersChanged();
+        //emit message("done");
     }
 }
 
@@ -296,7 +302,8 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
     }
     FKRoomInviteData invite(value);
     if(invite.isValid()){
-        joinServer(invite.passwords(),invite.address(),invite.port());
+        //joinServer(invite.passwords(),invite.address(),invite.port());
+        //todo
     }else{
         emit messageRequested(QString(tr("Fail enter room")));
     }
@@ -345,8 +352,12 @@ void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
     _customServerId=serverId;
 }
 
-void FKClientInfrastructure::requestCustomRoom(){
-    requestCreateRoom(_customRoomName,_customRoomType);
+qint32 FKClientInfrastructure::realmPort() const{
+    return 0;
+}
+
+QString FKClientInfrastructure::realmIP() const{
+    return QString();
 }
 
 void FKClientInfrastructure::realmConnection(FKConnector* connector){

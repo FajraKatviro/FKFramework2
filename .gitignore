@@ -4,3 +4,5 @@ FKFramework.pro.user.3.3-pre1
 makefile*
 *.debug
 *.release
+/build
+FKFramework.pro.user

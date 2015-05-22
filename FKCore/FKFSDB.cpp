@@ -29,6 +29,7 @@ void FKFSDB::reset(){
 }
 
 bool FKFSDB::hasIndex(const FKDBIndex& index) const{
+    FK_MLOGV("check index",index.sequentialPath())
     if(!index.isValid())return true;
     return _root.exists(index.sequentialPath().join('/'));
 }
@@ -107,6 +108,7 @@ FKDBValue FKFSDB::readValueFromDirectory(const QDir& path) const{
             QDataStream stream(&file);
             stream.setVersion(QDataStream::Qt_5_3);
             stream>>val;
+            FK_MLOGV("read value",QVariantList()<<val.value()<<path.absolutePath())
         }else{
             FK_MLOGV("unable open file",f.absoluteFilePath())
         }
@@ -123,6 +125,7 @@ void FKFSDB::writeValueToDirectory(const FKDBValue& value, const QDir& path) con
             QDataStream stream(&file);
             stream.setVersion(QDataStream::Qt_5_3);
             stream<<value;
+            FK_MLOGV("write value",QVariantList()<<value.value()<<path.absolutePath())
         }else{
             FK_MLOGV("unable open file to write",file.fileName())
         }
@@ -135,4 +138,19 @@ QDir FKFSDB::getIndexDirectory(const FKDBIndex& index) const{
     QStringList path(index.sequentialPath());
     path.prepend(_root.canonicalPath());
     return QDir(path.join('/'));
+}
+
+void FKFSDB::cutNode(const FKDBIndex& finalIndex){
+    if(finalIndex.isValid()){
+        QDir dir(getIndexDirectory(finalIndex));
+        foreach (QString nodeName,dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            dir.cd(nodeName);
+            if(!dir.removeRecursively()){
+                FK_MLOGV("Cut node error",dir.canonicalPath())
+            }
+            dir.cdUp();
+        }
+    }else{
+        reset();
+    }
 }

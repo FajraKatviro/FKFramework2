@@ -1,8 +1,8 @@
 #include "FKPackageManager.h"
 
-#include "FKPackage.h"
-
 #include "FKLogger.h"
+
+#include <QSharedPointer>
 
 FKPackageManager::FKPackageManager(QObject* parent):QObject(parent),_packagesInitialized(false){
     FK_CBEGIN

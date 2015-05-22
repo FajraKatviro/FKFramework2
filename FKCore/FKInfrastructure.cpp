@@ -114,6 +114,7 @@ void FKInfrastructure::cancelAnswer(FKInfrastructureType t){
 
 void FKInfrastructure::setDataBase(FKDataBase* db){
     _db=db;
+    sanityDatabase();
 }
 
 QString FKInfrastructure::createRandomString(const qint32 minLen, const qint32 maxLen){
@@ -157,6 +158,6 @@ bool FKInfrastructure::isRoomTypeName(const QString& roomType){
  * \brief Return previously set database
  */
 
-void FKInfrastructure::database()const{
+FKDataBase* FKInfrastructure::database()const{
     return _db;
 }

@@ -191,11 +191,11 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
     }else if(subject==FKBasicEventSubject::registerRoomType){
         realm()->registerServerRoomType(_id,value);
     }else if(subject==FKBasicEventSubject::startRoom){
-        realm()->roomStarted(id,value);
+        realm()->roomStarted(_id,value);
     }else if(subject==FKBasicEventSubject::stopRoom){
-        realm()->roomStopped(id,value);
+        realm()->roomStopped(_id,value);
     }else if(subject==FKBasicEventSubject::joinRoom){
-        realm()->enterRoomRespond(id,value);
+        realm()->enterRoomRespond(_id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from server to realm",subject)
         realm()->stopServerConnection(_id);

@@ -12,7 +12,7 @@
 #include "FKLogger.h"
 
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_room(0),_idgenerator(1),_id(-1){
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_idgenerator(1),_id(-1){
     FK_CBEGIN
     //_om=new FKObjectManager(this);
     FK_CEND
@@ -27,16 +27,17 @@ FKInfrastructureType FKServerInfrastructure::infrastructureType() const{
     return FKInfrastructureType::Server;
 }
 
-bool FKServerInfrastructure::isConnectedToRealm(){
-    return _logged;
+bool FKServerInfrastructure::isConnectedToRealm()const{
+    return _realmConnection && _realmConnection->isActive();
 }
 
 void FKServerInfrastructure::dropInfrastructure(){
-    for(auto i=_invitedUsers.begin();i!=_invitedUsers.end();++i){
+    for(auto i=_guests.begin();i!=_guests.end();++i){
 //        i.value()->dropUser();
 //        i.value()->deleteLater();
+        //todo
     }
-    _invitedUsers.clear();
+    _guests.clear();
     for(auto i=_clients.begin();i!=_clients.end();++i){
 //        i.value()->dropClient();
 //        i.value()->deleteLater();
@@ -85,7 +86,10 @@ void FKServerInfrastructure::registerRoomTypeRequest(const QString& roomType){
         emit messageRequested(QString(tr("Unable register empty room type")));
         return;
     }
-    if(!checkRealm())return;
+    if(!_logged){
+        emit messageRequested(QString(tr("Unable register room type: server is not not logged in")));
+        return;
+    }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
         emit messageRequested(QString(tr("Unable register room type: another request in progress")));
         return;
@@ -133,7 +137,7 @@ void FKServerInfrastructure::clientInvited(const QVariant& data){
         _clients.insert(invite.client(),userAlias);
         foreach(QString u,invite.users()){
             const qint32 id=_idgenerator.take();
-            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(clientSlot,id,createUserInvitePassword(),clientSlot);
+            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(userAlias,id,createUserInvitePassword());
             userAlias->addUser(userSlot);
             _users.insert(u,userSlot);
             answer.addUser(u,userSlot->password());
@@ -159,7 +163,7 @@ qint32 FKServerInfrastructure::serverId() const{
 
 void FKServerInfrastructure::realmConnection(FKConnector* connector){
     _realmConnection=new FKServerConnectionManagerR(this,connector,this);
-    connect(_realmConnection,SIGNAL(connectionStatusChanged()),SLOT(connectorStatusChanged()));
+    connect(_realmConnection,SIGNAL(connectionStatusChanged()),SLOT(realmConnectorStatusChanged()));
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
         FK_MLOG("Unexpected behaivour in FKServerInfrastructure::realmConnection()")
     }
@@ -212,7 +216,7 @@ void FKServerInfrastructure::roomStopped(){
     _realmConnection->sendBasicEvent(&ev);
 }
 
-bool FKServerInfrastructure::checkRealm() const{
+bool FKServerInfrastructure::checkRealm(){
     if(!isConnectedToRealm()){
         emit messageRequested(QString(tr("Unable login: not connected to realm")));
         return false;
@@ -222,6 +226,18 @@ bool FKServerInfrastructure::checkRealm() const{
         return false;
     }
     return true;
+}
+
+bool FKServerInfrastructure::hasRoom() const{
+    FK_MLOG("Unable check room existance: feature incomplete")
+    return false;
+    //todo
+}
+
+bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
+    //todo
+    FK_MLOG("Unable create room: feature incomplete")
+    return false;
 }
 
 QString FKServerInfrastructure::createUserInvitePassword(){

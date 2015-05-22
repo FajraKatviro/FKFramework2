@@ -1,5 +1,7 @@
 #include "FKRealmDBMap.h"
 
+#include "FKDataBase.h"
+
 FKDBIndex FKRealmDBMap::serversIndex()const{
     return _servers.path();
 }
@@ -21,7 +23,7 @@ FKDBIndex FKRealmDBMap::serverRoomClientsIndex(const qint32 serverId) const{
 
 FKDBIndex FKRealmDBMap::serverRoomClientIndex(const qint32 serverId, const QString& clientId) const{
     bindServer(serverId);
-    _servers.instance.roomClients.bindNode(clientId);
+    _servers.instance.roomClients.instance.bindNode(clientId);
     return _servers.instance.roomClients.instance.path();
 }
 
@@ -42,7 +44,7 @@ FKDBIndex FKRealmDBMap::serverRoomTypesIndex(const qint32 serverId)const{
 
 FKDBIndex FKRealmDBMap::serverRoomTypeIndex(const qint32 serverId, const QString& roomType)const{
     bindServer(serverId);
-    _servers.instance.roomTypes.bindNode(roomType);
+    _servers.instance.roomTypes.instance.bindNode(roomType);
     return _servers.instance.roomTypes.instance.path();
 }
 

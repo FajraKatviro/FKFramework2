@@ -231,7 +231,7 @@ void FKAbstractCore::setServer(FKServerInfrastructure* server){
     _server=server;
     connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SLOT(waitingForAnswerChanged(FKInfrastructureType)));
     connect(server,SIGNAL(connectedToRealm()),SLOT(serverConnectedToRealmSlot()));
-    connect(server,SIGNAL(disconnectedFromRealm()),SIGNAL(serverDisconnectedFromRealmSlot()));
+    connect(server,SIGNAL(disconnectedFromRealm()),SLOT(serverDisconnectedFromRealmSlot()));
     connect(server,SIGNAL(loggedIn()),SLOT(serverLoggedInSlot()));
     connect(server,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
     FKDataBase* db=new FKFSDB(_server);
@@ -285,6 +285,7 @@ FKClientInfrastructure* FKAbstractCore::clientInfrastructure(){
 
 QString FKAbstractCore::realmDatabasePath() const{
     QDir dir(qApp->applicationDirPath());
+    dir.cdUp();
     changeDir(dir,QString("data"));
     changeDir(dir,QString("realm"));
     return dir.canonicalPath();
@@ -296,6 +297,7 @@ QString FKAbstractCore::realmDatabasePath() const{
 
 QString FKAbstractCore::serverDatabasePath() const{
     QDir dir(qApp->applicationDirPath());
+    dir.cdUp();
     changeDir(dir,QString("data"));
     changeDir(dir,QString("server"));
     return dir.canonicalPath();

@@ -1,6 +1,9 @@
 #ifndef FKROOMINVITEDATA_H
 #define FKROOMINVITEDATA_H
 
+#include <QMap>
+#include <QString>
+
 class QString;
 class QStringList;
 class QVariant;
@@ -10,7 +13,7 @@ class FKRoomInviteData{
 public:
     FKRoomInviteData();
     FKRoomInviteData(const QString& client);
-    FKRoomInviteData(const QString& client,const QString& address,const qint32 port);
+    FKRoomInviteData(const QString& client,const qint32 port);
     FKRoomInviteData(const QVariant& data);
     FKRoomInviteData(const FKRoomInviteData& other);
     ~FKRoomInviteData();

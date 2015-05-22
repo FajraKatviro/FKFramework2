@@ -36,6 +36,7 @@ protected:
     void cancelAnswer(FKInfrastructureType t);
     FKDataBase* database()const;
 private:
+    virtual void sanityDatabase(){}
     QMap<FKInfrastructureType,QString> _requests;
     FKDataBase* _db;
 };

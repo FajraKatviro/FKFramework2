@@ -2,6 +2,8 @@
 
 #include <QVariant>
 
+const FKRoomDataFilter::Identifiers FKRoomDataFilter::identifiers;
+
 FKRoomDataFilter::FKRoomDataFilter(const QVariant& filterData){
     const QMap<QString,QVariant> data=filterData.toMap();
     _roomType=data.value(identifiers.roomType).toString();

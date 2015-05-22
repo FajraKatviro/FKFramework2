@@ -5,7 +5,7 @@
 
 class FKInfrastructureStateValue;
 
-enum class FKInfrastructureStateValueIdentifier:char{
+enum class FKInfrastructureStateValueIdentifier:qint32{
     Off,
     On,
     Enabling,
@@ -28,7 +28,7 @@ protected:
     FKInfrastructureStateValue* state(FKInfrastructureStateValueIdentifier s);
 private:
     FKInfrastructureStateValueIdentifier _current;
-    FKInfrastructureStateValue* _states[FKInfrastructureStateValueIdentifier::ValuesCount];
+    FKInfrastructureStateValue* _states[(qint32)FKInfrastructureStateValueIdentifier::ValuesCount];
 };
 
 #endif // FKINFRASTRUCTURESTATE_H

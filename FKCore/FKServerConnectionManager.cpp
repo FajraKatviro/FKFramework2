@@ -136,50 +136,47 @@ void FKServerConnectionManagerR::incomeMessageError(const QString& msgType, cons
  * \brief Create manager for \i connector at \i userSlot with \i parent
  */
 
-//FKServerConnectionManagerU::FKServerConnectionManagerU(FKUserInfrastructureSlot *userSlot, FKConnector *connector, QObject *parent):
-//        FKConnectionManager(connector,parent),_user(userSlot){
-//    FK_CBEGIN
-//    FK_CEND
-//}
+FKServerConnectionManagerU::FKServerConnectionManagerU(FKUserInfrastructureSlot *userSlot, FKConnector *connector, QObject *parent):
+        FKConnectionManager(connector,parent),_user(userSlot){
+    FK_CBEGIN
+    FK_CEND
+}
 
 /*!
  * \brief Deletes manager
  */
 
-//FKServerConnectionManagerU::~FKServerConnectionManagerU(){
-//    FK_DBEGIN
-//    FK_DEND
-//}
+FKServerConnectionManagerU::~FKServerConnectionManagerU(){
+    FK_DBEGIN
+    FK_DEND
+}
 
-//void FKServerConnectionManagerU::processMessage(FKMessage* msg){
-//    FK_MLOGV("Unexpected message from user to userSlot",msg->subject())
-//    msg->deleteLater();
-//    _user->stopConnection();
-//}
+void FKServerConnectionManagerU::processMessage(FKMessage* msg){
+    FK_MLOGV("Unexpected message from user to userSlot",msg->subject())
+    msg->deleteLater();
+}
 
-//void FKServerConnectionManagerU::processGuestEvent(FKBasicEvent* ev){
-//    FK_MLOGV("Unexpected guest event from user to userSlot",ev->subject())
-//    ev->deleteLater();
-//    _user->stopConnection();
-//}
+void FKServerConnectionManagerU::processGuestEvent(FKBasicEvent* ev){
+    FK_MLOGV("Unexpected guest event from user to userSlot",ev->subject())
+    ev->deleteLater();
+}
 
-//void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
-//    const QString subject=ev->subject();
-//    const QVariant value=ev->value();
-//    ev->deleteLater();
-//    if(false/*subject==FKBasicEventSubject::_____*/){
-//        ;
-//    }else{
-//        FK_MLOGV("Unexpected basic event subject from user to userSlot",subject)
-//        _user->stopConnection();
-//    }
-//}
+void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
+    const QString subject=ev->subject();
+    const QVariant value=ev->value();
+    ev->deleteLater();
+    if(false/*subject==FKBasicEventSubject::_____*/){
+        ;//todo reconnect event, quit event
+    }else{
+        FK_MLOGV("Unexpected basic event subject from user to userSlot",subject)
+    }
+}
 
-//void FKServerConnectionManagerU::processEvent(FKEvent* ev){
-//    _user->incomeEvent(ev);
-//}
+void FKServerConnectionManagerU::processEvent(FKEvent* ev){
+    //_user->incomeAction(ev);
+    //todo: force event to infrastructure
+}
 
-//void FKServerConnectionManagerU::incomeMessageError(const QString& msgType, const QString& reason){
-//    FK_MLOGV(QString("Income message error from user to userSlot: ")+reason,msgType)
-//    _user->stopConnection();
-//}
+void FKServerConnectionManagerU::incomeMessageError(const QString& msgType, const QString& reason){
+    FK_MLOGV(QString("Income message error from user to userSlot: ")+reason,msgType)
+}

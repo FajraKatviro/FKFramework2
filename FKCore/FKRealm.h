@@ -20,6 +20,7 @@ enum class FKClientRoomState{
     Invited
 };
 
+
 class FKRealm : public FKInfrastructure{
     Q_OBJECT
 public:
@@ -70,6 +71,7 @@ private:
     QStringList getActiveUsers(const QString& id)const;
     QStringList getRegisteredRoomTypes()const;
     bool isRoomTypeRegistered(const QString& roomType)const;
+    bool isRoomTypeRegistered(const QString& roomType,const qint32 serverId)const;
     bool isUserExists(const QString& userName)const;
     bool isUserExists(const QString& userName,const QString& clientId)const;
     bool isRoomExists(const QString& roomName);
@@ -103,6 +105,10 @@ private:
     void enterRoomRequested(const QString& clientId, const QString& roomId);
     void addClientToRoom(const qint32 server, const QString& client, const QString& room);
     void removeClientFromRoom(const qint32 server, const QString& client);
+    void addServerToRoomType(const qint32 serverId,const QString& roomType);
+
+    void sanityDatabase()override;
+
     QSet<QString> _customServerRequestedClients;
     QSet<FKConnectionManager*> _guesConnections;
     QHash<qint32,FKConnectionManager*> _serverConnections;

@@ -25,8 +25,8 @@ private:
     const QString _source;
 
     struct Resource{
-        Resource():flags(0),offset(0){}
-        Resource(const qint64 offset):flags(0),offset(offset){}
+        Resource():offset(0),flags(0){}
+        Resource(const qint64 offset):offset(offset),flags(0){}
         QVariant value;
         const qint64 offset;
         bool isCached()const{return flags & cached;}
@@ -43,6 +43,9 @@ private:
     };
     typedef QSharedPointer<FKPackageObject::Resource> FKPackageResource;
     QMap<QString,FKPackageResource> _resources;
+    QVariant preload(FKPackageResource& resource);
 };
+
+typedef QSharedPointer<FKPackageObject> FKPackage;
 
 #endif // FKPACKAGE_H

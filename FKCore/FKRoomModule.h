@@ -5,7 +5,8 @@
 #include <QPluginLoader>
 
 class FKRoomLoader;
-class FKPackage;
+class FKPackageObject;
+typedef QSharedPointer<FKPackageObject> FKPackage;
 class FKPackageManager;
 
 class FKRoomModule:public QObject{

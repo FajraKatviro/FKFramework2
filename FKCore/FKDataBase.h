@@ -81,6 +81,7 @@ public:
     virtual QStringList getProperties(const FKDBIndex& parentIndex)const=0;
     virtual QStringList findProperties(const FKDBIndex& parentIndex,const FKDBValue& matchValue)const;
     virtual QMap<QString,FKDBValue> mapValues(const FKDBIndex& parentIndex)const=0;
+    virtual void cutNode(const FKDBIndex& finalIndex)=0;
 signals:
     void dataChanged(const FKDBIndex index,const FKDBValue value);
 protected:

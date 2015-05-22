@@ -60,6 +60,15 @@ bool FKDBIndex::isNodeName(const QString& nodeName){
     return QRegExp("[0-9a-zA-Z]+").exactMatch(nodeName);
 }
 
+void FKDBIndex::checkNodeNames(){
+    foreach(QString nodeName,_nodeNames){
+        if(!isNodeName(nodeName)){
+            _nodeNames.clear();
+            return;
+        }
+    }
+}
+
 /*!
  * \fn QStringList FKDBIndex::sequentialPath()const
  * \brief Return sequential hierarchical node names

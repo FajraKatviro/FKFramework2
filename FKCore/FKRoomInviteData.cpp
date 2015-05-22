@@ -5,15 +5,15 @@
 #include <QVariant>
 #include <QMap>
 
-FKRoomInviteData::Identifiers FKRoomInviteData::identifiers=FKRoomInviteData::Identifiers();
+const FKRoomInviteData::Identifiers FKRoomInviteData::identifiers;
 
 FKRoomInviteData::FKRoomInviteData():_port(-1),_isValid(false){}
 
 FKRoomInviteData::FKRoomInviteData(const QString& client):
     _client(client),_port(-1),_isValid(false){}
 
-FKRoomInviteData::FKRoomInviteData(const QString& client, const QString& address, const qint32 port):
-    _client(client),_address(address),_port(port),_isValid(false){}
+FKRoomInviteData::FKRoomInviteData(const QString& client, const qint32 port):
+    _client(client),_port(port),_isValid(false){}
 
 FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true){
     QMap<QString,QVariant> dataMap=data.toMap();
@@ -49,8 +49,7 @@ FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true
     if(_isValid){
         _isValid =  !_client.isEmpty() &&
                     !userList.isEmpty() &&
-                    (passwordList.isEmpty() || passwordList.size()==userList.size()) &&
-                    (_address.isEmpty() || _port>=0);
+                    (passwordList.isEmpty() || passwordList.size()==userList.size());
         if(_isValid){
             if(passwordList.isEmpty()){
                 for(auto i=userList.constBegin();i!=userList.constEnd();++i){
@@ -97,7 +96,7 @@ QVariant FKRoomInviteData::toVariant() const{
         }
 
         dataMap.insert(identifiers.client,_client);
-        dataMap.insert(identifiers.users,_passwords.keys());
+        dataMap.insert(identifiers.users,QVariant(_passwords.keys()));
         if(hasPasswords)
             dataMap.insert(identifiers.passwords,passwords);
         if(hasAddress){

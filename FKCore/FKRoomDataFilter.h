@@ -4,6 +4,8 @@
 #include <QString>
 #include <QDateTime>
 
+class QVariant;
+
 class FKRoomDataFilter{
 public:
     FKRoomDataFilter(const QVariant& filterData);

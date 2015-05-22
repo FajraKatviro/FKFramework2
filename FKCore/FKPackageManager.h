@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-class FKPackageObject;
-typedef QSharedPointer<FKPackageObject> FKPackage;
+#include "FKPackage.h"
 
 class FKPackageManager:public QObject{
     Q_OBJECT

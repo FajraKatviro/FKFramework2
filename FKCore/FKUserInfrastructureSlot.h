@@ -11,7 +11,7 @@ class FKServerConnectionManagerU;
 class FKUserInfrastructureSlot:public QObject{
     Q_OBJECT
 public:
-    FKUserInfrastructureSlot(FKUserInfrastructureAlias* alias,const qint32 userObjectId,const QString& invitePassword,QObject* parent=0);
+    FKUserInfrastructureSlot(FKUserInfrastructureAlias* alias,const qint32 userObjectId,const QString& invitePassword);
     ~FKUserInfrastructureSlot();
     QString password()const;
     bool isActive()const;
