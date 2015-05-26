@@ -44,7 +44,8 @@ SOURCES += \
     FKRoomLoader.cpp \
     FKPackage.cpp \
     FKPackageManager.cpp \
-    FKRoomInviteData.cpp
+    FKRoomInviteData.cpp \
+    FKObjectFactory.cpp
 
 HEADERS += \
     fkcore_global.h \

@@ -105,7 +105,6 @@ public:
     ~FKObject();
     FK_OBJECT_FACTORY
     qint32 getId()const{return _id;}
-    void deleteObject();
     QString getClassName()const{return metaObject()->className();}
 
     FKObject* getObject(const qint32 id)const;

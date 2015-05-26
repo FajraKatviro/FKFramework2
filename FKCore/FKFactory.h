@@ -11,7 +11,7 @@ template<class D>
 class /*FKCORESHARED_EXPORT*/ FKFactoryBase{
     QMap<QString,const QMetaObject*> _metaObjects;
 public:
-    virtual ~FKFactoryBase()=0{}
+    virtual ~FKFactoryBase()=0;
     template<class E> void addClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
@@ -39,6 +39,10 @@ protected:
 };
 
 template<class D>
+FKFactoryBase<D>::~FKFactoryBase(){}
+
+
+template<class D>
 class FKFactory:public FKFactoryBase<D>{
 public:
     FKFactory(){}
@@ -48,3 +52,4 @@ public:
 };
 
 #endif // FKFACTORY_H
+

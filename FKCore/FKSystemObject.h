@@ -5,7 +5,7 @@
 
 #include "fkcore_global.h"
 
-#define FK_OBJECT_FACTORY\
+#define FK_OBJECT_FACTORY \
 template<class D>\
 static void allowConstructing(){\
     _factory.addClass<D>();\

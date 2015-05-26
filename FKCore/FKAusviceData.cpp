@@ -9,8 +9,8 @@ FKAusviceData::FKAusviceData():_valid(false){
 }
 
 FKAusviceData::FKAusviceData(const QString& clientId, const QString& password):
-            _infrastructureType(FKAusviceIdentifiers::client),_clientId(clientId),
-            _serverId(-1),_password(password),_valid(true){
+            _infrastructureType(FKAusviceIdentifiers::client),_serverId(-1),
+            _clientId(clientId),_password(password),_valid(true){
     if(clientId.isEmpty()){
         _valid=false;
         _error=QString(QObject::tr("empty client id"));

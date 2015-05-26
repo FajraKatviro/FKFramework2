@@ -527,25 +527,6 @@ void FKObject::logDestructor(){
     FK_DEND
 }
 
-/*!
- * \brief Change binded size of common propety vector used by watching system. Called by FK_CONSTRUCTOR macro
- */
-
-void FKObject::submitCommonPropertiesCount(const qint32 count){
-    if(servant){
-        servant->updateCommon.fill(false,count);
-    }
-}
-
-/*!
- * \brief Change binded size of custom propety vector used by watching system. Called by FK_CONSTRUCTOR macro
- */
-
-void FKObject::submitCustomPropertiesCount(const qint32 count){
-    if(servant){
-        servant->updateCustom.fill(false,count);
-    }
-}
 
 /*!
  * \fn void FKObject::deletedFKObject(FKObject* obj)
