@@ -13,6 +13,7 @@ class FKObject;
 class FKEvent;
 class FKMessage;
 class FKDataBase;
+class FKRoomModule;
 
 class /*FKCORESHARED_EXPORT*/ FKObjectManager:public QObject{
     Q_OBJECT
@@ -35,11 +36,14 @@ public:
     virtual qint32 clientId()const{return -1;}
     void setDataBase(FKDataBase* db){_db=db;}
     FKDataBase* dataBase()const{return _db;}
+    void setRoomModule(FKRoomModule* m){_roomModule=m;}
+    FKRoomModule* roomModule()const{return _roomModule;}
 private:
     FKObject* genObject(const QString& className,const qint32 id);
     FKIDGenerator _idGenerator;
     QHash<qint32,FKObject*> _objects;
     FKDataBase* _db;
+    FKRoomModule* _roomModule;
 };
 
 #endif // FKOBJECTMANAGER_H

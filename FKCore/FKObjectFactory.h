@@ -14,6 +14,8 @@ public:
     virtual FKObject* create(const QString& className)override;
     void deleteObject(FKObject* target);
     void clearPool();
+private:
+    virtual void cleanClass(const QString& className)override;
 };
 
 #endif // FKOBJECTFACTORY

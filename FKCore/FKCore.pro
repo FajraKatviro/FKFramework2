@@ -30,9 +30,6 @@ SOURCES += \
     FKClientInfrastructure.cpp \
     FKClientInfrastructureConnectionManager.cpp \
     FKInfrastructure.cpp \
-    FKServerInfrastructure.cpp \
-    FKUserInfrastructureSlot.cpp \
-    FKServerConnectionManager.cpp \
     FKRoomData.cpp \
     FKInfrastructureState.cpp \
     FKInfrastructureStateValue.cpp \
@@ -45,7 +42,11 @@ SOURCES += \
     FKPackage.cpp \
     FKPackageManager.cpp \
     FKRoomInviteData.cpp \
-    FKObjectFactory.cpp
+    FKObjectFactory.cpp \
+    FKRoom.cpp \
+    FKServerInfrastructure.cpp \
+    FKUserInfrastructureSlot.cpp \
+    FKServerConnectionManager.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -75,9 +76,6 @@ HEADERS += \
     FKClientInfrastructure.h \
     FKClientInfrastructureConnectionManager.h \
     FKInfrastructure.h \
-    FKServerInfrastructure.h \
-    FKUserInfrastructureSlot.h \
-    FKServerConnectionManager.h \
     FKRoomData.h \
     FKInfrastructureState.h \
     FKInfrastructureStateValue.h \
@@ -91,7 +89,11 @@ HEADERS += \
     FKPackageManager.h \
     FKRoomComponents.h \
     FKRoomInviteData.h \
-    FKObjectFactory.h
+    FKObjectFactory.h \
+    FKRoom.h \
+    FKServerInfrastructure.h \
+    FKUserInfrastructureSlot.h \
+    FKServerConnectionManager.h
 
 include(../FKFramework.pri)
 

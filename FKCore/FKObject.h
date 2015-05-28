@@ -4,6 +4,7 @@
 #include "FKSystemObject.h"
 
 #include "FKObjectFactory.h"
+#include "FKEvent.h"
 
 #include <QVariant>
 #include <QSet>
@@ -11,11 +12,11 @@
 
 class FKObjectManager;
 class FKDataBase;
-class FKEvent;
 class FKDBIndex;
 
 #define FK_OBJECT(derivedClass,parentClass) \
 derivedClass : public parentClass{ \
+    Q_OBJECT \
     typedef void (derivedClass::*fkfPtr)(FKEvent*); \
     static class Events:public FKObject::Events{ \
         void initEvents(); \
@@ -30,7 +31,7 @@ derivedClass : public parentClass{ \
     Servant* servant;\
 protected:\
     derivedClass():servant(0){logConstructor();}\
-    ~derivedClass(){delete servant; logDestructor();}\
+    ~derivedClass(){deleteServant(); logDestructor();}\
     virtual void customInitialization()override;\
     virtual void customDeinitialization()override;\
     virtual void totalInitialization()override{\
@@ -43,10 +44,12 @@ protected:\
     }\
     virtual void servantInitialization()override;\
     virtual void servantDeinitialization()override;\
+    virtual void createServant()override;\
+    virtual void deleteServant()override;\
     virtual void installServant()override{\
         if(!servant){\
             parentClass::installServant();\
-            servant=new Servant();\
+            createServant();\
             derivedClass::servantInitialization();\
         }\
     }\
@@ -90,6 +93,8 @@ private:
 
 #define FK_EVENTS(className) \
 className::Events className::_eventKeeper=className::Events(); \
+void className::createServant(){servant=new Servant();} \
+void className::deleteServant(){delete servant;} \
 void className::Events::initEvents()
 
 #define FK_NO_SERVANT(className) \
@@ -147,6 +152,8 @@ protected:
     virtual void servantDeinitialization();
     virtual void installServant();          //create all level servants and initialize them
     virtual void resetServant();
+    virtual void createServant(){}          //this function creates servant object. This is for FK_OBJECT macro to handle C++ limitations
+    virtual void deleteServant(){}
 
     void logConstructor();
     void logDestructor();

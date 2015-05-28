@@ -16,8 +16,9 @@ FKObject* FKObjectFactory::create(const QString& className){
 }
 
 void FKObjectFactory::deleteObject(FKObject* target){
-    QList<FKObject*>& pool=_pool[target->metaObject()->className()];
-    if(pool.size()<_poolSize){
+    const QString className(target->metaObject()->className());
+    QList<FKObject*>& pool=_pool[className];
+    if(isRegistered(className) && pool.size()<_poolSize){
         pool.append(target);
     }else{
         target->deleteLater();
@@ -31,4 +32,12 @@ void FKObjectFactory::clearPool(){
         }
     }
     _pool.clear();
+}
+
+void FKObjectFactory::cleanClass(const QString& className){
+    QList<FKObject*>& pool=_pool[className];
+    for(auto obj=pool.constBegin();obj!=pool.constEnd();++obj){
+        (*obj)->deleteLater();
+    }
+    _pool.remove(className);
 }

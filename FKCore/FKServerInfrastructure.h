@@ -13,7 +13,8 @@ class FKConnectionManager;
 class FKUserInfrastructureSlot;
 class FKUserInfrastructureAlias;
 class FKServerConnectionManager;
-//class FKRoom;
+class FKRoom;
+class FKRoomModule;
 class FKObjectManager;
 class FKRoomInviteData;
 
@@ -60,13 +61,12 @@ private:
     bool createRoom(const FKRoomData& roomData);
     static QString createUserInvitePassword();
     bool checkInviteData(const FKRoomInviteData& data);
-    //static FKRoom* createRoom(const QString& roomType);
-    //static void unloadRoomType(const QString& roomType);
-    //static QStringList getRoomTypeList();
+    virtual FKDataBase* createRoomDatabase();
     bool _logged;
     FKConnectionManager* _realmConnection;
     FKObjectManager* _om;
-    //FKRoom* _room;
+    FKRoomModule* _roomModule;
+    FKRoom* _room;
     FKRoomData _roomData;
     QSet<FKServerConnectionManager*> _guests;
     QMap<QString,FKUserInfrastructureAlias*> _clients;

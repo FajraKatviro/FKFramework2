@@ -21,6 +21,7 @@ public:
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
         _metaObjects.remove(className);
+        cleanClass(className);
     }
 protected:
     FKFactoryBase(){}
@@ -36,6 +37,12 @@ protected:
         }
         return 0;
     }
+    bool isRegistered(const QString& className){
+        return _metaObjects.contains(className);
+    }
+
+private:
+    virtual void cleanClass(const QString& className){Q_UNUSED(className)}
 };
 
 template<class D>

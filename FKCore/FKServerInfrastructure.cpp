@@ -7,12 +7,15 @@
 #include "FKAusviceData.h"
 #include "FKRoomInviteData.h"
 #include "FKRoomData.h"
+#include "FKFSDB.h"
+#include "FKRoomModule.h"
+#include "FKRoom.h"
 
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
 
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_idgenerator(1),_id(-1){
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_roomModule(0),_room(0),_idgenerator(1),_id(-1){
     FK_CBEGIN
     //_om=new FKObjectManager(this);
     FK_CEND
@@ -229,15 +232,33 @@ bool FKServerInfrastructure::checkRealm(){
 }
 
 bool FKServerInfrastructure::hasRoom() const{
-    FK_MLOG("Unable check room existance: feature incomplete")
-    return false;
-    //todo
+    return _room;
 }
 
 bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
-    //todo
-    FK_MLOG("Unable create room: feature incomplete")
-    return false;
+    bool answer=false;
+    if(!_roomModule){
+        _roomModule=new FKRoomModule(roomData.roomType(),this);
+        if(_roomModule->load()){
+            FKObject* room=_om->genObject(_roomModule->roomClass());
+            _room=qobject_cast<FKRoom*>(room);
+            if(!_room){
+                FK_MLOGV("Invalid room module",roomData.roomType())
+                if(room)_om->deleteObject(room);
+                _roomModule->deleteLater();
+                _roomModule=0;
+            }else{
+                _om->setRoomModule(_roomModule);
+                _room->setup(roomData);
+                answer=true;
+            }
+        }else{
+            FK_MLOGV("Unable load room module",roomData.roomType())
+            _roomModule->deleteLater();
+            _roomModule=0;
+        }
+    }
+    return answer;
 }
 
 QString FKServerInfrastructure::createUserInvitePassword(){
@@ -251,6 +272,12 @@ bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
         }
     }
     return false;
+}
+
+FKDataBase* FKServerInfrastructure::createRoomDatabase(){
+    FKDataBase* db=new FKFSDB(this);
+    db->setPath("../data/serverRoomDatabase");
+    return db;
 }
 
 /*!
