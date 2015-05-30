@@ -250,6 +250,7 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
             }else{
                 _om->setRoomModule(_roomModule);
                 _room->setup(roomData);
+                FK_MLOG("room created on server")
                 answer=true;
             }
         }else{
@@ -257,6 +258,8 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
             _roomModule->deleteLater();
             _roomModule=0;
         }
+    }else{
+        FK_MLOG("room module is not empty")
     }
     return answer;
 }

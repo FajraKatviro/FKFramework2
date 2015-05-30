@@ -1,0 +1,12 @@
+#ifndef FKCHATROOM_GLOBAL_H
+#define FKCHATROOM_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(FKCHATROOM_LIBRARY)
+#  define FKCHATROOMSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define FKCHATROOMSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // FKCHATROOM_GLOBAL_H

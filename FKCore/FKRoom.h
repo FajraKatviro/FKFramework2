@@ -5,7 +5,7 @@
 
 class FKRoomData;
 
-class FK_OBJECT(FKRoom,FKObject)
+class FKCORESHARED_EXPORT FK_ABSTRACT_OBJECT(FKRoom,FKObject)
 public:
     void setup(const FKRoomData& data);
 };

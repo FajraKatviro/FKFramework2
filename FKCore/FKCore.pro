@@ -1,4 +1,5 @@
 QT += qml
+CONFIG += dll
 
 TARGET = FKCore
 TEMPLATE = lib
@@ -31,14 +32,11 @@ SOURCES += \
     FKClientInfrastructureConnectionManager.cpp \
     FKInfrastructure.cpp \
     FKRoomData.cpp \
-    FKInfrastructureState.cpp \
-    FKInfrastructureStateValue.cpp \
     FKRoomDataFilter.cpp \
     FKDataBasePath.cpp \
     FKRealmDBMap.cpp \
     FKAusviceData.cpp \
     FKRoomModule.cpp \
-    FKRoomLoader.cpp \
     FKPackage.cpp \
     FKPackageManager.cpp \
     FKRoomInviteData.cpp \
@@ -77,8 +75,6 @@ HEADERS += \
     FKClientInfrastructureConnectionManager.h \
     FKInfrastructure.h \
     FKRoomData.h \
-    FKInfrastructureState.h \
-    FKInfrastructureStateValue.h \
     FKRoomDataFilter.h \
     FKDataBasePath.h \
     FKRealmDBMap.h \

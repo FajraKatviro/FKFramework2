@@ -4,6 +4,8 @@
 #include "FKUserInterface.h"
 
 #include <QThread>
+#include <QTimer>
+#include <QStringList>
 
 class FKConsoleReader;
 
@@ -20,6 +22,7 @@ public slots:
     void showMessage(const QString& m);
 private slots:
     void processInput(QString input);
+    void autoInput();
 private:
     QString welcomeString()const;
     void printHelp();
@@ -34,6 +37,8 @@ private:
     void registerRoomType(QString arg);
     QThread _consoleReaderThread;
     FKConsoleReader* _consoleReader;
+    QStringList _autoCommands;
+    QTimer _autoInputTimer;
 };
 
 #endif // FKCONSOLEINTERFACE_H

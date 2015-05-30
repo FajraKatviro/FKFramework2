@@ -10,10 +10,12 @@ win32{
         DESTDIR = ../../fkbin/bin_win
         LIBS += -L../../fkbin/bin_win
         DEPENDPATH += ../../fkbin/bin_win
+        DLLDESTDIR = ../../release/bin_win
     } else {
         DESTDIR= ../../fkbind/bin_win
         LIBS += -L../../fkbind/bin_win
         DEPENDPATH += ../../fkbind/bin_win
+        DLLDESTDIR = ../../debug/bin_win
     }
 } else {
     mac {

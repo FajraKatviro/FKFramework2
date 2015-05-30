@@ -14,7 +14,15 @@ class FKObjectManager;
 class FKDataBase;
 class FKDBIndex;
 
+#define FK_ABSTRACT_OBJECT(derivedClass,parentClass) \
+FK_OBJECT_COMMON(derivedClass,parentClass) \
+void doNothing()=0;
+
 #define FK_OBJECT(derivedClass,parentClass) \
+FK_OBJECT_COMMON(derivedClass,parentClass) \
+void doNothing(){}
+
+#define FK_OBJECT_COMMON(derivedClass,parentClass) \
 derivedClass : public parentClass{ \
     Q_OBJECT \
     typedef void (derivedClass::*fkfPtr)(FKEvent*); \
@@ -157,6 +165,7 @@ protected:
 
     void logConstructor();
     void logDestructor();
+    virtual void doNothing()=0;
 
 //This is reimplemented functions (FKSystemObject)
 //    bool packObject(QDataStream &stream)const;

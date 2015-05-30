@@ -7,7 +7,6 @@ class FKPackageManager;
 
 class FKRoomLoader{
 public:
-    FKRoomLoader();
     virtual ~FKRoomLoader(){}
     virtual QString version()const=0;
     virtual QString className()const=0;

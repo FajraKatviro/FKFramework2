@@ -23,6 +23,10 @@ FKConsoleInterface::FKConsoleInterface(QObject *parent):FKUserInterface(parent){
     connect(&_consoleReaderThread,SIGNAL(finished()),_consoleReader,SLOT(deleteLater()));
     connect(_consoleReader,SIGNAL(gotLine(QString)),SLOT(processInput(QString)));
     _consoleReaderThread.start();
+
+    _autoCommands<<"start realm"<<"start server"<<"login server 1 pass"<<"create room testname fkchatroom -r";
+    connect(&_autoInputTimer,SIGNAL(timeout()),SLOT(autoInput()));
+    _autoInputTimer.start(500);
     FK_CEND
 }
 
@@ -103,6 +107,10 @@ void FKConsoleInterface::processInput(QString input){
     }else{
         showMessage(QString(tr("Unknown command")));
     }
+}
+
+void FKConsoleInterface::autoInput(){
+    if(!_autoCommands.isEmpty())processInput(_autoCommands.takeFirst());
 }
 
 QString FKConsoleInterface::welcomeString() const{
