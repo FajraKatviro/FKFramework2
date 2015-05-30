@@ -4,7 +4,8 @@ SUBDIRS += \
     FKCore \
 \#    FKMultimedia \
 \#    FKNetwork \
-    FKLudo
+    FKLudo \
+    FKRooms\FKChatRoom
 
 HEADERS+= \
     FKTools/FKLogger.h \

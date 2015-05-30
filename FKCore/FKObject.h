@@ -24,7 +24,6 @@ void doNothing(){}
 
 #define FK_OBJECT_COMMON(derivedClass,parentClass) \
 derivedClass : public parentClass{ \
-    Q_OBJECT \
     typedef void (derivedClass::*fkfPtr)(FKEvent*); \
     static class Events:public FKObject::Events{ \
         void initEvents(); \

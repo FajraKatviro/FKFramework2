@@ -47,7 +47,6 @@ void FKRoomModule::loadPackageManager(){
 bool FKRoomModule::loadRoomPlugin(){
     _loader.setFileName(_module);
     _room=qobject_cast<FKRoomLoader*>(_loader.instance());
-    FK_MLOGV("try",_loader.errorString())
     if(!_room){
         FK_MLOGV("Warning! unable load room plugin",_module)
         return false;

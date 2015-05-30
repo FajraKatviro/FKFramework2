@@ -41,6 +41,7 @@ win32{
     }
 }
 
+LIBS += -lFKCore
 INCLUDEPATH += $$PWD/FKTools $$PWD/FKCore
 
 

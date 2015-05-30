@@ -3,9 +3,10 @@
 
 #include <QObject>
 
+#include "fkcore_global.h"
 #include "FKPackage.h"
 
-class FKPackageManager:public QObject{
+class FKCORESHARED_EXPORT FKPackageManager:public QObject{
     Q_OBJECT
 public:
     FKPackageManager(QObject* parent=0);
