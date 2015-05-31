@@ -19,7 +19,7 @@ class /*FKCORESHARED_EXPORT*/ FKObjectManager:public QObject{
     Q_OBJECT
 public:
     FKObjectManager(QObject* parent=0);
-    ~FKObjectManager()=0;
+    ~FKObjectManager();
     FKObject* genObject(const QString& className);
     FKObject* getObject(const qint32 id);
     void deleteObject(FKObject* obj);

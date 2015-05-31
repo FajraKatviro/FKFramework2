@@ -60,7 +60,7 @@ bool FKSystemObject::load(QDataStream& stream){
 }
 
 /*!
- * \brief Creates object of class with given className. Class must inherit FKSystemObject class and have default constructor marked Q_INVOKABLE. Also allowConstructing() function for that class must be called before first object constructing
+ * \brief Creates object of class with given className. Class must inherit FKSystemObject class and have default constructor. Also allowConstructing() function for that class must be called before first object constructing
  */
 
 FKSystemObject* FKSystemObject::create(const QString& className){

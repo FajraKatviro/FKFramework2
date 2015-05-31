@@ -562,6 +562,23 @@ FKDBIndex FKObject::selfIndex()const{
     return lst;
 }
 
+FKSystemObject *FKObject::clone() const{
+    FK_MLOG("Warning! FKObject::clone() base implementation call. Seems it should be reimplemented")
+    return 0;
+}
+
+bool FKObject::packObject(QDataStream &stream) const{
+    Q_UNUSED(stream)
+    FK_MLOG("Warning! FKObject::packObject() base implementation call. Seems it should be reimplemented")
+    return true;
+}
+
+bool FKObject::loadObject(QDataStream &stream){
+    Q_UNUSED(stream)
+    FK_MLOG("Warning! FKObject::loadObject() base implementation call. Seems it should be reimplemented")
+    return true;
+}
+
 /*!
  * \brief Writes numeric property value to database
  */

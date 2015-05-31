@@ -16,11 +16,10 @@ class FKDBIndex;
 
 #define FK_ABSTRACT_OBJECT(derivedClass,parentClass) \
 FK_OBJECT_COMMON(derivedClass,parentClass) \
-void doNothing()=0;
 
 #define FK_OBJECT(derivedClass,parentClass) \
 FK_OBJECT_COMMON(derivedClass,parentClass) \
-void doNothing(){}
+friend class FKFactoryObjectCreator<derivedClass>;
 
 #define FK_OBJECT_COMMON(derivedClass,parentClass) \
 derivedClass : public parentClass{ \
@@ -37,7 +36,7 @@ derivedClass : public parentClass{ \
     struct Servant;\
     Servant* servant;\
 protected:\
-    derivedClass():servant(0){logConstructor();}\
+    derivedClass():servant(0){logConstructor();} \
     ~derivedClass(){deleteServant(); logDestructor();}\
     virtual void customInitialization()override;\
     virtual void customDeinitialization()override;\
@@ -164,7 +163,6 @@ protected:
 
     void logConstructor();
     void logDestructor();
-    virtual void doNothing()=0;
 
 //This is reimplemented functions (FKSystemObject)
 //    bool packObject(QDataStream &stream)const;
@@ -265,6 +263,10 @@ private:
     qint32 _id;
     FKObjectManager* _om;
     static FKObjectFactory _factory;
+
+    virtual FKSystemObject* clone()const override;
+    virtual bool packObject(QDataStream& stream)const override;
+    virtual bool loadObject(QDataStream& stream)override;
 };
 
 #endif // FKOBJECT_H

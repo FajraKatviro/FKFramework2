@@ -10,7 +10,7 @@
 class /*FKCORESHARED_EXPORT*/ FKBasicEvent:public FKMessage{
     Q_OBJECT
 public:
-    Q_INVOKABLE FKBasicEvent();
+    FKBasicEvent();
     FKBasicEvent(const QString& subject, const QVariant value=QVariant());
     ~FKBasicEvent();
     QVariant value()const{return _value;}

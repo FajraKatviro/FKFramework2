@@ -7,26 +7,37 @@
 
 #include "fkcore_global.h"
 
+
+struct FKAbstractFactoryObjectCreator{
+    virtual ~FKAbstractFactoryObjectCreator(){}
+    virtual QObject* newInstance()const=0;
+};
+
+template<class D>
+struct FKFactoryObjectCreator:public FKAbstractFactoryObjectCreator{
+    virtual QObject* newInstance()const override{return new D;}
+};
+
 template<class D>
 class /*FKCORESHARED_EXPORT*/ FKFactoryBase{
-    QMap<QString,const QMetaObject*> _metaObjects;
+    QMap<QString,FKAbstractFactoryObjectCreator*> _creators;
 public:
     virtual ~FKFactoryBase()=0;
     template<class E> void addClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
-        _metaObjects.insert(className,m);
+        _creators.insert(className,new FKFactoryObjectCreator<E>());
     }
     template<class E> void removeClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
-        _metaObjects.remove(className);
+        delete _creators.take(className);
         cleanClass(className);
     }
 protected:
     FKFactoryBase(){}
     virtual D* create(const QString& className){
-        const QMetaObject* m=_metaObjects.value(className,0);
+        FKAbstractFactoryObjectCreator* m=_creators.value(className,0);
         if(m){
             QObject* q=m->newInstance();
             if(q){
@@ -38,7 +49,7 @@ protected:
         return 0;
     }
     bool isRegistered(const QString& className){
-        return _metaObjects.contains(className);
+        return _creators.contains(className);
     }
 
 private:

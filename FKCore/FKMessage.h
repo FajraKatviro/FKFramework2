@@ -6,7 +6,7 @@
 class /*FKCORESHARED_EXPORT*/ FKMessage : public FKSystemObject{
     Q_OBJECT
 public:
-    Q_INVOKABLE FKMessage();
+    FKMessage();
     FKMessage(const QString& subject);
     ~FKMessage();
     QString subject()const{return _subject;}
