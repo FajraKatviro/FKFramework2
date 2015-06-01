@@ -23,7 +23,7 @@ public:
     static FKEvent* makeEvent(const qint32 object,const QString& subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);
     static FKEvent* makeEvent(const qint32 object,const QString& subject,const QVariant& value,const qint32 reciever,const bool propertyChangeNotifier);
 private:
-    Q_INVOKABLE FKEvent();
+    FKEvent();
     FKEvent(const FKEvent* other);
     FKEvent(const qint32 object,const QString& subject,const QVariant& value,const qint32 client,const qint32 emitter);
     FKEvent(const qint32 object,const QString& subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);
@@ -37,6 +37,8 @@ private:
     qint32 _client;
     qint32 _emitter;
     bool _isPropertyNotifier;
+
+    friend class FKFactoryObjectCreator<FKEvent>;
 };
 
 #endif // FKEVENT_H

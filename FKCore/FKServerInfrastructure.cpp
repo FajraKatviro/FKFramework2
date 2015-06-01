@@ -17,7 +17,7 @@
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
         FKInfrastructure(parent),_logged(false),_realmConnection(0),_roomModule(0),_room(0),_idgenerator(1),_id(-1){
     FK_CBEGIN
-    //_om=new FKObjectManager(this);
+    _om=new FKObjectManager(this);
     FK_CEND
 }
 
