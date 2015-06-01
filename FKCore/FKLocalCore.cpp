@@ -37,6 +37,7 @@ bool FKLocalCore::startRealm(const int){
     }
     setRealm(new FKRealm(this));
     emit systemMessageRequested(QString(tr("Realm started")));
+    emit realmStarted();
     return true;
 }
 

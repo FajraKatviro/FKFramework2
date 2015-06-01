@@ -37,6 +37,7 @@ signals:
     void waitingForServerAnswerChanged();
     void userPoolChanged();
     void userListChanged();
+    void realmStarted();
 public slots:
     virtual bool startRealm(const int port=0)=0;
     virtual bool startServer(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
@@ -106,5 +107,7 @@ private:
     qint32 _customServerId;
     QString _customServerPassword;
 };
+
+
 
 #endif // FKABSTRACTCORE_H

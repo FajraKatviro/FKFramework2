@@ -44,7 +44,8 @@ SOURCES += \
     FKRoom.cpp \
     FKServerInfrastructure.cpp \
     FKUserInfrastructureSlot.cpp \
-    FKServerConnectionManager.cpp
+    FKServerConnectionManager.cpp \
+    FKUsersStructure.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -89,7 +90,8 @@ HEADERS += \
     FKRoom.h \
     FKServerInfrastructure.h \
     FKUserInfrastructureSlot.h \
-    FKServerConnectionManager.h
+    FKServerConnectionManager.h \
+    FKUsersStructure.h
 
 include(../FKFramework.pri)
 

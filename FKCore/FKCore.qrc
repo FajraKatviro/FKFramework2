@@ -2,6 +2,7 @@
     <qresource prefix="/application">
         <file>ConsoleBridge.qml</file>
         <file>ConsoleUserInterfaceLayer.qml</file>
+        <file>CoreLayer.qml</file>
     </qresource>
     <qresource prefix="/qt/etc">
         <file>qt.conf</file>
