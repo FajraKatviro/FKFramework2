@@ -174,14 +174,14 @@ void FKServerInfrastructure::realmConnection(FKConnector* connector){
 
 void FKServerInfrastructure::realmConnectorStatusChanged(){
     if(_realmConnection->isActive()){
-        emit connectedToRealm();
         if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
             FK_MLOG("Unexpected behaivour in FKServerInfrastructure::connectorStatusChanged()")
         }
+        emit connectedToRealm();
     }else{
         _logged=false;
-        emit disconnectedFromRealm();
         cancelAnswer(FKInfrastructureType::Realm);
+        emit disconnectedFromRealm();
     }
 }
 
