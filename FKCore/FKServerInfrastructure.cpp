@@ -5,6 +5,7 @@
 #include "FKBasicEvent.h"
 #include "FKObjectManager.h"
 #include "FKAusviceData.h"
+#include "FKRoomData.h"
 #include "FKRoomInviteData.h"
 #include "FKRoomData.h"
 #include "FKFSDB.h"
@@ -134,7 +135,7 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
 void FKServerInfrastructure::clientInvited(const QVariant& data){
     FKRoomInviteData invite(data);
     QVariant ret;
-    if(checkInviteData(invite)){
+    if(_room->addUsers(invite)){
         FKRoomInviteData answer(invite.client(),userPort());
         FKUserInfrastructureAlias* userAlias=new FKUserInfrastructureAlias(invite.client());
         _clients.insert(invite.client(),userAlias);
@@ -146,8 +147,6 @@ void FKServerInfrastructure::clientInvited(const QVariant& data){
             answer.addUser(u,userSlot->password());
         }
         ret=answer.toVariant();
-        _roomData.changeUsers(invite.users().count());
-        roomDataChanged(_roomData.maximumActors(),_roomData.actors(),_roomData.maximumUsers(),_roomData.users());
     }else{
         FKRoomInviteData answer(invite.client());
         ret=answer.toVariant();
@@ -185,16 +184,13 @@ void FKServerInfrastructure::realmConnectorStatusChanged(){
     }
 }
 
-void FKServerInfrastructure::roomDataChanged(const qint32 maxActors, const qint32 actors, const qint32 maxUsers, const qint32 users){
+void FKServerInfrastructure::roomDataChanged(const qint32 maxActorsDelta,const qint32 actorsDelta, const qint32 maxUsersDelta, const qint32 usersDelta){
     if(!_logged){
         FK_MLOG("Warning! Unable send room data delta to realm: server is not logged in")
         return;
     }
 
-    QVariant delta=FKRoomData::createDelta(maxActors    -_roomData.maximumActors(),
-                                           actors       -_roomData.actors(),
-                                           maxUsers     -_roomData.maximumUsers(),
-                                           users        -_roomData.users());
+    QVariant delta=FKRoomData::createDelta(maxActorsDelta,actorsDelta,maxUsersDelta,usersDelta);
     if(delta.isValid()){
         FKBasicEvent ev(FKBasicEventSubject::roomData,delta);
         _realmConnection->sendBasicEvent(&ev);
@@ -249,6 +245,7 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
                 _roomModule=0;
             }else{
                 _om->setRoomModule(_roomModule);
+                connect(_room,SIGNAL(roomDataChanged(qint32,qint32,qint32,qint32)),SLOT(roomDataChanged(qint32,qint32,qint32,qint32)));
                 _room->setup(roomData);
                 FK_MLOG("room created on server")
                 answer=true;
@@ -266,15 +263,6 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
 
 QString FKServerInfrastructure::createUserInvitePassword(){
     return createRandomString(8,10);
-}
-
-bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
-    if(data.isValid()){
-        if(_roomData.maximumUsers()-_roomData.users()>=data.users().count()){
-            return true;
-        }
-    }
-    return false;
 }
 
 FKDataBase* FKServerInfrastructure::createRoomDatabase(){

@@ -40,12 +40,13 @@ SOURCES += \
     FKPackage.cpp \
     FKPackageManager.cpp \
     FKRoomInviteData.cpp \
-    FKObjectFactory.cpp \
     FKRoom.cpp \
     FKServerInfrastructure.cpp \
     FKUserInfrastructureSlot.cpp \
     FKServerConnectionManager.cpp \
-    FKUsersStructure.cpp
+    FKUsersStructure.cpp \
+    FKUser.cpp \
+    FKObjectPool.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -86,12 +87,13 @@ HEADERS += \
     FKPackageManager.h \
     FKRoomComponents.h \
     FKRoomInviteData.h \
-    FKObjectFactory.h \
     FKRoom.h \
     FKServerInfrastructure.h \
     FKUserInfrastructureSlot.h \
     FKServerConnectionManager.h \
-    FKUsersStructure.h
+    FKUsersStructure.h \
+    FKUser.h \
+    FKObjectPool.h
 
 include(../FKFramework.pri)
 

@@ -6,7 +6,6 @@
 #include <QSet>
 
 #include "FKIDGenerator.h"
-#include "FKRoomData.h"
 
 class FKConnector;
 class FKConnectionManager;
@@ -16,6 +15,7 @@ class FKServerConnectionManager;
 class FKRoom;
 class FKRoomModule;
 class FKObjectManager;
+class FKRoomData;
 class FKRoomInviteData;
 
 class FKServerInfrastructure : public FKInfrastructure{
@@ -52,7 +52,7 @@ signals:
     void loggedIn();
 private slots:
     void realmConnectorStatusChanged();
-    void roomDataChanged(const qint32 maxActors, const qint32 actors, const qint32 maxUsers, const qint32 users);
+    void roomDataChanged(const qint32 maxActorsDelta, const qint32 actorsDelta, const qint32 maxUsersDelta, const qint32 usersDelta);
     void roomStarted();
     void roomStopped();
 private:
@@ -67,7 +67,6 @@ private:
     FKObjectManager* _om;
     FKRoomModule* _roomModule;
     FKRoom* _room;
-    FKRoomData _roomData;
     QSet<FKServerConnectionManager*> _guests;
     QMap<QString,FKUserInfrastructureAlias*> _clients;
     QMap<QString,FKUserInfrastructureSlot*> _users;

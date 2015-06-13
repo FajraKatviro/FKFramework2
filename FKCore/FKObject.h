@@ -3,7 +3,7 @@
 
 #include "FKSystemObject.h"
 
-#include "FKObjectFactory.h"
+#include "FKFactory.h"
 #include "FKEvent.h"
 
 #include <QVariant>
@@ -15,14 +15,16 @@ class FKDataBase;
 class FKDBIndex;
 
 #define FK_ABSTRACT_OBJECT(derivedClass,parentClass) \
-FK_OBJECT_COMMON(derivedClass,parentClass) \
+FK_OBJECT_COMMON(derivedClass,parentClass)
+
 
 #define FK_OBJECT(derivedClass,parentClass) \
 FK_OBJECT_COMMON(derivedClass,parentClass) \
 friend class FKFactoryObjectCreator<derivedClass>;
 
+
 #define FK_OBJECT_COMMON(derivedClass,parentClass) \
-derivedClass : public parentClass{ \
+private: \
     typedef void (derivedClass::*fkfPtr)(FKEvent*); \
     static class Events:public FKObject::Events{ \
         void initEvents(); \
@@ -94,8 +96,7 @@ public:\
         return p;} \
     virtual const QStringList customPropertyList()const override{ \
         static const QStringList p(_eventKeeper.customPropertyList()<<parentClass::customPropertyList()); \
-        return p;} \
-private:
+        return p;}
 
 #define FK_EVENTS(className) \
 className::Events className::_eventKeeper=className::Events(); \
@@ -262,7 +263,7 @@ private:
 
     qint32 _id;
     FKObjectManager* _om;
-    static FKObjectFactory _factory;
+    static FKFactory<FKObject> _factory;
 
     virtual FKSystemObject* clone()const override;
     virtual bool packObject(QDataStream& stream)const override;

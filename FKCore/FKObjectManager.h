@@ -6,6 +6,7 @@
 #include "fkcore_global.h"
 
 #include "FKIDGenerator.h"
+#include "FKObjectPool.h"
 
 #include <QHash>
 
@@ -41,6 +42,7 @@ public:
 private:
     FKObject* genObject(const QString& className,const qint32 id);
     FKIDGenerator _idGenerator;
+    FKObjectPool _objectPool;
     QHash<qint32,FKObject*> _objects;
     FKDataBase* _db;
     FKRoomModule* _roomModule;

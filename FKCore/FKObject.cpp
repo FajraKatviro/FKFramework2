@@ -84,7 +84,7 @@ FK_EVENTS(FKCilent){
  * \brief Use this macro at the end of class body if there is no servant needed by class
  */
 
-FKObjectFactory FKObject::_factory(20);
+FKFactory<FKObject> FKObject::_factory;
 
 /*!
  * \brief Constructs new object and register it for creator's object manager. Creator should be always passed for new objects in code. Null passed by system when constructing new objects for client-side. Use FK_CONSTRUCTOR macro when implementing new classes

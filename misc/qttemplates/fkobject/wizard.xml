@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--FKObject wizard configuration file. -->
+<wizard version="1" kind="class" id="A.ListModel" category="B.CustomClasses">
+    <description>Creates a FKObject implementation.</description>
+    <displayname>FKObject implementation</displayname>
+    <displaycategory>FKTemplates</displaycategory>
+    <files>
+        <file source="fkobject.cpp" target="%ClassName%.%CppSourceSuffix%" openeditor="true"/>
+        <file source="fkobject.h" target="%ClassName%.%CppHeaderSuffix%" openeditor="true"/>
+    </files>
+    <!-- Create parameter wizard page -->
+    <fieldpagetitle>New class parameters</fieldpagetitle>
+    <fields>
+        <field name="ClassName">
+            <fieldcontrol class="QLineEdit" validator="^[a-zA-Z0-9_]+$" defaulttext="MyNewObject" placeholdertext="Enter a class name"/>
+            <fielddescription>Class name:</fielddescription>
+        </field>
+        <field name="ParentClassName">
+            <fieldcontrol class="QLineEdit" validator="^[a-zA-Z0-9_]+$" defaulttext="FKObject" placeholdertext="Enter a class name"/>
+            <fielddescription>Parent class name:</fielddescription>
+        </field>
+        <field name="Servant">
+            <fieldcontrol class="QCheckBox" defaultvalue="true"/>
+            <fielddescription>Servant enabled</fielddescription>
+        </field>
+        <field name="Abstract">
+            <fieldcontrol class="QCheckBox" defaultvalue="false" truevalue="ABSTRACT_" falsevalue=""/>
+            <fielddescription>Abstract class</fielddescription>
+        </field>
+    </fields>
+</wizard>

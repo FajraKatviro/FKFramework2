@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMetaObject>
 #include <QMap>
+#include <QReadWriteLock>
 
 #include "fkcore_global.h"
 
@@ -26,20 +27,24 @@ public:
     template<class E> void addClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
+        QWriteLocker lock(&_locker);
         _creators.insert(className,new FKFactoryObjectCreator<E>());
     }
     template<class E> void removeClass(){
         const QMetaObject* m=&E::staticMetaObject;
         QString className=m->className();
+        QWriteLocker lock(&_locker);
         delete _creators.take(className);
         cleanClass(className);
     }
 protected:
     FKFactoryBase(){}
     virtual D* create(const QString& className){
+        _locker.lockForRead();
         FKAbstractFactoryObjectCreator* m=_creators.value(className,0);
         if(m){
             QObject* q=m->newInstance();
+            _locker.unlock();
             if(q){
                 D* d=qobject_cast<D*>(q);
                 if(d)return d;
@@ -49,11 +54,13 @@ protected:
         return 0;
     }
     bool isRegistered(const QString& className){
+        QReadLocker lock(&_locker);
         return _creators.contains(className);
     }
 
 private:
     virtual void cleanClass(const QString& className){Q_UNUSED(className)}
+    QReadWriteLock _locker;
 };
 
 template<class D>

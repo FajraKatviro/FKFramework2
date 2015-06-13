@@ -14,7 +14,7 @@
  * \brief Constructs object with given parent
  */
 
-FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_db(0),_roomModule(0){
+FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_objectPool(20),_db(0),_roomModule(0){
     FK_CBEGIN
     FK_CEND
 }
@@ -24,7 +24,7 @@ FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_db(0),_roomMo
  */
 
 FKObjectManager::~FKObjectManager(){
-    foreach(FKObject* obj,_objects)obj->deleteObject();
+
 }
 
 FKObject* FKObjectManager::genObject(const QString& className){
@@ -47,7 +47,7 @@ void FKObjectManager::deleteObject(FKObject* obj){
     obj->resetServant();
     _objects.remove(obj->getId());
     _idGenerator.back(obj->getId());
-    FKObject::_factory.deleteObject(obj);
+    _objectPool.add(obj);
 }
 
 /*!
@@ -55,8 +55,10 @@ void FKObjectManager::deleteObject(FKObject* obj){
  */
 
 FKObject* FKObjectManager::genObject(const QString &className,const qint32 id){
-    FKObject* obj=FKObject::_factory.create(className);
+    FKObject* obj=_objectPool.take(className);
+    if(!obj)obj=FKObject::_factory.create(className);
     if(obj){
+        obj->setParent(this);
         obj->setId(id);
         obj->setObjectManager(this);
         _objects.insert(id,obj);

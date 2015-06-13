@@ -4,7 +4,8 @@
 #include "fkchatroom_global.h"
 #include "FKRoomComponents.h"
 
-class FKCHATROOMSHARED_EXPORT FK_OBJECT(FKChatRoom,FKRoom)
+class FKCHATROOMSHARED_EXPORT FKChatRoom:public FKRoom{
+    FK_OBJECT(FKChatRoom,FKRoom)
     Q_OBJECT
 public:
 
