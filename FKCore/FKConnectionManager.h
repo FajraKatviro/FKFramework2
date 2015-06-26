@@ -6,7 +6,7 @@
 class FKSystemObject;
 class FKMessage;
 class FKBasicEvent;
-class FKEvent;
+class FKEventObject;
 class FKConnector;
 
 class FKConnectionManager : public QObject{
@@ -19,7 +19,7 @@ public:
     void sendData(const QByteArray& data);
     void sendMessage(FKMessage* message);
     void sendMessage(const QString& message);
-    void sendEvent(FKEvent* event);
+    void sendEvent(FKEventObject* event);
     void sendGuestEvent(FKBasicEvent* event);
     void sendBasicEvent(FKBasicEvent* event);
     void dropConnection();
@@ -34,7 +34,7 @@ private:
     virtual void processMessage(FKMessage* msg);
     virtual void processGuestEvent(FKBasicEvent* ev);
     virtual void processBasicEvent(FKBasicEvent* ev);
-    virtual void processEvent(FKEvent* ev);
+    virtual void processEvent(FKEventObject* ev);
     virtual void incomeMessageError(const QString& msgType,const QString& reason);
     FKConnector* _connector;
 };

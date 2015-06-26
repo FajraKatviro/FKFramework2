@@ -3,7 +3,7 @@
 #include "FKServerInfrastructure.h"
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 
 #include "FKLogger.h"
 #include "FKBasicEventSubjects.h"
@@ -118,7 +118,7 @@ void FKServerConnectionManagerR::processBasicEvent(FKBasicEvent* ev){
     }
 }
 
-void FKServerConnectionManagerR::processEvent(FKEvent* ev){
+void FKServerConnectionManagerR::processEvent(FKEventObject* ev){
     FK_MLOGV("Unexpected event from realm to server",ev->subject())
     ev->deleteLater();
 }
@@ -172,7 +172,7 @@ void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
     }
 }
 
-void FKServerConnectionManagerU::processEvent(FKEvent* ev){
+void FKServerConnectionManagerU::processEvent(FKEventObject* ev){
     //_user->incomeAction(ev);
     //todo: force event to infrastructure
 }

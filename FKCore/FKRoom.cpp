@@ -7,24 +7,24 @@ struct FKRoom::Servant{
     QList<QObject*> users;
 };
 
-void FKRoom::servantInitialization(){}
+//void FKRoom::servantInitialization(){}
 
-void FKRoom::servantDeinitialization(){
-    QList<QObject*> emptyList;
-    servant->users.swap(emptyList);
-}
+//void FKRoom::servantDeinitialization(){
+//    QList<QObject*> emptyList;
+//    servant->users.swap(emptyList);
+//}
 
-FK_EVENTS(FKRoom){
-    common.append("o_usersSize");
-}
+//FK_EVENTS(FKRoom){
+//    common.append("o_usersSize");
+//}
 
-void FKRoom::customInitialization(){
-    _usersSize=0;
-}
+//void FKRoom::customInitialization(){
+//    _usersSize=0;
+//}
 
-void FKRoom::customDeinitialization(){
-    _roomSettings.clear();
-}
+//void FKRoom::customDeinitialization(){
+//    _roomSettings.clear();
+//}
 
 //----------------------------------------
 
@@ -60,7 +60,7 @@ bool FKRoom::addUsers(const FKRoomInviteData& data){
                 }
                 //todo: keep user objects somewhere
                 emit roomDataChanged(0,0,0,usersToAdd);
-                updateCommon("o_usersSize");
+                //updateCommon("o_usersSize");
                 applyUpdates();
                 return true;
             }

@@ -1,9 +1,10 @@
 #include "FKObjectManager.h"
 
 #include "FKLogger.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 #include "FKMessage.h"
 #include "FKObject.h"
+#include "FKIdentifiers.h"
 
 /*!
  * \class FKObjectManager
@@ -29,8 +30,7 @@ FKObjectManager::~FKObjectManager(){
 
 FKObject* FKObjectManager::genObject(const QString& className){
     qint32 id=_idGenerator.take();
-    FKObject* obj=genObject(className,id);
-    obj->servantInitialization();
+    FKObject* obj=genObject(className,id,true);
     return obj;
 }
 
@@ -43,8 +43,8 @@ FKObject* FKObjectManager::getObject(const qint32 id){
 }
 
 void FKObjectManager::deleteObject(FKObject* obj){
-    obj->totalDeinitialization();
-    obj->resetServant();
+    obj->executeEvent(FKIdentifiers::deinitObject);
+    obj->executeEvent(FKIdentifiers::resetServant);
     _objects.remove(obj->getId());
     _idGenerator.back(obj->getId());
     _objectPool.add(obj);
@@ -54,15 +54,24 @@ void FKObjectManager::deleteObject(FKObject* obj){
  * \brief Create uninitialized object of given class, add to managed hash with given id and run initialization
  */
 
-FKObject* FKObjectManager::genObject(const QString &className,const qint32 id){
+FKObject* FKObjectManager::genObject(const QString &className, const qint32 id,const bool createServant){
     FKObject* obj=_objectPool.take(className);
-    if(!obj)obj=FKObject::_factory.create(className);
+    if(!obj){
+        obj=FKObject::_factory.create(className);
+        if(obj){
+            obj->installObjectInfo();
+            obj->setParent(this);
+            obj->setObjectManager(this);
+            if(createServant){
+                obj->executeEvent(FKIdentifiers::createServant);
+                obj->executeEvent(FKIdentifiers::resetServant);
+            }
+        }
+    }
     if(obj){
-        obj->setParent(this);
         obj->setId(id);
-        obj->setObjectManager(this);
         _objects.insert(id,obj);
-        obj->totalInitialization();
+        obj->executeEvent(FKIdentifiers::initObject);
     }
     return obj;
 }
@@ -71,7 +80,7 @@ FKObject* FKObjectManager::genObject(const QString &className,const qint32 id){
  * \brief Process event created at the same (client or server) side
  */
 
-void FKObjectManager::internalEvent(FKEvent* event){
+void FKObjectManager::internalEvent(FKEventObject* event){
     event->deleteLater();
 }
 
@@ -79,7 +88,7 @@ void FKObjectManager::internalEvent(FKEvent* event){
  * \brief Process event created at the opposite (client or server) side
  */
 
-void FKObjectManager::externalEvent(FKEvent* event){
+void FKObjectManager::externalEvent(FKEventObject* event){
     event->deleteLater();
 }
 
@@ -87,7 +96,7 @@ void FKObjectManager::externalEvent(FKEvent* event){
  * \brief Process action created at the same (client or server) side
  */
 
-void FKObjectManager::internalAction(FKEvent* action){
+void FKObjectManager::internalAction(FKEventObject* action){
     action->deleteLater();
 }
 
@@ -95,7 +104,7 @@ void FKObjectManager::internalAction(FKEvent* action){
  * \brief Process action created at the opposite (client or server) side
  */
 
-void FKObjectManager::externalAction(FKEvent* action){
+void FKObjectManager::externalAction(FKEventObject* action){
     action->deleteLater();
 }
 

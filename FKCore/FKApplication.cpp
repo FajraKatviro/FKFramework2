@@ -2,7 +2,8 @@
 
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
+#include "FKObject.h"
 
 #include "FKLogger.h"
 
@@ -62,8 +63,9 @@ void FKApplication::prepare(){
 //install event-objects factory
     FKSystemObject::allowConstructing<FKMessage>();
     FKSystemObject::allowConstructing<FKBasicEvent>();
-    FKSystemObject::allowConstructing<FKEvent>();
+    FKSystemObject::allowConstructing<FKEventObject>();
 //install common FKObjects factory
+    FKObject::allowService<FKObject>();
 //    FKObject::allowCreation<FKUser>();
 //    FKObject::allowCreation<FKActor>();
 //    FKObject::allowCreation<FKWatchingGroup>();

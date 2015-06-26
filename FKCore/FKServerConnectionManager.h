@@ -29,7 +29,7 @@ private:
     void processMessage(FKMessage* msg);
     void processGuestEvent(FKBasicEvent* ev);
     void processBasicEvent(FKBasicEvent* ev);
-    void processEvent(FKEvent* ev);
+    void processEvent(FKEventObject* ev);
     void incomeMessageError(const QString& msgType,const QString& reason);
     FKServerInfrastructure* _server;
 };
@@ -43,7 +43,7 @@ private:
     void processMessage(FKMessage* msg);
     void processGuestEvent(FKBasicEvent* ev);
     void processBasicEvent(FKBasicEvent* ev);
-    void processEvent(FKEvent* ev);
+    void processEvent(FKEventObject* ev);
     void incomeMessageError(const QString& msgType,const QString& reason);
     FKUserInfrastructureSlot* _user;
 };

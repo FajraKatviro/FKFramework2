@@ -11,7 +11,7 @@
 #include <QHash>
 
 class FKObject;
-class FKEvent;
+class FKEventObject;
 class FKMessage;
 class FKDataBase;
 class FKRoomModule;
@@ -24,10 +24,10 @@ public:
     FKObject* genObject(const QString& className);
     FKObject* getObject(const qint32 id);
     void deleteObject(FKObject* obj);
-    virtual void internalEvent(FKEvent* event);
-    virtual void externalEvent(FKEvent* event);
-    virtual void internalAction(FKEvent* action);
-    virtual void externalAction(FKEvent* action);
+    virtual void internalEvent(FKEventObject* event);
+    virtual void externalEvent(FKEventObject* event);
+    virtual void internalAction(FKEventObject* action);
+    virtual void externalAction(FKEventObject* action);
     virtual void internalMessageRequest(const QString& msg, const QList<qint32>& recievers);
     virtual void externalMessageRequest(FKMessage* message, const qint32 sender);
     virtual void shareObject(FKObject* obj,const QList<qint32>& recievers);
@@ -40,7 +40,7 @@ public:
     void setRoomModule(FKRoomModule* m){_roomModule=m;}
     FKRoomModule* roomModule()const{return _roomModule;}
 private:
-    FKObject* genObject(const QString& className,const qint32 id);
+    FKObject* genObject(const QString& className,const qint32 id,const bool createServant=false);
     FKIDGenerator _idGenerator;
     FKObjectPool _objectPool;
     QHash<qint32,FKObject*> _objects;

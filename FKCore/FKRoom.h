@@ -18,7 +18,6 @@ enum class FKRoomSettings{
 };
 
 class FKCORESHARED_EXPORT FKRoom:public FKObject{
-    FK_ABSTRACT_OBJECT(FKRoom,FKObject)
     Q_OBJECT
     Q_PROPERTY(qint32 o_usersSize READ ro_usersSize WRITE wo_usersSize)
 public:

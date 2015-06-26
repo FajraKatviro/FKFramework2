@@ -1,7 +1,7 @@
 #include "FKUserInfrastructureSlot.h"
 
 #include "FKServerConnectionManager.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 
 #include "FKLogger.h"
 
@@ -45,7 +45,7 @@ void FKUserInfrastructureSlot::sendMessage(const QString msg){
     _connection->sendMessage(msg);
 }
 
-void FKUserInfrastructureSlot::sendEvent(FKEvent* event){
+void FKUserInfrastructureSlot::sendEvent(FKEventObject* event){
     _connection->sendEvent(event);
 }
 
@@ -53,7 +53,7 @@ void FKUserInfrastructureSlot::sendData(const QByteArray& data){
     _connection->sendData(data);
 }
 
-void FKUserInfrastructureSlot::incomeAction(FKEvent* action){
+void FKUserInfrastructureSlot::incomeAction(FKEventObject* action){
     if(_client->isActive()){
         emit gotAction(action);
     }else{

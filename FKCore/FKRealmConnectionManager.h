@@ -16,7 +16,7 @@ private:
     void processMessage(FKMessage* msg);
     void processGuestEvent(FKBasicEvent* ev);
     void processBasicEvent(FKBasicEvent* ev);
-    void processEvent(FKEvent* ev);
+    void processEvent(FKEventObject* ev);
     void incomeMessageError(const QString& msgType,const QString& reason);
     FKRealm* _realm;
 };
@@ -30,7 +30,7 @@ private:
     void processMessage(FKMessage* msg);
     void processGuestEvent(FKBasicEvent* ev);
     void processBasicEvent(FKBasicEvent* ev);
-    void processEvent(FKEvent* ev);
+    void processEvent(FKEventObject* ev);
     void incomeMessageError(const QString& msgType,const QString& reason);
     QString _id;
 };
@@ -44,7 +44,7 @@ private:
     void processMessage(FKMessage* msg);
     void processGuestEvent(FKBasicEvent* ev);
     void processBasicEvent(FKBasicEvent* ev);
-    void processEvent(FKEvent* ev);
+    void processEvent(FKEventObject* ev);
     void incomeMessageError(const QString& msgType,const QString& reason);
     qint32 _id;
 };

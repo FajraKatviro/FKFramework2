@@ -3,7 +3,7 @@
 #include "FKRealm.h"
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 
 #include "FKLogger.h"
 #include "FKBasicEventSubjects.h"
@@ -56,7 +56,7 @@ void FKRealmConnectionManager::processBasicEvent(FKBasicEvent* ev){
     realm()->stopGuestConnection(this);
 }
 
-void FKRealmConnectionManager::processEvent(FKEvent* ev){
+void FKRealmConnectionManager::processEvent(FKEventObject* ev){
     FK_MLOGV("Unexpected event from guest to realm",ev->subject())
     ev->deleteLater();
     realm()->stopGuestConnection(this);
@@ -132,7 +132,7 @@ void FKRealmConnectionManagerC::processBasicEvent(FKBasicEvent* ev){
     }
 }
 
-void FKRealmConnectionManagerC::processEvent(FKEvent* ev){
+void FKRealmConnectionManagerC::processEvent(FKEventObject* ev){
     FK_MLOGV("Unexpected event from client to realm",ev->subject())
     ev->deleteLater();
     realm()->stopClientConnection(_id);
@@ -202,7 +202,7 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
     }
 }
 
-void FKRealmConnectionManagerS::processEvent(FKEvent* ev){
+void FKRealmConnectionManagerS::processEvent(FKEventObject* ev){
     FK_MLOGV("Unexpected event from server to realm",ev->subject())
     ev->deleteLater();
     realm()->stopServerConnection(_id);

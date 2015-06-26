@@ -5,7 +5,6 @@
 #include "FKRoomComponents.h"
 
 class FKCHATROOMSHARED_EXPORT FKChatRoom:public FKRoom{
-    FK_OBJECT(FKChatRoom,FKRoom)
     Q_OBJECT
 public:
 

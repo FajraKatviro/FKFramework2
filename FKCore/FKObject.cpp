@@ -2,7 +2,7 @@
 
 #include "FKObjectManager.h"
 #include "FKDataBase.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 
 #include "FKLogger.h"
 
@@ -33,66 +33,47 @@
  *\endlist
  * FKObject реализует все необходимые инструменты для использования КУО.
  *
- * При наследовании класса необходимо использовать макросы FK_OBJECT(), FK_EVENTS(){}, FK_CONSTRUCTOR и FK_DESTRUCTOR
- */
+ * При наследовании класса необходимо использовать макросы FK_OBJECT(), FK_EVENTS(){}, FK_CONSTRUCTOR и FK_DESTRUCTOR */
 
-/*!
- * \macro FK_OBJECT(...)
- *
- * \brief This macro must be placed in class definition instead of class specifier.
- *
- * Macro takes 2 arguments: className and inheritedClassName. The first '{' must be omitted.
-\code
-class FKOBJECTSSHARED_EXPORT FK_OBJECT(FKClient,FKObject)
-    Q_OBJECT
-public:
-
-};
-\endcode
- */
-
-/*!
- * \macro FK_EVENTS(...)
- *
- * \brief This macro must be placed in *.cpp file for every class.
- *
- * Macro takes 1 argument: className.
- *
- * Instruction block {} after macro is required. Block determine class-specific events, actions and properties or can be empty.
-\code
-FK_EVENTS(FKCilent){
-    events.insert(FKEventName::G_createObjects,&FKClient::E_createObjects);
-    events.insert(FKEventName::G_deleteObjects,&FKClient::E_deleteObjects);
-    actions.insert(FKEventName::A_setPassword,&FKClient::A_setPassword);
-    props.append(FKEventName::C_password);
-}
-\endcode
- */
-
-/*!
- * \macro FK_CONSTRUCTOR
- * \brief Use this macro at the beginning of constructor's implementation to correctly setup internal variables
- */
-
-/*!
- * \macro FK_DESTRUCTOR
- * \brief Use this macro in the destructor to correct deletion of object
- */
-
-/*!
- * \macro FK_NO_SERVANT
- * \brief Use this macro at the end of class body if there is no servant needed by class
- */
 
 FKFactory<FKObject> FKObject::_factory;
+FKObjectMetadata FKObject::objectMetadata;
+
+struct FKObject::Servant{
+    Servant():active(true){}
+    QMap<FKObject*,QVector<bool> > watchers; //used by startCommonWatching() and startCustomWatching()
+    QSet<FKObject*> watcheds; //used by startCommonWatching()
+    QSet<FKObject*> sharedWatchers;
+    QSet<FKObject*> sharedWatcheds; //used by startSharedWatching()
+    QMap<FKObject*,QVector<bool> > actors; //used by processAction()
+    QSet<FKObject*> controlled;
+    QList<qint32> emitters; //used by action handler to validate action source. Usually short list
+    QSet<FKObject*> sharedVisors; //used by doEvent(), updateCommon(), etc.
+    QVector<bool> updateCommon; //used by updateCommon()
+    QVector<bool> updateCustom; //used by updateCustom()
+    bool active; //used by setActive() and processAction()
+};
+
+void FKEvent<FKObject,FKIdentifiers::resetServant>::doEvent(FKEventObject *){
+    object->servant->watchers.clear();
+    object->servant->watcheds.clear();
+    object->servant->sharedWatchers.clear();
+    object->servant->sharedWatcheds.clear();
+    object->servant->actors.clear();
+    object->servant->controlled.clear();
+    object->servant->emitters.clear();
+    object->servant->sharedVisors.clear();
+    object->servant->updateCommon.fill(false,object->commonPropertyCount());
+    object->servant->updateCustom.fill(false,object->customPropertyCount());
+    object->servant->active=true;
+}
 
 /*!
  * \brief Constructs new object and register it for creator's object manager. Creator should be always passed for new objects in code. Null passed by system when constructing new objects for client-side. Use FK_CONSTRUCTOR macro when implementing new classes
  */
 
-FKObject::FKObject():FKSystemObject(),servant(0){
-    FK_CBEGIN
-    FK_CEND
+FKObject::FKObject():FKSystemObject(){
+    logConstructor();
 }
 
 /*!
@@ -100,9 +81,7 @@ FKObject::FKObject():FKSystemObject(),servant(0){
  */
 
 FKObject::~FKObject(){
-    FK_DBEGIN
-    if(servant)delete servant;
-    FK_DEND
+    logDestructor();
 }
 
 /*!
@@ -122,6 +101,7 @@ void FKObject::deleteObject(){
         forbidTotalWatching();
     }
     emit deletedFKObject(this);
+    //todo move to event
     _om->deleteObject(this);
 }
 
@@ -147,18 +127,18 @@ void FKObject::applyUpdates(){
         FK_MLOG("Unable apply updates: no servant")
         return;
     }
-    FKEvent* event;
+    FKEventObject* event;
     QList<qint32> recievers;
     QSet<FKObject*> visors=totalVisors();
     foreach(FKObject* r,visors){
         recievers.append(r->getId());
     }
-    QStringList props(commonPropertyList());
+    QList<qint32> props(commonPropertyList());
     auto u=servant->updateCommon.begin();
     auto p=props.constBegin();
     for(;u!=servant->updateCommon.end();++p, ++u){
         if(*u){
-            event=FKEvent::makeEvent(getId(),*p,property(p->toLatin1()),recievers,true);
+            event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
             _om->internalEvent(event);
             *u=false;
         }
@@ -204,7 +184,7 @@ void FKObject::startCommonWatching(FKObject* watched){
 void FKObject::startCustomWatching(FKObject* watched){
     if(watchingTest("start custom watching",watched)){
         startCommonWatching(watched);
-        QStringList props(watched->customPropertyList());
+        QList<qint32> props(watched->customPropertyList());
         QSet<FKObject*> newVisors(sharedVisors());
         auto u=watched->servant->watchers[this].begin();
         auto p=props.constBegin();
@@ -226,7 +206,7 @@ void FKObject::startCustomWatching(FKObject* watched){
  */
 
 
-void FKObject::startCustomWatching(FKObject* watched, const QString& prop){
+void FKObject::startCustomWatching(FKObject* watched, const qint32 prop){
     if(watchingTest("start custom property watching",watched)){
         qint32 index=watched->customPropertyList().indexOf(prop);
         if(index==-1){
@@ -298,7 +278,7 @@ void FKObject::stopCustomWatching(FKObject* watched){
  * \brief Server-side function. Stopd watching for object's custom property
  */
 
-void FKObject::stopCustomWatching(FKObject* watched, const QString& prop){
+void FKObject::stopCustomWatching(FKObject* watched, const qint32 prop){
     if(watchingTest("stop custom property watching",watched)){
         if(!servant->watcheds.contains(watched))return;
         qint32 index=watched->customPropertyList().indexOf(prop);
@@ -349,7 +329,7 @@ void FKObject::forbidTotalWatching(){
  * \brief Server-side function. Allow actor request actions for this object
  */
 
-bool FKObject::allowControlBy(FKObject* actor,const QString &action){
+bool FKObject::allowControlBy(FKObject* actor,const qint32 action){
     if(watchingTest("allow action",actor)){
         qint32 index=actionList().indexOf(action);
         if(index==-1){
@@ -357,7 +337,7 @@ bool FKObject::allowControlBy(FKObject* actor,const QString &action){
             return false;
         }
         if(!servant->actors.contains(actor)){
-            servant->actors.insert(actor,QVector<bool>(actionsCount(),false));
+            servant->actors.insert(actor,QVector<bool>(actionCount(),false));
             actor->servant->controlled.insert(this);
         }
         servant->actors[actor][index]=true;
@@ -373,7 +353,7 @@ bool FKObject::allowControlBy(FKObject* actor,const QString &action){
 bool FKObject::allowControlBy(FKObject* actor){
     if(watchingTest("allow all actions",actor)){
         if(!servant->actors.contains(actor)){
-            servant->actors.insert(actor,QVector<bool>(actionsCount(),true));
+            servant->actors.insert(actor,QVector<bool>(actionCount(),true));
             actor->servant->controlled.insert(this);
         }else{
             servant->actors[actor].fill(true);
@@ -435,7 +415,7 @@ bool FKObject::forbidControl(){
  * \brief Server-side function. Forbid actor request actions for this object
  */
 
-bool FKObject::forbidControlBy(FKObject* actor,const QString &action){
+bool FKObject::forbidControlBy(FKObject* actor,const qint32 action){
     if(watchingTest("forbid action",actor)){
         qint32 index=actionList().indexOf(action);
         if(index==-1){
@@ -485,37 +465,6 @@ bool FKObject::forbidEmitBy(FKObject* user){
     return false;
 }
 
-void FKObject::servantInitialization(){
-    servant->updateCommon.fill(false,commonPropertyCount());
-    servant->updateCustom.fill(false,customPropertyCount());
-}
-
-void FKObject::servantDeinitialization(){
-    servant->watchers.clear();
-    servant->watcheds.clear();
-    servant->sharedWatchers.clear();
-    servant->sharedWatcheds.clear();
-    servant->actors.clear();
-    servant->controlled.clear();
-    servant->emitters.clear();
-    servant->sharedVisors.clear();
-    servant->updateCommon.fill(false);
-    servant->updateCustom.fill(false);
-    servant->active=true;
-}
-
-void FKObject::installServant(){
-    if(!servant){
-        servant=new Servant();
-        FKObject::servantInitialization();
-    }
-}
-
-void FKObject::resetServant(){
-    if(servant){
-        FKObject::servantDeinitialization();
-    }
-}
 
 void FKObject::logConstructor(){
     FK_CBEGIN
@@ -534,21 +483,6 @@ void FKObject::logDestructor(){
  */
 
 /*!
- * \fn void FKObject::customInitialization()
- * \brief Execute object's class-specific initialization. This function declared by FK_OBJECT macro and must be implemented fot every subclass.
- */
-
-/*!
- * \fn void FKObject::customDeinitialization()
- * \brief Execute object's class-specific deinitialization from destructor before servant deletion. This function declared by FK_OBJECT macro and must be implemented fot every subclass.
- */
-
-/*!
- * \fn void FKObject::totalInitialization()
- * \brief Calls customInitialization() for all type hierarchy. Used by client-side object creation system. Implemented in FK_OBJECT macro and shouldn't be used in code.
- */
-
-/*!
  * \brief Returns database from object manager for slow property read/write
  */
 
@@ -562,7 +496,95 @@ FKDBIndex FKObject::selfIndex()const{
     return lst;
 }
 
-FKSystemObject *FKObject::clone() const{
+void FKObject::executeEvent(const qint32 id, FKEventObject* ev){
+    bool inherited=false;
+    FKEventExecutorBase* event=_classInfo->events().value(id,nullptr);
+    if(!event){
+        event=_classInfo->inheritedEvents().value(id,nullptr);
+        inherited=true;
+    }
+    if(event){
+        if(!event->direction){
+            event->doEvent(this,ev);
+        }else{
+            const QMetaObject* metaObj=metaObject();
+            const QString parentClass("FKObject");
+            if(inherited){
+                do{
+                    metaObj=metaObj->superClass();
+                    event=findEvent(id,metaObj->className());
+                }while(!(event || metaObj->className()==parentClass));
+            }
+
+            QStringList superClasses;
+            while(metaObj->className()!=parentClass){
+                metaObj=metaObj->superClass();
+                superClasses.prepend(metaObj->className());
+            }
+            if(event->direction>0){
+                for(auto cl=superClasses.constBegin();cl!=superClasses.constEnd();++cl){
+                    FKEventExecutorBase* subEvent=findEvent(id,*cl);
+                    if(subEvent)subEvent->doEvent(this,ev);
+                }
+                event->doEvent(this,ev);
+            }else{
+                event->doEvent(this,ev);
+                QStringListIterator cl(superClasses);
+                cl.toBack();
+                while(cl.hasPrevious()){
+                    FKEventExecutorBase* subEvent=findEvent(id,cl.previous());
+                    if(subEvent)subEvent->doEvent(this,ev);
+                }
+            }
+        }
+    }
+}
+
+void FKObject::executeEvent(FKEventObject* ev){
+    executeEvent(ev->subject(),ev);
+}
+
+void FKObject::executeAction(FKEventObject* ev){
+    const qint32 id=ev->subject();
+    FKEventExecutorBase* action=_classInfo->actions().value(id,nullptr);
+    if(!action){
+        action=_classInfo->inheritedActions().value(id,nullptr);
+    }
+    if(action)action->doEvent(this,ev);
+}
+
+FKBaseProperty* FKObject::findProperty(const qint32 id)const{
+    FKBaseProperty* prop=_properties.value(id,0);
+    if(!prop){
+        FKPropertyCreatorBase* creator=_classInfo->commonProperties().value(id,nullptr);
+        if(!creator){
+            creator=_classInfo->customProperties().value(id,nullptr);
+            if(!creator){
+                creator=_classInfo->inheritedCommonProperties().value(id,nullptr);
+                if(!creator){
+                    creator=_classInfo->inheritedCustomProperties().value(id,nullptr);
+                }
+            }
+        }
+        if(creator){
+            prop=creator->create(const_cast<FKObject*>(this));
+            _properties.insert(id,prop);
+        }
+    }
+    return prop;
+}
+
+FKEventExecutorBase* FKObject::findEvent(const qint32 id,const QString& className)const{
+    FKObjectInfoBase* objectInfo=objectMetadata.getObjectInfo(className);
+    FKEventExecutorBase* executor=objectInfo->events().value(id,nullptr);
+    return executor;
+}
+
+void FKObject::installObjectInfo(){
+    _classInfo=objectMetadata.getObjectInfo(getClassName());
+}
+
+FKSystemObject* FKObject::clone() const{
     FK_MLOG("Warning! FKObject::clone() base implementation call. Seems it should be reimplemented")
     return 0;
 }
@@ -646,7 +668,7 @@ void FKObject::showMessage(const QString& msg, FKObject* reciever){
  * \brief This is overloaded function
  */
 
-void FKObject::doEvent(FKObject* target, const QString& subject, const QVariant& value, FKObject* reciever){
+void FKObject::doEvent(FKObject* target, const qint32 subject, const QVariant& value, FKObject* reciever){
     if(!target){
         FK_MLOGV("Unable request event for null object",subject)
         return;
@@ -659,7 +681,7 @@ void FKObject::doEvent(FKObject* target, const QString& subject, const QVariant&
  * \brief This is overloaded function
  */
 
-void FKObject::doEvent(FKObject* target, const QString& subject, FKObject* reciever){
+void FKObject::doEvent(FKObject* target, const qint32 subject, FKObject* reciever){
     doEvent(target,subject,QVariant(),reciever);
 }
 
@@ -667,12 +689,12 @@ void FKObject::doEvent(FKObject* target, const QString& subject, FKObject* recie
  * \brief  Server-side function. Sends \i subject event for \i target with \i value to \i reciever's visors. If no reciever provided, send to target's visors instead.
  */
 
-void FKObject::doEvent(const qint32 target, const QString& subject, const QVariant& value, FKObject* reciever){
+void FKObject::doEvent(const qint32 target, const qint32 subject, const QVariant& value, FKObject* reciever){
     if(!reciever)reciever=getObject(target);
     QList<qint32> recievers;
     foreach(FKObject* obj,reciever->sharedVisors())recievers.append(obj->getId());
     if(!recievers.isEmpty()){
-        FKEvent* event=FKEvent::makeEvent(target,subject,value,recievers,false);
+        FKEventObject* event=FKEventObject::makeEvent(target,subject,value,recievers,false);
         _om->internalEvent(event);
     }
 }
@@ -681,7 +703,7 @@ void FKObject::doEvent(const qint32 target, const QString& subject, const QVaria
  * \brief This is overloaded function
  */
 
-void FKObject::doEvent(const qint32 target, const QString& subject, FKObject* reciever){
+void FKObject::doEvent(const qint32 target, const qint32 subject, FKObject* reciever){
     doEvent(target,subject,QVariant(),reciever);
 }
 
@@ -689,8 +711,8 @@ void FKObject::doEvent(const qint32 target, const QString& subject, FKObject* re
  * \brief Client-side function. Sends \i subject action for \i target object with \i value by this object from manager's root.
  */
 
-void FKObject::doAction(const qint32 target, const QString& subject, const QVariant& value){
-    FKEvent* action=FKEvent::makeAction(target,subject,value,_om->clientId(),getId());
+void FKObject::doAction(const qint32 target, const qint32 subject, const QVariant& value){
+    FKEventObject* action=FKEventObject::makeAction(target,subject,value,_om->clientId(),getId());
     _om->internalAction(action);
 }
 
@@ -698,9 +720,9 @@ void FKObject::doAction(const qint32 target, const QString& subject, const QVari
  * \brief Server-side function. Marks given common ptoperty as changed, for future for update by applyUpdates()
  */
 
-void FKObject::updateCommon(const QString& propertyName){
+void FKObject::updateCommon(const qint32 propertyId){
     if(servant){
-        qint32 index=commonPropertyList().indexOf(propertyName);
+        qint32 index=commonPropertyList().indexOf(propertyId);
         if(index!=-1){
             servant->updateCommon[index]=true;
         }
@@ -711,29 +733,49 @@ void FKObject::updateCommon(const QString& propertyName){
  * \brief Server-side function. Marks given custom ptoperty as changed, for future for update by applyUpdates()
  */
 
-void FKObject::updateCustom(const QString& propertyName){
+void FKObject::updateCustom(const qint32 propertyId){
     if(servant){
-        qint32 index=customPropertyList().indexOf(propertyName);
+        qint32 index=customPropertyList().indexOf(propertyId);
         if(index!=-1){
             servant->updateCustom[index]=true;
         }
     }    
 }
 
-/*!
- * \fn qint32 commonPropertyCount()const
- * \brief Returns number of existing common properties
- */
+QVariant FKObject::getProperty(const qint32 id)const{
+    FKBaseProperty* prop=findProperty(id);
+    if(prop){
+        return prop->serverValue();
+    }
+    return QVariant();
+}
 
-/*!
- * \fn qint32 customPropertyCount()const
- * \brief Returns number of existing custom properties
- */
+QVariant FKObject::getValue(const qint32 id)const{
+    FKBaseProperty* prop=findProperty(id);
+    if(prop){
+        return prop->clientValue();
+    }
+    return QVariant();
+}
 
-/*!
- * \fn qint32 actionsCount()const
- * \brief Returns number of existing actions
- */
+void FKObject::setProperty(const qint32 id,const QVariant& value){
+    FKBaseProperty* prop=findProperty(id);
+    if(prop){
+        prop->serverValue(value);
+        if(commonPropertyList().contains(id)){
+            updateCommon(id);
+        }else{
+            updateCustom(id);
+        }
+    }
+}
+
+void FKObject::setValue(const qint32 id,const QVariant& value){
+    FKBaseProperty* prop=findProperty(id);
+    if(prop){
+        prop->clientValue(value);
+    }
+}
 
 /*!
  * \fn const QStringList eventList()const
@@ -755,17 +797,7 @@ void FKObject::updateCustom(const QString& propertyName){
  * \brief Returns list of existing custom properties
  */
 
-/*!
- * \fn void executeEvent(FKEvent* ev)
- * \brief This function created by FK_OBJECT macro for internal calls of events and shouldn't be used in code
- */
-
-/*!
- * \fn void executeAction(FKEvent* ac)
- * \brief This function created by FK_OBJECT macro for internal calls of actions and shouldn't be used in code
- */
-
-void FKObject::processFKAction(FKEvent* action){
+void FKObject::processFKAction(FKEventObject* action){
     if(servant){
         qint32 index=actionList().indexOf(action->subject());
         if(index!=-1){   //если распознано действие
@@ -802,10 +834,10 @@ void FKObject::processFKAction(FKEvent* action){
     }
 }
 
-void FKObject::processFKEvent(FKEvent* event){
+void FKObject::processFKEvent(FKEventObject* event){
     if(event->isPropertyNotifier()){
         if(commonPropertyList().contains(event->subject()) || customPropertyList().contains(event->subject())){
-            setProperty(event->subject().toLatin1(),event->value());
+            setValue(event->subject(),event->value());
         }else{
             FK_MLOGV("Object has no requested property",getClassName()+QString("::")+event->subject())
         }
@@ -818,7 +850,7 @@ void FKObject::processFKEvent(FKEvent* event){
     }
 }
 
-QSet<FKObject*> FKObject::customVisors(const QString &prop)const{
+QSet<FKObject*> FKObject::customVisors(const qint32 prop)const{
     QSet<FKObject*> v;
     qint32 index=customPropertyList().indexOf(prop);
     if(index!=-1){
@@ -885,24 +917,24 @@ void FKObject::addSharedVisors(QSet<FKObject*> newRecievers){
     }
 }
 
-void FKObject::refreshProperty(const QString& propertyName, const QSet<FKObject*>& recievers){
+void FKObject::refreshProperty(const qint32 propertyId, const QSet<FKObject*>& recievers){
     QList<qint32> recieversList;
     foreach(FKObject* r,recievers){
         recieversList.append(r->getId());
     }
-    FKEvent* event=FKEvent::makeEvent(getId(),propertyName,property(propertyName.toLatin1()),recieversList,true);
+    FKEventObject* event=FKEventObject::makeEvent(getId(),propertyId,getProperty(propertyId),recieversList,true);
     _om->internalEvent(event);
 }
 
 void FKObject::initVisibleProperties(FKObject* watcher, const QList<qint32>& recievers){
     initCommonProperties(recievers);
-    FKEvent* event;
-    QStringList props(customPropertyList());
+    FKEventObject* event;
+    QList<qint32> props(customPropertyList());
     auto u=servant->watchers[watcher].begin();
     auto p=props.constBegin();
     for(;p!=props.constEnd();++p, ++u){
         if(*u){
-            event=FKEvent::makeEvent(getId(),*p,property(p->toLatin1()),recievers,true);
+            event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
             _om->internalEvent(event);
         }
     }
@@ -910,10 +942,10 @@ void FKObject::initVisibleProperties(FKObject* watcher, const QList<qint32>& rec
 
 void FKObject::initCommonProperties(const QList<qint32>& recievers){
     _om->shareObject(this,recievers);
-    FKEvent* event;
-    QStringList props(commonPropertyList());
+    FKEventObject* event;
+    QList<qint32> props(commonPropertyList());
     for(auto p=props.constBegin();p!=props.constEnd();++p){
-        event=FKEvent::makeEvent(getId(),*p,property(p->toLatin1()),recievers,true);
+        event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
         _om->internalEvent(event);
     }
 }

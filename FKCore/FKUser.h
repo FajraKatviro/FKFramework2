@@ -10,7 +10,6 @@ public:
 
 private:
 
-    FK_OBJECT(FKUser,FKObject)
 };
 
 #endif // FKUSER_H

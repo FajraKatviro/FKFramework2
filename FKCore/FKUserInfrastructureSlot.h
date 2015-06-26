@@ -5,7 +5,7 @@
 
 class FKUserInfrastructureAlias;
 class FKConnector;
-class FKEvent;
+class FKEventObject;
 class FKServerConnectionManagerU;
 
 class FKUserInfrastructureSlot:public QObject{
@@ -22,11 +22,11 @@ public:
     void setUserConnector(FKConnector* connector);
 
     void sendMessage(const QString msg);
-    void sendEvent(FKEvent* event);
+    void sendEvent(FKEventObject* event);
     void sendData(const QByteArray& data);
-    void incomeAction(FKEvent* action);
+    void incomeAction(FKEventObject* action);
 signals:
-    void gotAction(FKEvent* action);
+    void gotAction(FKEventObject* action);
 private:
     const qint32 _id;
     const QString _password;

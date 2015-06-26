@@ -16,7 +16,7 @@ SOURCES += \
     FKSystemObject.cpp \
     FKMessage.cpp \
     FKBasicEvent.cpp \
-    FKEvent.cpp \
+    FKEventObject.cpp \
     FKObject.cpp \
     FKFSDB.cpp \
     FKConsoleInterface.cpp \
@@ -61,7 +61,7 @@ HEADERS += \
     FKFactory.h \
     FKMessage.h \
     FKBasicEvent.h \
-    FKEvent.h \
+    FKEventObject.h \
     FKObject.h \
     FKFSDB.h \
     FKConsoleInterface.h \
@@ -93,9 +93,11 @@ HEADERS += \
     FKServerConnectionManager.h \
     FKUsersStructure.h \
     FKUser.h \
-    FKObjectPool.h
+    FKObjectPool.h \
+    FKService.h
 
 include(../FKFramework.pri)
+include(fkservice/FKCore_service.pri)
 
 RESOURCES += \
     FKCore.qrc

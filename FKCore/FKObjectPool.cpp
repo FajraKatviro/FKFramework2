@@ -26,6 +26,7 @@ void FKObjectPool::add(FKObject* obj){
     if(pool.size()<_poolSize){
         pool.append(obj);
     }else{
+        obj->executeEvent(FKIdentifiers::deleteServant);
         obj->deleteLater();
     }
 }

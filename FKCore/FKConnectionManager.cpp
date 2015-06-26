@@ -3,7 +3,7 @@
 #include "FKConnector.h"
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
-#include "FKEvent.h"
+#include "FKEventObject.h"
 
 #include "FKPacker.h"
 #include "FKLogger.h"
@@ -71,7 +71,7 @@ void FKConnectionManager::sendMessage(const QString& message){
  * \brief Send given event object
  */
 
-void FKConnectionManager::sendEvent(FKEvent* event){
+void FKConnectionManager::sendEvent(FKEventObject* event){
     _connector->sendMessage(FKPacker::event,event);
 }
 
@@ -132,7 +132,7 @@ void FKConnectionManager::processMsg(const QString msgType, FKSystemObject* msg)
             return;
         }
     }else if(msgType==FKPacker::event){
-        FKEvent* event=qobject_cast<FKEvent*>(msg);
+        FKEventObject* event=qobject_cast<FKEventObject*>(msg);
         if(event){
             processEvent(event);
             return;
@@ -177,7 +177,7 @@ void FKConnectionManager::processBasicEvent(FKBasicEvent* ev){
  * \brief Income event handler. Ev never becomes null, but can be invalid.
  */
 
-void FKConnectionManager::processEvent(FKEvent* ev){
+void FKConnectionManager::processEvent(FKEventObject* ev){
     FK_MLOGV("Unhandled event",ev->subject())
     ev->deleteLater();
 }
