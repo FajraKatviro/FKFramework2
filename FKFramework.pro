@@ -1,16 +1,30 @@
+CONFIG += fkrooms
+CONFIG += fkapp
+CONFIG += fktools
+
 TEMPLATE = subdirs
 
 SUBDIRS += \
     FKCore \
-\#    FKMultimedia \
-\#    FKNetwork \
-    FKLudo \
-    FKRooms\FKChatRoom
+#    FKMultimedia \
+#    FKNetwork
 
 HEADERS+= \
-    FKTools/FKLogger.h \
-    FKTools/FKOSType.h \
-    FKTools/FKPostOperations.h \
-    FKTools/FKCommands.h \
-    FKTools/FKBasicEventSubjects.h \
-    FKTools/FKAusviceIdentifiers.h
+    FKUtility/FKLogger.h \
+    FKUtility/FKOSType.h \
+    FKUtility/FKPostOperations.h \
+    FKUtility/FKCommands.h \
+    FKUtility/FKBasicEventSubjects.h \
+    FKUtility/FKAusviceIdentifiers.h
+
+CONFIG(fkrooms){
+    SUBDIRS += FKRooms
+}
+
+CONFIG(fkapp){
+    SUBDIRS += FKLudo
+}
+
+CONFIG(fktools){
+    SUBDIRS += FKTools
+}
