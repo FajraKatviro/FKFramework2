@@ -126,6 +126,8 @@ void FKRealmConnectionManagerC::processBasicEvent(FKBasicEvent* ev){
         realm()->customServerRequested(_id,value);
     }else if(subject==FKBasicEventSubject::createRoom){
         realm()->createRoomRequested(_id,value);
+    }else if(subject==FKBasicEventSubject::rejectCustomServer){
+        realm()->customServerRejected(_id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from client to realm",subject)
         realm()->stopClientConnection(_id);

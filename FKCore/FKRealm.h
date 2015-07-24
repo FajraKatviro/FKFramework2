@@ -47,6 +47,7 @@ public:
     void selectUser(const QString& clientId, const QVariant& userName);
     void deselectUser(const QString& clientId, const QVariant& userName);
     void customServerRequested(const QString& clientId, const QVariant& data);
+    void customServerRejected(const QString& clientId, const QVariant& data);
     void createRoomRequested(const QString& clientId, const QVariant& data);
     void enterRoomRequested(const QString& clientId, const QVariant& data);
     void createRoomRespond(const qint32 serverId, const QVariant& data);

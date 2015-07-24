@@ -10,6 +10,7 @@
 #include <QVariant>
 #include <QSet>
 #include <QVector>
+#include <QReadWriteLock>
 
 class FKObjectManager;
 class FKDataBase;
@@ -37,10 +38,12 @@ public:
     FK_OBJECT_REGISTRATOR(Service)
     template<class D>
     static void allowService(){
+        QWriteLocker lock(&objectMetadataLocker);
         objectMetadata.addClass<D>();
     }
     template<class D>
     static void forbidService(){
+        QWriteLocker lock(&objectMetadataLocker);
         objectMetadata.removeClass<D>();
     }
 
@@ -154,6 +157,7 @@ private:
     FKObjectManager* _om;
     static FKFactory<FKObject> _factory;
     static FKObjectMetadata objectMetadata;
+    static QReadWriteLock objectMetadataLocker;
     FKObjectInfoBase* _classInfo;
     mutable QMap<qint32,FKBaseProperty*> _properties;
 

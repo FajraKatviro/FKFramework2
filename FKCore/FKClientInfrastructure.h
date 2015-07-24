@@ -28,6 +28,7 @@ public:
     bool requestUserDeauthorization(const QString& name);
     void requestRoomList(/*filters*/);
     void requestCustomServer();
+    void rejectCustomServerRequest();
     void requestCreateRoom(const QString& roomName, const QString& roomType);
     //void requestEnterRoom(const qint32 id);
     //void requestExitRoom();

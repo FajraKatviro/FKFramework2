@@ -9,11 +9,11 @@ ConsoleUserInterfaceLayer{
         id: app
         userInterface: ui
 
-        onRealmStarted: startServer()
-        onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
+       // onRealmStarted: startServer()
+       // onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
     }
 
     Component.onCompleted:{
-            app.startRealm()
+         //   app.startRealm()
     }
 }

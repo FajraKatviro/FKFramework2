@@ -212,6 +212,15 @@ void FKClientInfrastructure::requestCustomServer(){
     }
 }
 
+void FKClientInfrastructure::rejectCustomServerRequest(){
+    if(_logged){
+        FKBasicEvent ev(FKBasicEventSubject::rejectCustomServer);
+        _realmConnection->sendBasicEvent(&ev);
+    }else{
+        emit messageRequested(QString(tr("Warning! Unable reject custom server request")));
+    }
+}
+
 void FKClientInfrastructure::refreshUserList(const QVariant& value){
     QStringList lst(value.toStringList());
     foreach(QString u,_users.keys())lst.removeOne(u);

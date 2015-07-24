@@ -20,6 +20,7 @@ namespace FKBasicEventSubject{
     const QString selectUser=QStringLiteral("su"); //add existing user to active list
     const QString deselectUser=QStringLiteral("dsu"); //remove existing user from active list
     const QString customServer=QStringLiteral("cus"); //create server for client's custom room
+    const QString rejectCustomServer=QStringLiteral("rcs"); //client reply if unable start custom server by realm request
 }
 
 #endif // FKBASICEVENTSUBJECTS_H

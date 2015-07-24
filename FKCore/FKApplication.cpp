@@ -4,6 +4,7 @@
 #include "FKBasicEvent.h"
 #include "FKEventObject.h"
 #include "FKObject.h"
+#include "FKRoom.h"
 
 #include "FKLogger.h"
 
@@ -66,6 +67,7 @@ void FKApplication::prepare(){
     FKSystemObject::allowConstructing<FKEventObject>();
 //install common FKObjects factory
     FKObject::allowService<FKObject>();
+    FKObject::allowService<FKRoom>();
 //    FKObject::allowCreation<FKUser>();
 //    FKObject::allowCreation<FKActor>();
 //    FKObject::allowCreation<FKWatchingGroup>();

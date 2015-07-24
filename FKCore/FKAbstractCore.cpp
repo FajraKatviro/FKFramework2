@@ -324,6 +324,7 @@ void FKAbstractCore::createCustomServer(const qint32 id, const QString password)
         _customServerPassword=password;
         startServer(customServerPort(),clientInfrastructure()->realmPort(),clientInfrastructure()->realmIP());
     }else{
+        _infr->rejectCustomServerRequest();
         emit messageRequested(error);
     }
 }

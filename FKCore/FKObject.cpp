@@ -38,6 +38,7 @@
 
 FKFactory<FKObject> FKObject::_factory;
 FKObjectMetadata FKObject::objectMetadata;
+QReadWriteLock FKObject::objectMetadataLocker;
 
 struct FKObject::Servant{
     Servant():active(true){}
@@ -509,6 +510,7 @@ void FKObject::executeEvent(const qint32 id, FKEventObject* ev){
         }else{
             const QMetaObject* metaObj=metaObject();
             const QString parentClass("FKObject");
+            QReadLocker lock(&objectMetadataLocker);
             if(inherited){
                 do{
                     metaObj=metaObj->superClass();
@@ -581,6 +583,7 @@ FKEventExecutorBase* FKObject::findEvent(const qint32 id,const QString& classNam
 }
 
 void FKObject::installObjectInfo(){
+    QReadLocker lock(&objectMetadataLocker);
     _classInfo=objectMetadata.getObjectInfo(getClassName());
 }
 

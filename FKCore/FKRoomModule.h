@@ -2,6 +2,7 @@
 #define FKROOMMODULE_H
 
 #include <QObject>
+#include <QMutex>
 #include <QPluginLoader>
 
 class FKRoomLoader;
@@ -29,6 +30,8 @@ private:
     QPluginLoader _loader;
     FKRoomLoader* _room;
     FKPackageManager* _packageManager;
+    static QMutex listMutex;
+    static QMap<QString,qint32> loadedModules;
 };
 
 #endif // FKROOMMODULE_H

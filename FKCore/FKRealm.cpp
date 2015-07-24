@@ -511,6 +511,10 @@ void FKRealm::customServerRequested(const QString& clientId, const QVariant& dat
     mgr->sendBasicEvent(&ev);
 }
 
+void FKRealm::customServerRejected(const QString& clientId, const QVariant& data){
+    todoNow;
+}
+
 /*!
  * \brief Proccess clients request to start new room
  */
