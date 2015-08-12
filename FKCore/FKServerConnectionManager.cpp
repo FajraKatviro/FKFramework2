@@ -109,6 +109,8 @@ void FKServerConnectionManagerR::processBasicEvent(FKBasicEvent* ev){
         _server->submitLoginRealm(value);
     }else if(subject==FKBasicEventSubject::registerRoomType){
         _server->registerRoomTypeRespond(value);
+    }else if(subject==FKBasicEventSubject::removeRoomType){
+        _server->removeRoomTypeRespond(value);
     }else if(subject==FKBasicEventSubject::createRoom){
         _server->createRoomRequested(value);
     }else if(subject==FKBasicEventSubject::joinRoom){

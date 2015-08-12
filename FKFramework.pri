@@ -13,6 +13,8 @@ CONFIG(debug, debug|release):{
     DEPENDPATH += $$PWD/build/fkbin
 }
 
+DEFINES += FK_NO_TODO
+
 win32{
     CONFIG(release, debug|release){
         DLLDESTDIR = $$PWD/release/bin_win

@@ -5,11 +5,14 @@
 
 #include <QObject>
 
+class FKCommandResolver;
+
 class FKCORESHARED_EXPORT FKUserInterface:public QObject{
     Q_OBJECT
 public:
     FKUserInterface(QObject* parent);
     ~FKUserInterface();
+    virtual void installCommandsResolver(FKCommandResolver* resolver);
 public slots:
     virtual void showMessage(const QString& m)=0;
     virtual void show()=0;
@@ -20,23 +23,25 @@ signals:
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
     void createClientRequested(const QString clientName,const QString password);
-    void createRoomRequested(const QString roomName,const QString roomType);
+    void deleteClientRequested(const QString clientName);
+    void createRoomRequested(const QString roomName,const QString roomType, const QStringList users);
     void createRoomRequestedRealm(const QString roomName,const QString roomType);
     void createServerRequested(const QString password);
-    void createCustomServerRequested();
+    void deleteServerRequested(const qint32 serverId);
+    //void createCustomServerRequested();
     void clientLoginRequested(const QString clientName,const QString password);
     void serverLoginRequested(const qint32 serverId,const QString password);
     void createUserRequested(const QString userName);
     void deleteUserRequested(const QString userName);
-    void selectUserRequested(const QString userName);
-    void deselectUserRequested(const QString userName);
     void registerRoomTypeRequested(const QString roomType);
     void registerServerRoomTypeRequested(const QString roomType);
+    void removeRoomTypeRequested(const QString roomType);
+    void removeServerRoomTypeRequested(const QString roomType);
+    void clientUsersRequested();
+    void realmUsersRequested();
 protected:
     void requestCreateUser(const QString& arg);
     void requestDeleteUser(const QString& arg);
-    void requestSelectUser(const QString& arg);
-    void requestDeselectUser(const QString& arg);
 };
 
 #endif

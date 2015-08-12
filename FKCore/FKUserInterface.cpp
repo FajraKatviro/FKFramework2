@@ -1,5 +1,7 @@
 #include "FKUserInterface.h"
 
+#include "FKCommandResolver.h"
+
 #include "FKLogger.h"
 
 /*!
@@ -25,6 +27,28 @@ FKUserInterface::~FKUserInterface(){
     FK_DEND
 }
 
+void FKUserInterface::installCommandsResolver(FKCommandResolver* resolver){
+    connect(resolver,&FKCommandResolver::message,this,&FKUserInterface::showMessage);
+    connect(resolver,&FKCommandResolver::quitApplicationRequested,this,&FKUserInterface::quitApplicationRequested);
+    connect(resolver,&FKCommandResolver::startRealmRequested,this,&FKUserInterface::startRealmRequested);
+    connect(resolver,&FKCommandResolver::startClientInfrastructureRequested,this,&FKUserInterface::startClientInfrastructureRequested);
+    connect(resolver,&FKCommandResolver::startServerInfrastructureRequested,this,&FKUserInterface::startServerInfrastructureRequested);
+    connect(resolver,&FKCommandResolver::clientUsersRequested,this,&FKUserInterface::clientUsersRequested);
+    connect(resolver,&FKCommandResolver::realmUsersRequested,this,&FKUserInterface::realmUsersRequested);
+    connect(resolver,&FKCommandResolver::clientLoginRequested,this,&FKUserInterface::clientLoginRequested);
+    connect(resolver,&FKCommandResolver::serverLoginRequested,this,&FKUserInterface::serverLoginRequested);
+    connect(resolver,&FKCommandResolver::createClientRequested,this,&FKUserInterface::createClientRequested);
+    connect(resolver,&FKCommandResolver::deleteClientRequested,this,&FKUserInterface::deleteClientRequested);
+    connect(resolver,&FKCommandResolver::createServerRequested,this,&FKUserInterface::createServerRequested);
+    connect(resolver,&FKCommandResolver::deleteServerRequested,this,&FKUserInterface::deleteServerRequested);
+    connect(resolver,&FKCommandResolver::createRoomRequestedRealm,this,&FKUserInterface::createRoomRequestedRealm);
+    connect(resolver,&FKCommandResolver::createRoomRequested,this,&FKUserInterface::createRoomRequested);
+    connect(resolver,&FKCommandResolver::registerServerRoomTypeRequested,this,&FKUserInterface::registerServerRoomTypeRequested);
+    connect(resolver,&FKCommandResolver::registerRoomTypeRequested,this,&FKUserInterface::registerRoomTypeRequested);
+    connect(resolver,&FKCommandResolver::removeServerRoomTypeRequested,this,&FKUserInterface::removeServerRoomTypeRequested);
+    connect(resolver,&FKCommandResolver::removeRoomTypeRequested,this,&FKUserInterface::removeRoomTypeRequested);
+}
+
 /*!
  * \brief Check arg is valid and send createUserRequested signal
  */
@@ -48,24 +72,6 @@ void FKUserInterface::requestDeleteUser(const QString& arg){
         emit deleteUserRequested(userName);
     }else{
         showMessage(QString(tr("Unable request user deletion: invalid user name")));
-    }
-}
-
-void FKUserInterface::requestSelectUser(const QString& arg){
-    auto userName=arg.trimmed();
-    if(!userName.isEmpty()){
-        emit selectUserRequested(userName);
-    }else{
-        showMessage(QString(tr("Unable request user selection: invalid user name")));
-    }
-}
-
-void FKUserInterface::requestDeselectUser(const QString& arg){
-    auto userName=arg.trimmed();
-    if(!userName.isEmpty()){
-        emit deselectUserRequested(userName);
-    }else{
-        showMessage(QString(tr("Unable request user unselection: invalid user name")));
     }
 }
 

@@ -13,26 +13,10 @@ class FKCORESHARED_EXPORT FKConsoleInterface : public FKUserInterface{
 public:
     FKConsoleInterface(QObject* parent=0);
     ~FKConsoleInterface();
-signals:
-    void clientUsersRequested();
-    void realmUsersRequested();
 public slots:
     void show();
     void showMessage(const QString& m);
-private slots:
-    void processInput(QString input);
 private:
-    QString welcomeString()const;
-    void printHelp();
-    static bool isCommand(QString& arg, const QString& command);
-    static bool hasKey(QString& arg, const QString& key);
-    void showUsers(QString& arg);
-    void loginClient(const QString& arg);
-    void loginServer(const QString& arg);
-    void createClient(const QString& arg);
-    void createServer(QString arg);
-    void createRoom(QString arg);
-    void registerRoomType(QString arg);
     QThread _consoleReaderThread;
     FKConsoleReader* _consoleReader;
 };

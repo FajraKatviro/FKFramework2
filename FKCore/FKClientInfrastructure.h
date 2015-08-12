@@ -24,23 +24,17 @@ public:
 
     bool requestUserCreation(const QString& name);
     bool requestUserDeletion(const QString& name);
-    bool requestUserAuthorization(const QString& name);
-    bool requestUserDeauthorization(const QString& name);
     void requestRoomList(/*filters*/);
-    void requestCustomServer();
-    void rejectCustomServerRequest();
-    void requestCreateRoom(const QString& roomName, const QString& roomType);
+    void requestCreateRoom(const QString& roomName, const QString& roomType, const QStringList& users, const bool custom);
     //void requestEnterRoom(const qint32 id);
     //void requestExitRoom();
 
     void refreshUserList(const QVariant& value);
     void respondUserCreation(const QVariant& value);
     void respondUserDeletion(const QVariant& value);
-    void respondUserAuthorization(const QVariant& value);
-    void respondUserDeauthorization(const QVariant& value);
     void respondRoomList(const QVariant& value);
-    void respondCreateRoom(const QVariant& value);
     void respondEnterRoom(const QVariant& value);
+    void respondCreateRoom(const QVariant& value);
     //void respondExitRoom(const QVariant& value);
     void respondCustomServer(const QVariant& value);
 

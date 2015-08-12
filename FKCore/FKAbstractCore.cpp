@@ -102,33 +102,6 @@ bool FKAbstractCore::deleteUserRecord(const QString& name){
 }
 
 /*!
- * \fn bool FKAbstractCore::startUser(const QString& name)
- * \brief Validates user at realm side and creates user object. If clientInfrastructure does not exists, returns false
- */
-
-bool FKAbstractCore::startUser(const QString &name){
-    if(clientInfrastructure()){
-        return clientInfrastructure()->requestUserAuthorization(name);
-    }else{
-        emit messageRequested(QString(tr("Unable start user: no client infrastructure")));
-        return false;
-    }
-}
-
-/*!
- * \brief Try stop selected user. Returns false if client infrastructure does not exists
- */
-
-bool FKAbstractCore::stopUser(const QString& name){
-    if(clientInfrastructure()){
-        return clientInfrastructure()->requestUserDeauthorization(name);
-    }else{
-        emit messageRequested(QString(tr("Unable stop user: no client infrastructure")));
-        return false;
-    }
-}
-
-/*!
  * \fn bool FKAbstractCore::createRoom(const QMap<QString,QVariant>& roomData)
  * \brief Request at realm side room creation and join it. Creation occures at server side
  */
@@ -250,9 +223,9 @@ void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
     connect(infr,SIGNAL(disconnectedFromRealm()),SIGNAL(clientDisconnectedFromRealm()));
     connect(infr,SIGNAL(loggedIn()),SIGNAL(clientLoggedIn()));
     connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-    connect(infr,SIGNAL(userPoolChanged()),SIGNAL(userPoolChanged()));
-    connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
-    connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
+    //connect(infr,SIGNAL(userPoolChanged()),SIGNAL(userPoolChanged()));
+    //connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
+    //connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
 }
 
 /*!
@@ -311,23 +284,23 @@ void FKAbstractCore::waitingForAnswerChanged(FKInfrastructureType t){
     }
 }
 
-void FKAbstractCore::createCustomServer(const qint32 id, const QString password){
-    QString error;
-    if(server()){
-        error=QString(tr("Unable create custom server: server already exists"));
-    }else if(_customServerId>0 || !_customServerPassword.isEmpty()){
-        error=QString(tr("Unable create custom server: current server data is not empty"));
-    }
+//void FKAbstractCore::createCustomServer(const qint32 id, const QString password){
+//    QString error;
+//    if(server()){
+//        error=QString(tr("Unable create custom server: server already exists"));
+//    }else if(_customServerId>0 || !_customServerPassword.isEmpty()){
+//        error=QString(tr("Unable create custom server: current server data is not empty"));
+//    }
 
-    if(error.isEmpty()){
-        _customServerId=id;
-        _customServerPassword=password;
-        startServer(customServerPort(),clientInfrastructure()->realmPort(),clientInfrastructure()->realmIP());
-    }else{
-        _infr->rejectCustomServerRequest();
-        emit messageRequested(error);
-    }
-}
+//    if(error.isEmpty()){
+//        _customServerId=id;
+//        _customServerPassword=password;
+//        startServer(customServerPort(),clientInfrastructure()->realmPort(),clientInfrastructure()->realmIP());
+//    }else{
+//        _infr->rejectCustomServerRequest();
+//        emit messageRequested(error);
+//    }
+//}
 
 void FKAbstractCore::serverConnectedToRealmSlot(){
     emit serverConnectedToRealm();
@@ -338,16 +311,16 @@ void FKAbstractCore::serverConnectedToRealmSlot(){
 
 void FKAbstractCore::serverDisconnectedFromRealmSlot(){
     emit serverDisconnectedFromRealm();
-    _customServerId=-1;
-    _customServerPassword.clear();
+//    _customServerId=-1;
+//    _customServerPassword.clear();
 }
 
 void FKAbstractCore::serverLoggedInSlot(){
     emit serverLoggedIn();
-    if(_customServerId>0){
-        clientInfrastructure()->setCustomServerId(_customServerId);
-        emit customServerReady(_customServerId);
-    }
+//    if(_customServerId>0){
+//        clientInfrastructure()->setCustomServerId(_customServerId);
+//        emit customServerReady(_customServerId);
+//    }
 }
 
 qint32 FKAbstractCore::customServerPort() const{
@@ -390,19 +363,11 @@ bool FKAbstractCore::waitingForServerAnswer() const{
 }
 
 /*!
- * \brief Returns list of currently avaliable not selected users for current client infrastructure
- */
-
-QStringList FKAbstractCore::getUserPool() const{
-    return _infr ? _infr->userPool() : QStringList();
-}
-
-/*!
  * \brief Returns list of currently selected users for current client infrastructure
  */
 
-QStringList FKAbstractCore::getUserList() const{
-    return _infr ? _infr->activeUsers() : QStringList();
+QStringList FKAbstractCore::userList() const{
+    return _infr ? _infr->userPool() : QStringList();
 }
 
 /*!
@@ -425,6 +390,14 @@ void FKAbstractCore::createClientRecord(const QString clientName, const QString 
     }
 }
 
+void FKAbstractCore::deleteClientRecord(const QString clientName){
+    if(_realm){
+        _realm->deleteClientRecord(clientName);
+    }else{
+        emit messageRequested(QString(tr("Unable delete client record: no realm infrastructure")));
+    }
+}
+
 /*!
  * \brief Try create new server record for started realm
  */
@@ -434,6 +407,14 @@ void FKAbstractCore::createServerRecord(const QString password){
         _realm->createServerRecord(password);
     }else{
         emit messageRequested(QString(tr("Unable create server record: no realm infrastructure")));
+    }
+}
+
+void FKAbstractCore::deleteServerRecord(const qint32 serverId){
+    if(_realm){
+        _realm->deleteServerRecord(serverId);
+    }else{
+        emit messageRequested(QString(tr("Unable delete server record: no realm infrastructure")));
     }
 }
 
@@ -453,15 +434,33 @@ void FKAbstractCore::registerServerRoomType(const QString roomType){
     }
 }
 
+void FKAbstractCore::removeRoomType(const QString roomType){
+    if(_realm){
+        _realm->removeRoomType(roomType);
+    }else{
+        emit messageRequested(QString(tr("Unable remove room type: no realm infrastructure")));
+    }
+}
+
+void FKAbstractCore::removeServerRoomType(const QString roomType){
+    if(_server){
+        _server->removeRoomTypeRequest(roomType);
+    }else{
+        emit messageRequested(QString(tr("Unable remove room type: no server infrastructure")));
+    }
+}
+
 /*!
  * \brief Try create request to realm to create custom room at self-side
  */
 
-void FKAbstractCore::createRoomRequest(const QString roomName, const QString roomType){
+void FKAbstractCore::createRoomRequest(const QString roomName, const QString roomType, const QStringList users){
     if(!clientInfrastructure()){
         emit messageRequested(QString(tr("Unable create room: no client infrastructure started")));
+//    }else if(server()){
+//        emit messageRequested(QString(tr("Unable create room: server infrastructure started")));
     }else{
-        clientInfrastructure()->requestCreateRoom(roomName,roomType);
+        clientInfrastructure()->requestCreateRoom(roomName,roomType,users,false);
     }
 }
 

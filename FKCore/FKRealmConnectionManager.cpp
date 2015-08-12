@@ -113,21 +113,13 @@ void FKRealmConnectionManagerC::processBasicEvent(FKBasicEvent* ev){
     const QVariant value=ev->value();
     ev->deleteLater();
     if(subject==FKBasicEventSubject::roomList){
-        realm()->refreshRoomList(_id,value);
+        todo;//realm()->refreshRoomList(_id,value);
     }else if(subject==FKBasicEventSubject::createUser){
         realm()->createUser(_id,value);
     }else if(subject==FKBasicEventSubject::deleteUser){
         realm()->deleteUser(_id,value);
-    }else if(subject==FKBasicEventSubject::selectUser){
-        realm()->selectUser(_id,value);
-    }else if(subject==FKBasicEventSubject::deselectUser){
-        realm()->deselectUser(_id,value);
-    }else if(subject==FKBasicEventSubject::customServer){
-        realm()->customServerRequested(_id,value);
     }else if(subject==FKBasicEventSubject::createRoom){
         realm()->createRoomRequested(_id,value);
-    }else if(subject==FKBasicEventSubject::rejectCustomServer){
-        realm()->customServerRejected(_id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from client to realm",subject)
         realm()->stopClientConnection(_id);
@@ -187,17 +179,13 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
     const QVariant value=ev->value();
     ev->deleteLater();
     if(subject==FKBasicEventSubject::roomData){
-        realm()->refreshRoomData(_id,value);
-    }else if(subject==FKBasicEventSubject::createRoom){
-        realm()->createRoomRespond(_id,value);
+        todo;//realm()->refreshRoomData(_id,value);
     }else if(subject==FKBasicEventSubject::registerRoomType){
         realm()->registerServerRoomType(_id,value);
-    }else if(subject==FKBasicEventSubject::startRoom){
-        realm()->roomStarted(_id,value);
+    }else if(subject==FKBasicEventSubject::removeRoomType){
+        realm()->removeServerRoomType(_id,value);
     }else if(subject==FKBasicEventSubject::stopRoom){
-        realm()->roomStopped(_id,value);
-    }else if(subject==FKBasicEventSubject::joinRoom){
-        realm()->enterRoomRespond(_id,value);
+        todo;//realm()->roomStopped(_id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from server to realm",subject)
         realm()->stopServerConnection(_id);

@@ -69,6 +69,13 @@ QVariant FKRoomData::toVariant() const{
     return data;
 }
 
+QVariant FKRoomData::toCreationRequest() const{
+    QMap<QString,QVariant> data;
+    data.insert(identifiers.roomType,_roomType);
+    data.insert(identifiers.owner,_owner);
+    return data;
+}
+
 QVariant FKRoomData::createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange){
     QMap<QString,QVariant> data;
     if(maxUsersChange)data[identifiers.maximumUsers]=maxUsersChange;
@@ -110,19 +117,25 @@ void FKRoomData::changeUsers(const qint32 userCount){
 
 const FKRoomCreateData::Identifiers FKRoomCreateData::identifiers;
 
-FKRoomCreateData::FKRoomCreateData(const QString& id, const QString& roomType):_id(id),_roomType(roomType){}
+FKRoomCreateData::FKRoomCreateData(const QString& id, const QString& roomType, const QStringList& users, const bool custom):
+    _id(id),_roomType(roomType),_users(users),_custom(custom){}
 
 FKRoomCreateData::FKRoomCreateData(const QVariant& data){
     auto map=data.toMap();
     _id=map.value(identifiers.roomName).toString();
     _roomType=map.value(identifiers.roomType).toString();
+    _users=map.value(identifiers.users).toStringList();
+    _custom=map.value(identifiers.custom).toBool();
 }
 
-FKRoomCreateData::FKRoomCreateData(const FKRoomCreateData& other):_id(other._id),_roomType(other._roomType){}
+FKRoomCreateData::FKRoomCreateData(const FKRoomCreateData& other):
+    _id(other._id),_roomType(other._roomType),_users(other._users),_custom(other._custom){}
 
 QVariant FKRoomCreateData::toVariant() const{
     QMap<QString,QVariant> map;
     map[identifiers.roomName]=_id;
     map[identifiers.roomType]=_roomType;
+    map[identifiers.users]=_users;
+    if(_custom)map[identifiers.custom]=true;
     return map;
 }

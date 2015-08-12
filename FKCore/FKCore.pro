@@ -46,7 +46,8 @@ SOURCES += \
     FKServerConnectionManager.cpp \
     FKUsersStructure.cpp \
     FKUser.cpp \
-    FKObjectPool.cpp
+    FKObjectPool.cpp \
+    FKCommandResolver.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -94,7 +95,8 @@ HEADERS += \
     FKUsersStructure.h \
     FKUser.h \
     FKObjectPool.h \
-    FKService.h
+    FKService.h \
+    FKCommandResolver.h
 
 include(../FKFramework.pri)
 include(fkservice/FKCore_service.pri)

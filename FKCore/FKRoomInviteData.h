@@ -12,16 +12,17 @@ class QVariant;
 class FKRoomInviteData{
 public:
     FKRoomInviteData();
-    FKRoomInviteData(const QString& client);
+    //FKRoomInviteData(const QString& client);
     FKRoomInviteData(const QString& client,const qint32 port);
     FKRoomInviteData(const QVariant& data);
     FKRoomInviteData(const FKRoomInviteData& other);
     ~FKRoomInviteData();
 
-    bool addUser(const QString& user);
+    //bool addUser(const QString& user);
     bool addUser(const QString& user,const QString& password);
 
-    QVariant toVariant()const;
+    QVariant toClientInvite()const;
+    QVariant toServerInvite()const;
     bool isValid()const;
     QString client()const;
     QStringList users()const;

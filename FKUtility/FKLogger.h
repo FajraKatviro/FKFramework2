@@ -102,4 +102,8 @@ public:
 
 #endif
 
+#ifndef FK_NO_TODO
+#define todo
+#endif
+
 #endif

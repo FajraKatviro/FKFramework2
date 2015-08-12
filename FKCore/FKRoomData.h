@@ -16,6 +16,7 @@ public:
     FKRoomData& operator=(const FKRoomData& other);
     bool isValid()const;
     QVariant toVariant()const;
+    QVariant toCreationRequest()const;
     static QVariant createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange);
     void change(const QVariant& delta);
     bool fit(const FKRoomDataFilter& filter)const;
@@ -60,21 +61,27 @@ private:
     } identifiers;
 };
 
-class FKRoomCreateData{
+class FKRoomCreateData{ //this class used for client->realm requests
 public:
-    FKRoomCreateData(const QString& id,const QString& roomType);
+    FKRoomCreateData(const QString& id,const QString& roomType,const QStringList& users, const bool custom);
     FKRoomCreateData(const QVariant& data);
     FKRoomCreateData(const FKRoomCreateData& other);
     QVariant toVariant()const;
     QString roomId()const{return _id;}
     QString roomType()const{return _roomType;}
+    QStringList users()const{return _users;}
+    bool custom()const{return _custom;}
 private:
     QString _id;
     QString _roomType;
+    QStringList _users;
+    bool _custom;
     static const struct Identifiers{
-        Identifiers():roomType("rt"),roomName("rn"){}
+        Identifiers():roomType("rt"),roomName("rn"),users("us"),custom("cu"){}
         const QString roomType;
         const QString roomName;
+        const QString users;
+        const QString custom;
     } identifiers;
 };
 

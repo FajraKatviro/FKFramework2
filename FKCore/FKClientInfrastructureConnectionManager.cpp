@@ -35,14 +35,8 @@ void FKClientInfrastructureConnectionManager::processBasicEvent(FKBasicEvent* ev
         _infr->respondUserCreation(value);
     }else if(subject==FKBasicEventSubject::deleteUser){
         _infr->respondUserDeletion(value);
-    }else if(subject==FKBasicEventSubject::selectUser){
-        _infr->respondUserAuthorization(value);
-    }else if(subject==FKBasicEventSubject::deselectUser){
-        _infr->respondUserDeauthorization(value);
     }else if(subject==FKBasicEventSubject::roomList){
         _infr->respondRoomList(value);
-    }else if(subject==FKBasicEventSubject::customServer){
-        _infr->respondCustomServer(value);
     }else if(subject==FKBasicEventSubject::createRoom){
         _infr->respondCreateRoom(value);
     }else if(subject==FKBasicEventSubject::joinRoom){

@@ -33,6 +33,7 @@ void FKClientInfrastructure::dropInfrastructure(){
     for(auto i=_users.begin();i!=_users.end();++i){
         //i.value()->dropUser();
         //i.value()->deleteLater();
+        todo;
     }
     _users.clear();
     _realmConnection->dropConnection();
@@ -90,6 +91,10 @@ bool FKClientInfrastructure::requestUserCreation(const QString& name){
         emit messageRequested(QString(tr("Unable create user: infrastructure is not logged on realm")));
         return false;
     }
+    if(userPool().contains(name)){
+        emit messageRequested(QString(tr("Unable create user: already exists")));
+        return false;
+    }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createUser)){
         emit messageRequested(QString(tr("Unable create user: another request in progress")));
         return false;
@@ -108,55 +113,15 @@ bool FKClientInfrastructure::requestUserDeletion(const QString& name){
         emit messageRequested(QString(tr("Unable delete user: infrastructure is not logged on realm")));
         return false;
     }
+    if(!userPool().contains(name)){
+        emit messageRequested(QString(tr("Unable delete user: not exists")));
+        return false;
+    }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deleteUser)){
         emit messageRequested(QString(tr("Unable delete user: another request in progress")));
         return false;
     }
     FKBasicEvent ev(FKBasicEventSubject::deleteUser,name);
-    _realmConnection->sendBasicEvent(&ev);
-    return true;
-}
-
-bool FKClientInfrastructure::requestUserAuthorization(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable select user: name is empty")));
-        return false;
-    }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable select user: infrastructure is not logged on realm")));
-        return false;
-    }
-    if(!_userPool.contains(name)){
-        emit messageRequested(QString(tr("Unable select user: no such name in user pool")));
-        return false;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::selectUser)){
-        emit messageRequested(QString(tr("Unable select user: another request in progress")));
-        return false;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::selectUser,name);
-    _realmConnection->sendBasicEvent(&ev);
-    return true;
-}
-
-bool FKClientInfrastructure::requestUserDeauthorization(const QString& name){
-    if(name.isEmpty()){
-        emit messageRequested(QString(tr("Unable deselect user: name is empty")));
-        return false;
-    }
-    if(!_logged){
-        emit messageRequested(QString(tr("Unable deselect user: infrastructure is not logged on realm")));
-        return false;
-    }
-    if(!activeUsers().contains(name)){
-        emit messageRequested(QString(tr("Unable deselect user: no such user selected")));
-        return false;
-    }
-    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
-        emit messageRequested(QString(tr("Unable deselect user: another request in progress")));
-        return false;
-    }
-    FKBasicEvent ev(FKBasicEventSubject::deselectUser,name);
     _realmConnection->sendBasicEvent(&ev);
     return true;
 }
@@ -175,55 +140,38 @@ void FKClientInfrastructure::requestRoomList(/*filters*/){
     _realmConnection->sendBasicEvent(&ev);
 }
 
-void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QString& roomType){
+void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QString& roomType, const QStringList& userList,const bool custom){
     QString error;
+    bool check=true;
     if(roomName.isEmpty()){
         error=QString(tr("Unable create room: name is empty"));
+        check=false;
     }else if(roomType.isEmpty()){
         error=QString(tr("Unable create room: roomType is empty"));
+        check=false;
+    }else if(userList.isEmpty()){
+        error=QString(tr("Unable create room: user list is empty"));
+        check=false;
     }else if(!_logged){
         error=QString(tr("Unable create room: client infrastructure is not logged"));
-    }else if(_users.isEmpty()){
-        error=QString(tr("Unable create room: no users selected"));
-    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
+        check=false;
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
         error=QString(tr("Unable create room: another request in progress"));
+        check=false;
     }
 
-    if(error.isEmpty()){
-        FKRoomCreateData data(roomName,roomType);
+    if(check){
+        FKRoomCreateData data(roomName,roomType,userList,custom);
         FKBasicEvent ev(FKBasicEventSubject::createRoom,data.toVariant());
         _realmConnection->sendBasicEvent(&ev);
     }else{
         emit messageRequested(error);
     }
 }
-void FKClientInfrastructure::requestCustomServer(){
-    QString error;
-    if(!_logged){
-        error=QString(tr("Unable create custom server: client infrastructure is not logged"));
-    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
-        error=QString(tr("Unable create custom room: another request in progress"));
-    }
-    if(error.isEmpty()){
-        FKBasicEvent ev(FKBasicEventSubject::customServer);
-        _realmConnection->sendBasicEvent(&ev);
-    }else{
-        emit messageRequested(error);
-    }
-}
-
-void FKClientInfrastructure::rejectCustomServerRequest(){
-    if(_logged){
-        FKBasicEvent ev(FKBasicEventSubject::rejectCustomServer);
-        _realmConnection->sendBasicEvent(&ev);
-    }else{
-        emit messageRequested(QString(tr("Warning! Unable reject custom server request")));
-    }
-}
 
 void FKClientInfrastructure::refreshUserList(const QVariant& value){
     QStringList lst(value.toStringList());
-    foreach(QString u,_users.keys())lst.removeOne(u);
+    //foreach(QString u,_users.keys())lst.removeOne(u);
     _userPool=lst;
     emit userPoolChanged();
 }
@@ -250,40 +198,6 @@ void FKClientInfrastructure::respondUserDeletion(const QVariant& value){
     }
 }
 
-void FKClientInfrastructure::respondUserAuthorization(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::selectUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserAuthorization()")
-    }
-    if(!name.isEmpty()){
-        _userPool.removeOne(name);
-        FK_MLOGV("Unable create user: feature incomplete",name)
-        //_users.insert(name,new FKUserInfrastructure(this));
-        //todo();//setup user
-        emit userPoolChanged();
-        emit activeUsersChanged();
-        //emit message("done");
-    }
-}
-
-void FKClientInfrastructure::respondUserDeauthorization(const QVariant& value){
-    const QString name=value.toString();
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::deselectUser)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondUserDeauthorization()")
-    }
-    if(!name.isEmpty()){
-        _userPool.append(name);
-        FKUserInfrastructure* user=_users.take(name);
-        FK_MLOGV("Unable deselect user: feature incomplete",name)
-        //user->dropInfrastructure();
-        //user->deleteLater();
-        //todo
-        emit userPoolChanged();
-        emit activeUsersChanged();
-        //emit message("done");
-    }
-}
-
 void FKClientInfrastructure::respondRoomList(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::roomList)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondRoomList()")
@@ -293,16 +207,11 @@ void FKClientInfrastructure::respondRoomList(const QVariant& value){
 }
 
 void FKClientInfrastructure::respondCreateRoom(const QVariant& value){
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
+    Q_UNUSED(value)
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCreateRoom()")
     }
-    if(value==QVariant(true)){
-        if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
-            FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondRoomList() on success")
-        }
-    }else{
-        emit messageRequested(QString(tr("Fail create room")));
-    }
+    emit messageRequested(QString(tr("Fail create room")));
 }
 
 void FKClientInfrastructure::respondEnterRoom(const QVariant& value){

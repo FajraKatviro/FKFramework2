@@ -9,20 +9,21 @@ UserInterface{
     onStartClientInfrastructureRequested: core.startClientInfrastructure()
     onCreateUserRequested: core.createUserRecord(userName)
     onDeleteUserRequested: core.deleteUserRecord(userName)
-    onSelectUserRequested: core.startUser(userName)
-    onDeselectUserRequested: core.stopUser(userName)
-    onClientUsersRequested: {showMessage(core.userPool); showMessage(core.userList)}
+    onClientUsersRequested: showMessage(core.userList())
     onRealmUsersRequested: showMessage(core.realmUserList())
     onClientLoginRequested: core.ausviseClientInfrastructure(clientName,password)
     onServerLoginRequested: core.ausviseServerInfrastructure(serverId,password)
     onCreateClientRequested: core.createClientRecord(clientName,password)
+    onDeleteClientRequested: core.deleteClientRecord(clientName)
     onCreateServerRequested: core.createServerRecord(password)
+    onDeleteServerRequested: core.deleteServerRecord(serverId)
     onStartServerInfrastructureRequested: core.startServer()
     onRegisterRoomTypeRequested: core.registerRoomType(roomType)
     onRegisterServerRoomTypeRequested: core.registerServerRoomType(roomType)
-    onCreateRoomRequested: core.createRoomRequest(roomName,roomType)
+    onRemoveRoomTypeRequested: core.removeRoomType(roomType)
+    onRemoveServerRoomTypeRequested: core.removeServerRoomType(roomType)
+    onCreateRoomRequested: core.createRoomRequest(roomName,roomType,users)
     onCreateRoomRequestedRealm: core.createRoomRequestRealm(roomName,roomType)
-    onCreateCustomServerRequested: core.createCustomServerRequest()
 
 
     Component.onCompleted:{

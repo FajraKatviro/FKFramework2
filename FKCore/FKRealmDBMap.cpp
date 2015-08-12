@@ -6,30 +6,13 @@ FKDBIndex FKRealmDBMap::serversIndex()const{
     return _servers.path();
 }
 
+FKDBIndex FKRealmDBMap::lastServerIndex() const{
+    return _lastServer.path();
+}
+
 FKDBIndex FKRealmDBMap::serverIndex(const qint32 serverId) const{
     bindServer(serverId);
     return _servers.instance.path();
-}
-
-FKDBIndex FKRealmDBMap::serverRoomIndex(const qint32 serverId) const{
-    bindServer(serverId);
-    return _servers.instance.room.path();
-}
-
-FKDBIndex FKRealmDBMap::serverRoomClientsIndex(const qint32 serverId) const{
-    bindServer(serverId);
-    return _servers.instance.roomClients.path();
-}
-
-FKDBIndex FKRealmDBMap::serverRoomClientIndex(const qint32 serverId, const QString& clientId) const{
-    bindServer(serverId);
-    _servers.instance.roomClients.instance.bindNode(clientId);
-    return _servers.instance.roomClients.instance.path();
-}
-
-FKDBIndex FKRealmDBMap::serverRoomStartedIndex(const qint32 serverId) const{
-    bindServer(serverId);
-    return _servers.instance.roomStarted.path();
 }
 
 FKDBIndex FKRealmDBMap::serverOwnerIndex(const qint32 serverId) const{
@@ -57,14 +40,9 @@ FKDBIndex FKRealmDBMap::clientIndex(const QString& clientId) const{
     return _clients.instance.path();
 }
 
-FKDBIndex FKRealmDBMap::clientRoomIndex(const QString& clientId)const{
+FKDBIndex FKRealmDBMap::clientLastServerIndex(const QString& clientId) const{
     bindClient(clientId);
-    return _clients.instance.currentRoom.path();
-}
-
-FKDBIndex FKRealmDBMap::clientRoomStateIndex(const QString& clientId) const{
-    bindClient(clientId);
-    return _clients.instance.roomState.path();
+    return _clients.instance.lastServer.path();
 }
 
 FKDBIndex FKRealmDBMap::clientCustomServerIndex(const QString& clientId) const{
@@ -81,6 +59,17 @@ FKDBIndex FKRealmDBMap::clientUserIndex(const QString& clientId, const QString& 
     bindClient(clientId);
     _clients.instance.users.instance.bindNode(userId);
     return _clients.instance.users.instance.path();
+}
+
+FKDBIndex FKRealmDBMap::clientLastUsersIndex(const QString& clientId) const{
+    bindClient(clientId);
+    return _clients.instance.lastUsers.path();
+}
+
+FKDBIndex FKRealmDBMap::clientLastUserIndex(const QString& clientId, const QString& userId) const{
+    bindClient(clientId);
+    _clients.instance.lastUsers.instance.bindNode(userId);
+    return _clients.instance.lastUsers.instance.path();
 }
 
 FKDBIndex FKRealmDBMap::usersIndex()const{

@@ -33,6 +33,9 @@ public:
     void registerRoomTypeRequest(const QString& roomType);
     void registerRoomTypeRespond(const QVariant& value);
 
+    void removeRoomTypeRequest(const QString& roomType);
+    void removeRoomTypeRespond(const QVariant& value);
+
     void createRoomRequested(const QVariant& data);
 
     void clientInvited(const QVariant& data);
@@ -59,7 +62,6 @@ private:
     bool checkRealm();
     bool hasRoom()const;
     bool createRoom(const FKRoomData& roomData);
-    static QString createUserInvitePassword();
     bool checkInviteData(const FKRoomInviteData& data);
     virtual FKDataBase* createRoomDatabase();
     bool _logged;

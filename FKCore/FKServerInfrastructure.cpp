@@ -102,8 +102,7 @@ void FKServerInfrastructure::registerRoomTypeRequest(const QString& roomType){
     _realmConnection->sendBasicEvent(&request);
 }
 
-void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value)
-{
+void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
         FK_MLOG("Unexpected behavior in FKServerInfrastructure::registerRoomTypeRespond()")
     }
@@ -114,22 +113,59 @@ void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value)
     }
 }
 
+void FKServerInfrastructure::removeRoomTypeRequest(const QString& roomType){
+    if(roomType.isEmpty()){
+        emit messageRequested(QString(tr("Unable remove empty room type")));
+        return;
+    }
+    if(!_logged){
+        emit messageRequested(QString(tr("Unable remove room type: server is not not logged in")));
+        return;
+    }
+    if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::removeRoomType)){
+        emit messageRequested(QString(tr("Unable remove room type: another request in progress")));
+        return;
+    }
+    FKBasicEvent request(FKBasicEventSubject::removeRoomType,roomType);
+    _realmConnection->sendBasicEvent(&request);
+}
+
+void FKServerInfrastructure::removeRoomTypeRespond(const QVariant& value){
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::removeRoomType)){
+        FK_MLOG("Unexpected behavior in FKServerInfrastructure::removeRoomTypeRespond()")
+    }
+    if(value.toBool()){
+        emit messageRequested(QString(tr("Room type removed")));
+    }else{
+        emit messageRequested(QString(tr("Room type not removed")));
+    }
+}
+
 void FKServerInfrastructure::createRoomRequested(const QVariant& data){
+    QString msg;
     bool answer;
     if(hasRoom()){
-        FK_MLOG("Create room request recieved, but room does exists")
+        msg=QString(tr("Create room request recieved, but room does exists"));
         answer=false;
     }else{
         const FKRoomData roomData(data);
         answer=roomData.isValid();
         if(!answer){
-            FK_MLOG("Invalid create room request recieved")
+            msg=QString(tr("Invalid create room request recieved"));
         }else{
             answer=createRoom(roomData);
+            if(answer){
+                mgr=QString(tr("Failed create room of type %1")).arg(roomData.roomType());
+            }else{
+                mgr=QString(tr("Created room of type %1")).arg(roomData.roomType());
+            }
         }
     }
-    FKBasicEvent ev(FKBasicEventSubject::createRoom,answer);
-    _realmConnection->sendBasicEvent(&ev);
+    emit messageRequested(msg);
+    if(!answer){
+        FKBasicEvent ev(FKBasicEventSubject::stopRoom);
+        _realmConnection->sendBasicEvent(&ev);
+    }
 }
 
 void FKServerInfrastructure::clientInvited(const QVariant& data){
@@ -261,9 +297,7 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
     return answer;
 }
 
-QString FKServerInfrastructure::createUserInvitePassword(){
-    return createRandomString(8,10);
-}
+
 
 FKDataBase* FKServerInfrastructure::createRoomDatabase(){
     FKDataBase* db=new FKFSDB(this);

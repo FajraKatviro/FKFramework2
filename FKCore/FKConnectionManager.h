@@ -24,6 +24,7 @@ public:
     void sendBasicEvent(FKBasicEvent* event);
     void dropConnection();
     QString address()const;
+    virtual qint32 guestPort()const{return 3232;}
 signals:
     void connectionStatusChanged();
 private slots:
