@@ -18,6 +18,10 @@ FKEventObject::~FKEventObject(){
     FK_DEND
 }
 
+void FKEventObject::setRecievers(const QList<qint32>& recievers){
+    _recievers=recievers;
+}
+
 /*!
  * \fn qint32 FKEventObject::object()const
  * \brief Returns target object's id
@@ -127,7 +131,8 @@ bool FKEventObject::packObject(QDataStream &stream)const{
             _value<<
             _client<<
             _emitter<<
-            _isPropertyNotifier;
+            _isPropertyNotifier<<
+            _recievers;
     return true;
 }
 
@@ -137,7 +142,8 @@ bool FKEventObject::loadObject(QDataStream &stream){
             _value>>
             _client>>
             _emitter>>
-            _isPropertyNotifier;
+            _isPropertyNotifier>>
+            _recievers;
     return true;
 }
 

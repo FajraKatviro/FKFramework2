@@ -5,14 +5,13 @@
 #include "FKRoomLoader.h"
 #include "FKRoom.h"
 
-
-#define FK_ROOM_MODULE(RoomClass,Version,PackageManagerClass,UsedObjects...) \
+#define FK_ROOM_MODULE(RoomClass,PackageManagerClass,UsedObjects...) \
 class RoomClass ## Loader:public QObject,public FKRoomLoader{\
     Q_OBJECT\
     Q_PLUGIN_METADATA(IID FKRoomLoader_IID)\
     Q_INTERFACES(FKRoomLoader)\
 public:\
-    virtual QString version()const override{return #Version;}\
+    virtual FKVersionList version()const override{return RoomClass::version();}\
     virtual QString className()const override{return #RoomClass;}\
     virtual void registerObjects()const override{FKObject::allowConstructing<RoomClass,##UsedObjects>();}\
     virtual void unregisterObjects()const override{FKObject::forbidConstructing<RoomClass,##UsedObjects>();}\

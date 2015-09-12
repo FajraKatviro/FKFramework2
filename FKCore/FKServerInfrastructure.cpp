@@ -39,7 +39,7 @@ void FKServerInfrastructure::dropInfrastructure(){
     for(auto i=_guests.begin();i!=_guests.end();++i){
 //        i.value()->dropUser();
 //        i.value()->deleteLater();
-        //todo
+        todo;
     }
     _guests.clear();
     for(auto i=_clients.begin();i!=_clients.end();++i){
@@ -172,7 +172,8 @@ void FKServerInfrastructure::clientInvited(const QVariant& data){
     FKRoomInviteData invite(data);
     QVariant ret;
     if(_room->addUsers(invite)){
-        FKRoomInviteData answer(invite.client(),userPort());
+        //FKRoomInviteData answer(invite.client(),userPort());
+        todo; //delayed creation and id send, check reconnection on userConnection, create user object
         FKUserInfrastructureAlias* userAlias=new FKUserInfrastructureAlias(invite.client());
         _clients.insert(invite.client(),userAlias);
         foreach(QString u,invite.users()){

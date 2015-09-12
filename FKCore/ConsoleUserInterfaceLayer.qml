@@ -2,7 +2,7 @@ import QtQml 2.0
 import FKApp 1.0
 
 UserInterface{
-    default property Core core
+    property Core core
 
     onQuitApplicationRequested: core.quitApplication()
     onStartRealmRequested: core.startRealm()

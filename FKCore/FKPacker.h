@@ -13,6 +13,7 @@ namespace FKPacker{
     const QString basicEvent("be");
     const QString message("mg");
     const QString guestEvent("ge");
+    const QString updateData("ud");
 }
 
 #endif // FKPACKER_H

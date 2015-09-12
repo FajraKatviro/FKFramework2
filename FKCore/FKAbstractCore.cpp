@@ -7,6 +7,7 @@
 #include "FKServerInfrastructure.h"
 #include "FKClientInfrastructure.h"
 #include "FKFSDB.h"
+#include "FKVersionList.h"
 
 #include "FKPostOperations.h"
 #include "FKOSType.h"
@@ -22,8 +23,9 @@
  */
 
 FKAbstractCore::FKAbstractCore(QObject* parent):QObject(parent),
-        _realm(0),_server(0),_infr(0),_customServerId(-1){
-    FK_CBEGIN
+        _realm(0),_server(0),_infr(0){
+    FK_CBEGIN        
+    qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
     FK_CEND
 }
 
@@ -163,26 +165,26 @@ void FKAbstractCore::addPostExecutionCommand(const QString& command){
  * \brief Constructs application files list object for application versionalizing
  */
 
-FKFilesList FKAbstractCore::buildApplicationFilesList()const{
-    FKFilesList lst;
-    QDir dir(qApp->applicationDirPath());
-    dir.cdUp();
-//    lst.add(QFileInfo(dir.canonicalPath()),FK_OS_COMMON);
-    QMap<qint8,QString> platforms;
-    platforms.insert(FKOSType::nix,FKOSDir::nix);
-    platforms.insert(FKOSType::ard,FKOSDir::ard);
-    platforms.insert(FKOSType::mac,FKOSDir::mac);
-    platforms.insert(FKOSType::ios,FKOSDir::ios);
-    platforms.insert(FKOSType::win,FKOSDir::win);
-    platforms.insert(FKOSType::common,QStringLiteral("qml"));
-    for(auto i=platforms.constBegin();i!=platforms.constEnd();++i){
-        if(dir.cd(i.value())){
-            lst.addRecursive(QFileInfo(dir.canonicalPath()),i.key());
-            dir.cdUp();
-        }
-    }
-    return lst;
-}
+//FKFilesList FKAbstractCore::buildApplicationFilesList()const{
+//    FKFilesList lst;
+//    QDir dir(qApp->applicationDirPath());
+//    dir.cdUp();
+// //    lst.add(QFileInfo(dir.canonicalPath()),FK_OS_COMMON);
+//    QMap<qint8,QString> platforms;
+//    platforms.insert(FKOSType::nix,FKOSDir::nix);
+//    platforms.insert(FKOSType::ard,FKOSDir::ard);
+//    platforms.insert(FKOSType::mac,FKOSDir::mac);
+//    platforms.insert(FKOSType::ios,FKOSDir::ios);
+//    platforms.insert(FKOSType::win,FKOSDir::win);
+//    platforms.insert(FKOSType::common,QStringLiteral("qml"));
+//    for(auto i=platforms.constBegin();i!=platforms.constEnd();++i){
+//        if(dir.cd(i.value())){
+//            lst.addRecursive(QFileInfo(dir.canonicalPath()),i.key());
+//            dir.cdUp();
+//        }
+//    }
+//    return lst;
+//}
 
 /*!
  * \brief Assign started by this core realm infrastructure
@@ -222,10 +224,14 @@ void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
     connect(infr,SIGNAL(connectedToRealm()),SIGNAL(clientConnectedToRealm()));
     connect(infr,SIGNAL(disconnectedFromRealm()),SIGNAL(clientDisconnectedFromRealm()));
     connect(infr,SIGNAL(loggedIn()),SIGNAL(clientLoggedIn()));
+    connect(infr,SIGNAL(connectedToServer()),SIGNAL(clientConnectedToServer()));
+    connect(infr,SIGNAL(disconnectedFromServer()),SIGNAL(clientDisconnectedFromServer()));
+    connect(infr,SIGNAL(loggedInServer()),SIGNAL(clientLoggedInServer()));
     connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
     //connect(infr,SIGNAL(userPoolChanged()),SIGNAL(userPoolChanged()));
     //connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
     //connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
+    connect(infr,SIGNAL(connectToServerRequest(QString,qint32)),SLOT(connectClientToServer(QString,qint32)));
 }
 
 /*!
@@ -304,9 +310,6 @@ void FKAbstractCore::waitingForAnswerChanged(FKInfrastructureType t){
 
 void FKAbstractCore::serverConnectedToRealmSlot(){
     emit serverConnectedToRealm();
-    if(_customServerId>0){
-        ausviseServerInfrastructure(_customServerId,_customServerPassword);
-    }
 }
 
 void FKAbstractCore::serverDisconnectedFromRealmSlot(){
@@ -320,11 +323,12 @@ void FKAbstractCore::serverLoggedInSlot(){
 //    if(_customServerId>0){
 //        clientInfrastructure()->setCustomServerId(_customServerId);
 //        emit customServerReady(_customServerId);
-//    }
+    //    }
 }
 
-qint32 FKAbstractCore::customServerPort() const{
-    return 0;
+void FKAbstractCore::connectClientToServer(const QString address, const qint32 port){
+    Q_UNUSED(address)
+    Q_UNUSED(port)
 }
 
 QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){
@@ -341,10 +345,10 @@ QDir& FKAbstractCore::changeDir(QDir& dir, const QString& name){
  * \brief Restart application and run post-execution script
  */
 
-void FKAbstractCore::restartApplication(){
-    addPostExecutionCommand(FKPostOperations::restartApplication);
-    qApp->quit();
-}
+//void FKAbstractCore::restartApplication(){
+//    addPostExecutionCommand(FKPostOperations::restartApplication);
+//    qApp->quit();
+//}
 
 /*!
  * \brief Returns true if core is waiting for realm's answer
@@ -474,6 +478,10 @@ void FKAbstractCore::createRoomRequestRealm(const QString roomName, const QStrin
     }else{
         realm()->createRoomRealmRequest(roomName,roomType);
     }
+}
+
+QString FKAbstractCore::uiSource() const{
+    return QString();
 }
 
 void FKAbstractCore::createCustomServerRequest(){

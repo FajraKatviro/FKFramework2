@@ -18,6 +18,9 @@ public:
     qint32 client()const{return _client;}
     qint32 emitter()const{return _emitter;}
     bool isPropertyNotifier()const{return _isPropertyNotifier;}
+
+    void setRecievers(const QList<qint32>& recievers);
+
     static FKMessage* eventError(FKEventObject* errorSource, const QString& reason);
     static FKEventObject* makeAction(const qint32 object,const qint32 subject,const QVariant& value,const qint32 client,const qint32 emitter);
     static FKEventObject* makeEvent(const qint32 object,const qint32 subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);

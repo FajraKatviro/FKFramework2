@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QPluginLoader>
 
+class FKVersionList;
 class FKRoomLoader;
 class FKPackageObject;
 typedef QSharedPointer<FKPackageObject> FKPackage;
@@ -17,7 +18,7 @@ public:
     ~FKRoomModule();
     bool load();
 
-    QString version()const;
+    FKVersionList version()const;
     QString roomClass()const;
 
     FKPackage getPackage(const QString& package);

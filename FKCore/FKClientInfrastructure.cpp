@@ -3,6 +3,7 @@
 #include "FKConnectionManager.h"
 #include "FKClientInfrastructureConnectionManager.h"
 #include "FKBasicEvent.h"
+#include "FKRoomModule.h"
 
 #include "FKAusviceData.h"
 #include "FKRoomInviteData.h"
@@ -11,7 +12,7 @@
 #include "FKLogger.h"
 
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_customServerId(-1){
+        FKInfrastructure(parent),_logged(false),_realmConnection(0),_serverConnection(0),_customServerId(-1){
     FK_CBEGIN
     FK_CEND
 }
@@ -31,14 +32,13 @@ bool FKClientInfrastructure::isConnectedToRealm(){
 
 void FKClientInfrastructure::dropInfrastructure(){
     for(auto i=_users.begin();i!=_users.end();++i){
-        //i.value()->dropUser();
-        //i.value()->deleteLater();
-        todo;
+        i.value()->dropUser();
+        i.value()->deleteLater();
     }
     _users.clear();
     _realmConnection->dropConnection();
     _realmConnection->deleteLater();
-    _realmConnection=0;
+    _realmConnection=nullptr;
     _logged=false;
     cancelAnswer(FKInfrastructureType::Realm);
 }
@@ -64,6 +64,8 @@ void FKClientInfrastructure::requestLoginRealm(const QString& id, const QString&
         return;
     }
 
+    _clientId=id;
+
     FKAusviceData data(id,password);
     FKBasicEvent ev(FKBasicEventSubject::login,data.toVariant());
     _realmConnection->sendGuestEvent(&ev);
@@ -79,6 +81,22 @@ void FKClientInfrastructure::submitLoginRealm(const QVariant& value){
         emit loggedIn();
     }else{
         emit messageRequested(QString(tr("Realm declined login command")));
+    }
+}
+
+void FKClientInfrastructure::submitLoginServer(const QVariant& value){
+    if(!submitAnswer(FKInfrastructureType::Server,FKBasicEventSubject::login)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::submitLoginServer()")
+    }
+    QList<QVariant> users=value.toList();
+    if(!users.isEmpty()){
+        _serverLogged=true;
+        for(auto u=users.constBegin();u!=users.constEnd();++u){
+            startUser((*u).toInt());
+        }
+        emit loggedInServer();
+    }else{
+        emit messageRequested(QString(tr("Server declined login command")));
     }
 }
 
@@ -171,7 +189,6 @@ void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QS
 
 void FKClientInfrastructure::refreshUserList(const QVariant& value){
     QStringList lst(value.toStringList());
-    //foreach(QString u,_users.keys())lst.removeOne(u);
     _userPool=lst;
     emit userPoolChanged();
 }
@@ -211,6 +228,7 @@ void FKClientInfrastructure::respondCreateRoom(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCreateRoom()")
     }
+
     emit messageRequested(QString(tr("Fail create room")));
 }
 
@@ -219,11 +237,27 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondEnterRoom()")
     }
     FKRoomInviteData invite(value);
+    bool success=false;
     if(invite.isValid()){
-        //joinServer(invite.passwords(),invite.address(),invite.port());
-        //todo
+        if(!_roomModule){
+            _roomModule=new FKRoomModule(invite.roomType(),this);
+            if(_roomModule->load()){
+                success=true;
+            }else{
+                emit messageRequested(QString(tr("Unable load room module %1. Use chat room instead")).arg(invite.roomType()));
+                _roomModule->deleteLater();
+                _roomModule=nullptr;
+            }
+        }else{
+            emit messageRequested(QString(tr("Unable load room module: another one is loaded")));
+        }
     }else{
-        emit messageRequested(QString(tr("Fail enter room")));
+        emit messageRequested(QString(tr("Fail enter room: invalid invite data")));
+    }
+
+    if(success){
+        _dynamicPassword=invite.password();
+        emit connectToServerRequest(invite.address(),invite.port());
     }
 }
 
@@ -254,12 +288,20 @@ void FKClientInfrastructure::respondCustomServer(const QVariant& value){
     }
 }
 
+void FKClientInfrastructure::incomeVersionData(const QVariant& value){
+    todo;
+}
+
 QStringList FKClientInfrastructure::userPool() const{
     return _userPool;
 }
 
 QStringList FKClientInfrastructure::activeUsers() const{
     return _users.keys();
+}
+
+QList<QSharedPointer<FKUpdateChannel> > FKClientInfrastructure::updates() const{
+    return _updates.channels;
 }
 
 void FKClientInfrastructure::messageFromRealm(const QString& msg){
@@ -286,17 +328,69 @@ void FKClientInfrastructure::realmConnection(FKConnector* connector){
     }
 }
 
+void FKClientInfrastructure::serverConnection(FKConnector* connector){
+    _serverConnection=new FKClientInfrastructureConnectionManagerS(this,connector,this);
+    connect(_serverConnection,SIGNAL(connectionStatusChanged()),SLOT(serverConnectorStatusChanged()));
+    if(!requestAnswer(FKInfrastructureType::Server,FKBasicEventSubject::connect)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::serverConnection()")
+    }
+}
+
 void FKClientInfrastructure::connectorStatusChanged(){
     if(_realmConnection->isActive()){
         emit connectedToRealm();
         if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
             FK_MLOG("Unexpected behaivour in FKClientInfrastructure::connectorStatusChanged()")
         }
+        requestLoginServer();
     }else{
         _logged=false;
         emit disconnectedFromRealm();
         cancelAnswer(FKInfrastructureType::Realm);
     }
+}
+
+void FKClientInfrastructure::serverConnectorStatusChanged(){
+    if(_serverConnection->isActive()){
+        emit connectedToServer();
+        if(!submitAnswer(FKInfrastructureType::Server,FKBasicEventSubject::connect)){
+            FK_MLOG("Unexpected behaivour in FKClientInfrastructure::serverConnectorStatusChanged()")
+        }
+    }else{
+        _serverLogged=false;
+        emit disconnectedFromServer();
+        cancelAnswer(FKInfrastructureType::Server);
+    }
+}
+
+void FKClientInfrastructure::requestLoginServer(){
+    if(!requestAnswer(FKInfrastructureType::Server,FKBasicEventSubject::login)){
+        emit messageRequested(QString(tr("Unable login: another request in progress")));
+        return;
+    }
+
+    FKAusviceData data(_clientId,_dynamicPassword);
+    FKBasicEvent ev(FKBasicEventSubject::login,data.toVariant());
+    _serverConnection->sendGuestEvent(&ev);
+}
+
+void FKClientInfrastructure::startUser(const qint32 objectId){
+    if(objectId==0){
+        emit messageRequested(QString(tr("Unable start user infrastructure: object id not recognized")));
+        return;
+    }
+    if(_users.contains(objectId)){
+        emit messageRequested(QString(tr("Unable start user infrastructure %1: already started")).arg(QString::number(objectId)));
+        return;
+    }
+    FKUserInfrastructure* infr=new FKUserInfrastructure(this);
+    _users.insert(objectId,infr);
+
+    connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+    //FKDataBase* db=new FKFSDB(_server);
+    //db->setPath(serverDatabasePath());
+    //_server->setDataBase(db);
+    emit messageRequested(QString(tr("User infrastructure started")));
 }
 
 /*!

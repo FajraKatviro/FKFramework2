@@ -3,6 +3,7 @@
 
 #include "FKObject.h"
 
+class FKVersionList;
 class FKRoomData;
 class FKRoomInviteData;
 
@@ -21,6 +22,7 @@ class FKCORESHARED_EXPORT FKRoom:public FKObject{
     Q_OBJECT
     Q_PROPERTY(qint32 o_usersSize READ ro_usersSize WRITE wo_usersSize)
 public:
+    static FKVersionList version();
     virtual void setup(const FKRoomData& data);
     bool addUsers(const FKRoomInviteData& data);
     qint32 usersSize()const;

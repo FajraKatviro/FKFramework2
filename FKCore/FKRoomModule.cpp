@@ -30,7 +30,7 @@ bool FKRoomModule::load(){
     return _loaded;
 }
 
-QString FKRoomModule::version() const{
+FKVersionList FKRoomModule::version() const{
     return _room->version();
 }
 

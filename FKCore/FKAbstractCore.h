@@ -12,12 +12,14 @@
 class FKRealm;
 class FKServerInfrastructure;
 class FKClientInfrastructure;
+class FKUserInfrastructure;
 enum class FKInfrastructureType:qint8;
 
 class FKCORESHARED_EXPORT FKAbstractCore:public QObject{
     Q_OBJECT
     Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
     Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
+    Q_PROPERTY(QString uiSource READ uiSource NOTIFY uiSourceChanged)
 public:
     FKAbstractCore(QObject* parent=0);
     ~FKAbstractCore();
@@ -27,12 +29,16 @@ signals:
     void clientConnectedToRealm();
     void clientDisconnectedFromRealm();
     void clientLoggedIn();
+    void clientConnectedToServer();
+    void clientDisconnectedFromServer();
+    void clientLoggedInServer();
     void serverConnectedToRealm();
     void serverDisconnectedFromRealm();
     void serverLoggedIn();
     void waitingForRealmAnswerChanged();
     void waitingForServerAnswerChanged();
     void realmStarted();
+    void uiSourceChanged();
 public slots:
     virtual bool startRealm(const int port=0)=0;
     virtual bool startServer(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
@@ -69,6 +75,7 @@ public slots:
     void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);
     void createRoomRequestRealm(const QString roomName, const QString roomType);
     //void createCustomServerRequest();
+    QString uiSource()const;
 protected:
     //void addPostExecutionCommand(const QString& command);
     //virtual FKFilesList buildApplicationFilesList()const;
@@ -88,6 +95,8 @@ private slots:
     void serverConnectedToRealmSlot();
     void serverDisconnectedFromRealmSlot();
     void serverLoggedInSlot();
+
+    virtual void connectClientToServer(const QString address,const qint32 port);
 private:
     //FKFilesList _appFilesList;
 

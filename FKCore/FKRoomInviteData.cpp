@@ -9,8 +9,8 @@ const FKRoomInviteData::Identifiers FKRoomInviteData::identifiers;
 
 FKRoomInviteData::FKRoomInviteData():_port(-1),_isValid(false){}
 
-FKRoomInviteData::FKRoomInviteData(const QString& client, const qint32 port):
-    _client(client),_port(port),_isValid(false){}
+FKRoomInviteData::FKRoomInviteData(const QString& client, const QString& password):
+    _client(client),_password(password),_isValid(false){}
 
 FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true){
     QMap<QString,QVariant> dataMap=data.toMap();
@@ -20,14 +20,20 @@ FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true
         _client=i.value().toString();
     }
 
+    i=dataMap.constFind(identifiers.roomType);
+    if(i!=dataMap.constEnd()){
+        _roomType=i.value().toString();
+    }
+
     i=dataMap.constFind(identifiers.users);
     if(i!=dataMap.constEnd()){
         userList=i.value().toStringList();
     }
 
-    i=dataMap.constFind(identifiers.passwords);
+    i=dataMap.constFind(identifiers.password);
     if(i!=dataMap.constEnd()){
-        passwordList=i.value().toStringList();
+        _password=i.value().toString();
+        if(_password.isEmpty())_isValid=false;
     }
 
     i=dataMap.constFind(identifiers.address);
@@ -42,24 +48,27 @@ FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true
         if(!b)_isValid=false;
     }
     if(_isValid){
-        _isValid =  !userList.isEmpty() &&
-                    passwordList.size()==userList.size();
+        _isValid =  (!userList.isEmpty() &&
+                     !client.isEmpty()) ||
+                    (!_roomType.isEmpty() &&
+                     !_address.isEmpty() &&
+                     _port>=0);
         if(_isValid){
-            for(auto i=userList.constBegin(),p=passwordList.constBegin();i!=userList.constEnd();++i,++p){
-                if(!tryAddUser(*i,*p))return;
+            for(auto i=userList.constBegin();i!=userList.constEnd();++i){
+                if(!tryAddUser(*i))return;
             }
         }
     }
 }
 
 FKRoomInviteData::FKRoomInviteData(const FKRoomInviteData& other):
-    _client(other._client),_passwords(other._passwords),_address(other._address),_port(other._port){}
+    _client(other._client),_password(other._password),_users(other._users),_address(other._address),_port(other._port),_roomType(other._roomType){}
 
 FKRoomInviteData::~FKRoomInviteData(){}
 
-bool FKRoomInviteData::addUser(const QString& user, const QString& password){
-    if(!user.isEmpty() && !_passwords.contains(user)){
-        _passwords.insert(user,password);
+bool FKRoomInviteData::addUser(const QString& user){
+    if(!user.isEmpty() && !_users.contains(user)){
+        _users.append(user);
         _isValid=true;
         return true;
     }
@@ -69,10 +78,8 @@ bool FKRoomInviteData::addUser(const QString& user, const QString& password){
 QVariant FKRoomInviteData::toClientInvite() const{
     if(_isValid){
         QMap<QString,QVariant> dataMap;
-        QStringList passwords=_passwords.values();
-        //dataMap.insert(identifiers.client,_client);
-        dataMap.insert(identifiers.users,QVariant(_passwords.keys()));
-        dataMap.insert(identifiers.passwords,passwords);
+        dataMap.insert(identifiers.password,_password);
+        dataMap.insert(identifiers.roomType,_roomType);
         dataMap.insert(identifiers.address,_address);
         dataMap.insert(identifiers.port,_port);
         return dataMap;
@@ -84,12 +91,9 @@ QVariant FKRoomInviteData::toClientInvite() const{
 QVariant FKRoomInviteData::toServerInvite() const{
     if(_isValid){
         QMap<QString,QVariant> dataMap;
-        QStringList passwords=_passwords.values();
         dataMap.insert(identifiers.client,_client);
-        dataMap.insert(identifiers.users,QVariant(_passwords.keys()));
-        dataMap.insert(identifiers.passwords,passwords);
-        //dataMap.insert(identifiers.address,_address);
-        //dataMap.insert(identifiers.port,_port);
+        dataMap.insert(identifiers.password,_password);
+        dataMap.insert(identifiers.users,_users);
         return dataMap;
     }else{
         return QVariant();
@@ -105,11 +109,11 @@ QString FKRoomInviteData::client() const{
 }
 
 QStringList FKRoomInviteData::users() const{
-    return _passwords.keys();
+    return _users;
 }
 
-QMap<QString, QString> FKRoomInviteData::passwords() const{
-    return _passwords;
+QString FKRoomInviteData::password() const{
+    return _password;
 }
 
 QString FKRoomInviteData::address() const{
@@ -120,18 +124,30 @@ qint32 FKRoomInviteData::port() const{
     return _port;
 }
 
+QString FKRoomInviteData::roomType() const{
+    return _roomType;
+}
+
 void FKRoomInviteData::setAddress(const QString& ip){
     _address=ip;
 }
 
-bool FKRoomInviteData::tryAddUser(const QString& user,const QString& password){
-    if(user.isEmpty() || _passwords.contains(user)){
+void FKRoomInviteData::setPort(const qint32 port){
+    _port=port;
+}
+
+void FKRoomInviteData::setRoomType(const QString& rt){
+    _roomType=rt;
+}
+
+bool FKRoomInviteData::tryAddUser(const QString& user){
+    if(user.isEmpty() || _users.contains(user)){
         _isValid=false;
-        _passwords.clear();
+        _users.clear();
         FK_MLOG("Invalid user id for room invite data found")
         return false;
     }
-    _passwords.insert(user,password);
+    _users.append(user);
     return true;
 }
 

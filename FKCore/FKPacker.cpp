@@ -24,6 +24,8 @@ QString FKPacker::unpack(QByteArray arr, FKSystemObject* &container){
         className=QString("FKBasicEvent");
     }else if(type==message){
         className=QString("FKMessage");
+    }else if(type==updateData){
+        className=QString("FKUpdateData");
     }else{
         return QString("Invalid event type recieved by packer: ")+type;
     }

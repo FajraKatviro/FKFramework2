@@ -3,6 +3,7 @@
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
 #include "FKEventObject.h"
+#include "FKUpdateData.h"
 #include "FKObject.h"
 #include "FKRoom.h"
 
@@ -65,6 +66,7 @@ void FKApplication::prepare(){
     FKSystemObject::allowConstructing<FKMessage>();
     FKSystemObject::allowConstructing<FKBasicEvent>();
     FKSystemObject::allowConstructing<FKEventObject>();
+    FKSystemObject::allowConstructing<FKUpdateData>();
 //install common FKObjects factory
     FKObject::allowService<FKObject>();
     FKObject::allowService<FKRoom>();

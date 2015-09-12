@@ -3,12 +3,13 @@
 
 #include <QObject>
 
+class FKVersionList;
 class FKPackageManager;
 
 class FKRoomLoader{
 public:
     virtual ~FKRoomLoader(){}
-    virtual QString version()const=0;
+    virtual FKVersionList version()const=0;
     virtual QString className()const=0;
     virtual void registerObjects()const=0;
     virtual void unregisterObjects()const=0;

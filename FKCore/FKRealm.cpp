@@ -1069,10 +1069,11 @@ QString FKRealm::createUserInvitePassword()const{
 
 void FKRealm::addClientToRoom(const qint32 server, const QString& client, const QStringList& users){
     FKServerReferent* s=_serverConnections.value(server,nullptr);
-    FKRoomInviteData invite(client,s->mgr->guestPort());
+    FKRoomInviteData invite(client,createUserInvitePassword());
+    invite.setPort(s->mgr->guestPort());
     invite.setAddress(s->mgr->address());
     foreach(QString user,users){
-        if(!invite.addUser(user,createUserInvitePassword())){
+        if(!invite.addUser(user)){
             FK_MLOG("Happend something very bad")
         }
         database()->addIndex(_dbPath.clientLastUserIndex(client,user));

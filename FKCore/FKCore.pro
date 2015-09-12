@@ -11,7 +11,6 @@ SOURCES += \
     FKUserInterface.cpp \
     FKAbstractCore.cpp \
     FKObjectManager.cpp \
-    FKFilesList.cpp \
     FKDataBase.cpp \
     FKSystemObject.cpp \
     FKMessage.cpp \
@@ -47,7 +46,12 @@ SOURCES += \
     FKUsersStructure.cpp \
     FKUser.cpp \
     FKObjectPool.cpp \
-    FKCommandResolver.cpp
+    FKCommandResolver.cpp \
+    FKUserInfrastructure.cpp \
+    FKUpdateData.cpp \
+    FKUpdateChannel.cpp \
+    FKVersionList.cpp \
+    FKPathResolver.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -55,7 +59,6 @@ HEADERS += \
     FKUserInterface.h \
     FKAbstractCore.h \
     FKObjectManager.h \
-    FKFilesList.h \
     FKDataBase.h \
     FKIDGenerator.h \
     FKSystemObject.h \
@@ -96,7 +99,13 @@ HEADERS += \
     FKUser.h \
     FKObjectPool.h \
     FKService.h \
-    FKCommandResolver.h
+    FKCommandResolver.h \
+    FKUserInfrastructure.h \
+    FKUpdateData.h \
+    FKUpdateChannel.h \
+    FKUpdateChannelStatus.h \
+    FKVersionList.h \
+    FKPathResolver.h
 
 include(../FKFramework.pri)
 include(fkservice/FKCore_service.pri)

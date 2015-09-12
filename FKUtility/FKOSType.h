@@ -25,8 +25,10 @@ namespace FKOSType{
 }
 
 namespace FKOSDir{
+    const QString common=QStringLiteral("data");
+    const QString uncknown=QStringLiteral("uncknownData");
     const QString nix=QStringLiteral("bin_nix");
-    const QString ard=QStringLiteral("bin_android");
+    const QString ard=QStringLiteral("bin_and");
     const QString mac=QStringLiteral("bin_mac");
     const QString ios=QStringLiteral("bin_ios");
     const QString win=QStringLiteral("bin_win");
@@ -41,6 +43,18 @@ namespace FKOSDir{
 #elif defined(Q_OS_UNIX)
     const QString current=nix;
 #endif
+
+    static QMap<qint8,QString> getPlatformFolders(){
+        QMap<qint8,QString> map;
+        map.insert(FKOSType::common,FKOSDir::common);
+        map.insert(FKOSType::ard,FKOSDir::ard);
+        map.insert(FKOSType::ios,FKOSDir::ios);
+        map.insert(FKOSType::mac,FKOSDir::mac);
+        map.insert(FKOSType::nix,FKOSDir::nix);
+        map.insert(FKOSType::win,FKOSDir::win);
+        return map;
+    }
+    static QMap<qint8,QString> platformFolders=getPlatformFolders();
 }
 
 #endif // FKOSTYPE_H

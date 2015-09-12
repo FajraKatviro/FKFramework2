@@ -84,3 +84,24 @@ bool FKLocalCore::stopRealm(){
     realm()->deleteLater();
     return true;
 }
+
+void FKLocalCore::connectClientToServer(const QString address, const qint32 port){
+    Q_UNUSED(address)
+    Q_UNUSED(port)
+    if(!clientInfrastructure()){
+        emit messageRequested(QString(tr("Warning! Unable start user: no client started")));
+        return;
+    }
+    if(!server()){
+        emit messageRequested(QString(tr("Unable start user: no server started")));
+        clientInfrastructure()->stopUser(usr);
+        return;
+    }
+
+    FKLocalConnector* clientSideConnector=new FKLocalConnector(clientInfrastructure());
+    FKLocalConnector* serverSideConnector=new FKLocalConnector(server());
+    server()->incomeConnection(serverSideConnector);
+    clientInfrastructure()->serverConnection(clientSideConnector);
+    serverSideConnector->join(clientSideConnector);
+    emit systemMessageRequested(QString(tr("Client connecting to server..")));
+}

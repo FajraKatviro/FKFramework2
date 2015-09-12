@@ -3,6 +3,7 @@
 #include "FKConnector.h"
 #include "FKMessage.h"
 #include "FKBasicEvent.h"
+#include "FKUpdateData.h"
 #include "FKEventObject.h"
 
 #include "FKPacker.h"
@@ -91,6 +92,10 @@ void FKConnectionManager::sendBasicEvent(FKBasicEvent* event){
     _connector->sendMessage(FKPacker::basicEvent,event);
 }
 
+void FKConnectionManager::sendUpdateData(FKUpdateData* data){
+    _connector->sendMessage(FKPacker::updateData,data);
+}
+
 /*!
  * \brief Disconnect connector and delete it
  */
@@ -137,6 +142,12 @@ void FKConnectionManager::processMsg(const QString msgType, FKSystemObject* msg)
             processEvent(event);
             return;
         }
+    }else if(msgType==FKPacker::updateData){
+        FKUpdateData* data=qobject_cast<FKUpdateData*>(msg);
+        if(data){
+            processUpdateData(data);
+            return;
+        }
     }else{
         incomeMessageError(msgType,QString("Invalid msgType"));
         msg->deleteLater();
@@ -180,6 +191,11 @@ void FKConnectionManager::processBasicEvent(FKBasicEvent* ev){
 void FKConnectionManager::processEvent(FKEventObject* ev){
     FK_MLOGV("Unhandled event",ev->subject())
     ev->deleteLater();
+}
+
+void FKConnectionManager::processUpdateData(FKUpdateData* data){
+    FK_MLOGV("Unhandled update data",data->path())
+    data->deleteLater();
 }
 
 /*!

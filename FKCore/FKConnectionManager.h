@@ -8,6 +8,7 @@ class FKMessage;
 class FKBasicEvent;
 class FKEventObject;
 class FKConnector;
+class FKUpdateData;
 
 class FKConnectionManager : public QObject{
     Q_OBJECT
@@ -22,6 +23,7 @@ public:
     void sendEvent(FKEventObject* event);
     void sendGuestEvent(FKBasicEvent* event);
     void sendBasicEvent(FKBasicEvent* event);
+    void sendUpdateData(FKUpdateData* data);
     void dropConnection();
     QString address()const;
     virtual qint32 guestPort()const{return 3232;}
@@ -36,6 +38,7 @@ private:
     virtual void processGuestEvent(FKBasicEvent* ev);
     virtual void processBasicEvent(FKBasicEvent* ev);
     virtual void processEvent(FKEventObject* ev);
+    virtual void processUpdateData(FKUpdateData* data);
     virtual void incomeMessageError(const QString& msgType,const QString& reason);
     FKConnector* _connector;
 };

@@ -18,6 +18,7 @@ namespace FKBasicEventSubject{
     const QString userList=QStringLiteral("ul"); //send userlist to client
     const QString createUser=QStringLiteral("cu"); //create new user record
     const QString deleteUser=QStringLiteral("du"); //delete existing user record
+    const QString update=QStringLiteral("ru"); //send update room files request or data
     //const QString selectUser=QStringLiteral("su"); //add existing user to active list
     //const QString deselectUser=QStringLiteral("dsu"); //remove existing user from active list
     //const QString customServer=QStringLiteral("cus"); //create server for client's custom room

@@ -1,4 +1,4 @@
-CONFIG += c++11
+CONFIG += c++14
 
 CONFIG(debug, debug|release):{
     DEFINES+= FK_DEBUG
@@ -15,9 +15,9 @@ CONFIG(debug, debug|release):{
 
 win32{
     CONFIG(release, debug|release){
-        DLLDESTDIR = $$PWD/release/bin_win/rooms
+        DLLDESTDIR = $$PWD/release/rooms/bin_win
     } else {
-        DLLDESTDIR = $$PWD/debug/bin_win/rooms
+        DLLDESTDIR = $$PWD/debug/rooms/bin_win
     }
 } else {
     mac {

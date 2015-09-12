@@ -20,6 +20,7 @@ namespace FKCommands {
     const QString deleteClient=QStringLiteral("delete client");
     const QString createServer=QStringLiteral("create server");
     const QString deleteServer=QStringLiteral("delete server");
+    const QString joinRoom=QStringLiteral("join room");
     const QString createRoom=QStringLiteral("create room");
     const QString registerRoomType=QStringLiteral("add room type");
     const QString removeRoomType=QStringLiteral("remove room type");
