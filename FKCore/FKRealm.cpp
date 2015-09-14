@@ -672,26 +672,53 @@ void FKRealm::createNewRoomForServer(const QString& roomName, const QString& roo
 }
 
 void FKRealm::joinRoomRequested(const QString& clientId, const QVariant& data){
-    todo; //refactoring addClientToRoom(serverId,clientId,users);
-    const QString roomId=data.toString();
-    QString error;
-    if(roomId.isEmpty()){
-        error=QString(tr("Invalid enter room request: empty roomName"));
-    }else if(!isRoomName(roomId)){
-        error=QString(tr("Invalid enter room request: invalid roomName"));
-    }else if(!isRoomExists(roomId)){
-        error=QString(tr("Invalid enter room request: room does not exists"));
-    }else if(getClientRoomState(clientId)!=FKClientRoomState::NotInRoom){
-        error=QString(tr("Unable enter room: invalid client room state"));
+    FKRoomRequestData roomData(data);
+    QString error, roomName(roomData.roomId());
+    QStringList users(roomData.users());
+    bool check=true;
+    if(roomName.isEmpty()){
+        error=QString(tr("Room join request declined: empty room name provided"));
+        check=false;
+    }else if(!isRoomName(roomName)){
+        error=QString(tr("Room join request declined: invalid room name provided"));
+        check=false;
+    }else if(!isRoomExists(roomName)){
+        error=QString(tr("Room join request declined: room does not exists"));
+        check=false;
+    }else if(isClientInRoom(clientId)){
+        error=QString(tr("Room join request declined: already joined room"));
+        check=false;
+    }else if(users.isEmpty()){
+        error=QString(tr("Room join request declined: no users provided"));
+        check=false;
+    }else if(users.removeDuplicates()){
+        error=QString(tr("Room join request declined: duplicate users provided"));
+        check=false;
+    }else{
+        foreach(QString user,users){
+            if(user.isEmpty()){
+                error=QString(tr("Room join request declined: empty user name provided"));
+                check=false;
+                break;
+            }else if(!isUserName(user)){
+                error=QString(tr("Room join request declined: invalid user name provided"));
+                check=false;
+                break;
+            }else if(!isUserExists(user,clientId)){
+                error=QString(tr("Room join request declined: user %1 not registered for %2 client")).arg(user).arg(clientId);
+                check=false;
+                break;
+            }
+        }
     }
 
-    if(error.isEmpty()){
-        enterRoomRequested(clientId,roomId);
+    if(check){
+       addClientToRoom(getRoomServer(roomId),clientId,users);
     }else{
-        auto mgr=_clientConnections[clientId];
-        mgr->sendMessage(error);
-        FKBasicEvent fail(FKBasicEventSubject::joinRoom,false);
-        mgr->sendBasicEvent(&fail);
+       FKConnectionManager* clientMgr=_clientConnections.value(clientId,nullptr);
+       clientMgr->sendMessage(error);
+       FKBasicEvent ev(FKBasicEventSubject::joinRoom);
+       clientMgr->sendBasicEvent(&ev);
     }
 }
 
@@ -879,6 +906,11 @@ qint32 FKRealm::getFreeServer(const QString& roomType) const{
             return s.key();
     }
     return -1;
+}
+
+qint32 FKRealm::getRoomServer(const QString& roomId) const{
+    auto d=_activeRooms.constFind(roomId);
+    return d==_activeRooms.constEnd() ? -1 : d.value().server();
 }
 
 void FKRealm::registerNewRoomType(const QString& roomType){

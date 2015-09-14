@@ -80,6 +80,7 @@ private:
     qint32 createNewServerRecord(const QString& password);
     void deleteServerRecordFromDatabase(const qint32 serverId);
     qint32 getFreeServer(const QString& roomType)const;
+    qint32 getRoomServer(const QString& roomId)const;
     void registerNewRoomType(const QString& roomType);
     void removeRoomTypeFromDatabase(const QString& roomType);
     void registerNewRoomType(const qint32 serverId,const QString& roomType);
