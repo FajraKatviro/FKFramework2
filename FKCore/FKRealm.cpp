@@ -596,7 +596,7 @@ void FKRealm::customServerRejected(const QString& clientId, const QVariant& data
  */
 
 void FKRealm::createRoomRequested(const QString& clientId, const QVariant& data){
-    FKRoomCreateData roomData(data);
+    FKRoomRequestData roomData(data);
     QString error, roomName(roomData.roomId()), roomType(roomData.roomType());
     QStringList users(roomData.users());
     bool check=true;
@@ -671,7 +671,8 @@ void FKRealm::createNewRoomForServer(const QString& roomName, const QString& roo
     s->mgr->sendBasicEvent(&ev);
 }
 
-void FKRealm::enterRoomRequested(const QString& clientId, const QVariant& data){
+void FKRealm::joinRoomRequested(const QString& clientId, const QVariant& data){
+    todo; //refactoring addClientToRoom(serverId,clientId,users);
     const QString roomId=data.toString();
     QString error;
     if(roomId.isEmpty()){

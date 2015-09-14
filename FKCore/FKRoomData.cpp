@@ -115,12 +115,15 @@ void FKRoomData::changeUsers(const qint32 userCount){
     _users+=userCount;
 }
 
-const FKRoomCreateData::Identifiers FKRoomCreateData::identifiers;
+const FKRoomRequestData::Identifiers FKRoomRequestData::identifiers;
 
-FKRoomCreateData::FKRoomCreateData(const QString& id, const QString& roomType, const QStringList& users, const bool custom):
+FKRoomRequestData::FKRoomRequestData(const QString& id, const QString& roomType, const QStringList& users, const bool custom):
     _id(id),_roomType(roomType),_users(users),_custom(custom){}
 
-FKRoomCreateData::FKRoomCreateData(const QVariant& data){
+FKRoomRequestData::FKRoomRequestData(const QString& id, const QStringList& users):
+    _id(id),_users(users),_custom(false){}
+
+FKRoomRequestData::FKRoomRequestData(const QVariant& data){
     auto map=data.toMap();
     _id=map.value(identifiers.roomName).toString();
     _roomType=map.value(identifiers.roomType).toString();
@@ -128,10 +131,10 @@ FKRoomCreateData::FKRoomCreateData(const QVariant& data){
     _custom=map.value(identifiers.custom).toBool();
 }
 
-FKRoomCreateData::FKRoomCreateData(const FKRoomCreateData& other):
+FKRoomRequestData::FKRoomRequestData(const FKRoomRequestData& other):
     _id(other._id),_roomType(other._roomType),_users(other._users),_custom(other._custom){}
 
-QVariant FKRoomCreateData::toVariant() const{
+QVariant FKRoomRequestData::toVariant() const{
     QMap<QString,QVariant> map;
     map[identifiers.roomName]=_id;
     map[identifiers.roomType]=_roomType;

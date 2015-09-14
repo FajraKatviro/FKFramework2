@@ -31,6 +31,7 @@ public:
     bool requestUserDeletion(const QString& name);
     void requestRoomList(/*filters*/);
     void requestCreateRoom(const QString& roomName, const QString& roomType, const QStringList& users, const bool custom);
+    void requestJoinRoom(const QString& roomName, const QStringList& users);
     //void requestEnterRoom(const qint32 id);
     //void requestExitRoom();
 

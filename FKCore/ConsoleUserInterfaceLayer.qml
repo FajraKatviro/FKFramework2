@@ -24,6 +24,7 @@ UserInterface{
     onRemoveServerRoomTypeRequested: core.removeServerRoomType(roomType)
     onCreateRoomRequested: core.createRoomRequest(roomName,roomType,users)
     onCreateRoomRequestedRealm: core.createRoomRequestRealm(roomName,roomType)
+    onJoinRoomRequested: core.joinRoomRequest(roomName,users)
 
 
     Component.onCompleted:{

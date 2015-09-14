@@ -7,7 +7,7 @@
 
 #include "fkcore_global.h"
 
-#include "FKFilesList.h"
+class QDir;
 
 class FKRealm;
 class FKServerInfrastructure;
@@ -73,6 +73,7 @@ public slots:
     void removeServerRoomType(const QString roomType);
 
     void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);
+    void joinRoomRequest(const QString roomName, const QStringList users);
     void createRoomRequestRealm(const QString roomName, const QString roomType);
     //void createCustomServerRequest();
     QString uiSource()const;

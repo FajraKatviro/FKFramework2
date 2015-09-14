@@ -36,6 +36,8 @@ void FKCommandResolver::processInput(QString input){
         loginServer(input);
     }else if(isCommand(input,FKCommands::createRoom)){
         createRoom(input);
+    }else if(isCommand(input,FKCommands::joinRoom)){
+        joinRoom(input);
     }else if(isCommand(input,FKCommands::registerRoomType)){
         registerRoomType(input);
     }else if(isCommand(input,FKCommands::removeRoomType)){
@@ -174,6 +176,16 @@ void FKCommandResolver::createRoom(QString arg){
         }else{
             emit message(QString(tr("You need provide 3 or more arguments: room name, room type and list of users")));
         }
+    }
+}
+
+void FKCommandResolver::joinRoom(QString arg){
+    QString argTrimmed=arg.trimmed();
+    QStringList splitArg=argTrimmed.split(' ',QString::SkipEmptyParts);
+    if(splitArg.size()>1){
+        emit joinRoomRequested(splitArg.takeFirst(),splitArg);
+    }else{
+        emit message(QString(tr("You need provide 2 or more arguments: room name and list of users")));
     }
 }
 

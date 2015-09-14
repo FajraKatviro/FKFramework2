@@ -25,6 +25,7 @@ signals:
     void createClientRequested(const QString clientName,const QString password);
     void deleteClientRequested(const QString clientName);
     void createRoomRequested(const QString roomName,const QString roomType, const QStringList users);
+    void joinRoomRequested(const QString roomName, const QStringList users);
     void createRoomRequestedRealm(const QString roomName,const QString roomType);
     void createServerRequested(const QString password);
     void deleteServerRequested(const qint32 serverId);

@@ -61,11 +61,12 @@ private:
     } identifiers;
 };
 
-class FKRoomCreateData{ //this class used for client->realm requests
+class FKRoomRequestData{ //this class used for client->realm requests
 public:
-    FKRoomCreateData(const QString& id,const QString& roomType,const QStringList& users, const bool custom);
-    FKRoomCreateData(const QVariant& data);
-    FKRoomCreateData(const FKRoomCreateData& other);
+    FKRoomRequestData(const QString& id,const QString& roomType,const QStringList& users, const bool custom);
+    FKRoomRequestData(const QString& id,const QStringList& users);
+    FKRoomRequestData(const QVariant& data);
+    FKRoomRequestData(const FKRoomRequestData& other);
     QVariant toVariant()const;
     QString roomId()const{return _id;}
     QString roomType()const{return _roomType;}

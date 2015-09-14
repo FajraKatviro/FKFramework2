@@ -25,6 +25,7 @@ signals:
     void deleteServerRequested(const qint32 server);
     void createRoomRequestedRealm(const QString roomName,const QString roomType);
     void createRoomRequested(const QString roomName,const QString roomType,const QStringList users);
+    void joinRoomRequested(const QString roomName,const QStringList users);
     void registerServerRoomTypeRequested(const QString roomType);
     void registerRoomTypeRequested(const QString roomType);
     void removeServerRoomTypeRequested(const QString roomType);
@@ -42,6 +43,7 @@ private:
     void createServer(QString arg);
     void deleteServer(QString arg);
     void createRoom(QString arg);
+    void joinRoom(QString arg);
     void registerRoomType(QString arg);
     void removeRoomType(QString arg);
 };

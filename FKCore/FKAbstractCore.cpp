@@ -468,6 +468,14 @@ void FKAbstractCore::createRoomRequest(const QString roomName, const QString roo
     }
 }
 
+void FKAbstractCore::joinRoomRequest(const QString roomName, const QStringList users){
+    if(!clientInfrastructure()){
+        emit messageRequested(QString(tr("Unable join room: no client infrastructure started")));
+    }else{
+        clientInfrastructure()->requestJoinRoom(roomName,users);
+    }
+}
+
 /*!
  * \brief Try create room for any avaliable server
  */

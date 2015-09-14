@@ -41,7 +41,7 @@ public:
     void createUser(const QString& clientId, const QVariant& userName);
     void deleteUser(const QString& clientId, const QVariant& userName);
     void createRoomRequested(const QString& clientId, const QVariant& data);
-    //void enterRoomRequested(const QString& clientId, const QVariant& data);
+    void joinRoomRequested(const QString& clientId, const QVariant& data);
     //void createRoomRespond(const qint32 serverId, const QVariant& data);
     //void enterRoomRespond(const qint32 serverId, const QVariant& data);
 

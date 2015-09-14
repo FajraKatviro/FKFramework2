@@ -179,8 +179,37 @@ void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QS
     }
 
     if(check){
-        FKRoomCreateData data(roomName,roomType,userList,custom);
+        FKRoomRequestData data(roomName,roomType,userList,custom);
         FKBasicEvent ev(FKBasicEventSubject::createRoom,data.toVariant());
+        _realmConnection->sendBasicEvent(&ev);
+    }else{
+        emit messageRequested(error);
+    }
+}
+
+void FKClientInfrastructure::requestJoinRoom(const QString& roomName, const QStringList& users){
+    QString error;
+    bool check=true;
+    if(roomName.isEmpty()){
+        error=QString(tr("Unable join room: name is empty"));
+        check=false;
+    }else if(users.isEmpty()){
+        error=QString(tr("Unable join room: user list is empty"));
+        check=false;
+    }else if(!_logged){
+        error=QString(tr("Unable join room: client infrastructure is not logged"));
+        check=false;
+    }else if(_roomModule){
+        error=QString(tr("Unable join room: another room exist on client"));
+        check=false;
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+        error=QString(tr("Unable join room: another request in progress"));
+        check=false;
+    }
+
+    if(check){
+        FKRoomRequestData data(roomName,users);
+        FKBasicEvent ev(FKBasicEventSubject::joinRoom,data.toVariant());
         _realmConnection->sendBasicEvent(&ev);
     }else{
         emit messageRequested(error);
@@ -262,6 +291,7 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
 }
 
 void FKClientInfrastructure::respondCustomServer(const QVariant& value){
+    todo; //refactoring
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCustomServer()")
     }
