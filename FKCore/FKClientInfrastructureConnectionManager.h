@@ -19,4 +19,17 @@ private:
     FKClientInfrastructure* _infr;
 };
 
+class FKClientInfrastructureConnectionManagerS : public FKConnectionManager{
+    Q_OBJECT
+public:
+    FKClientInfrastructureConnectionManagerS(FKClientInfrastructure* infr, FKConnector* connector, QObject *parent=0);
+    ~FKClientInfrastructureConnectionManagerS();
+private:
+    //virtual void processMessage(FKMessage* msg)override;
+    virtual void processBasicEvent(FKBasicEvent* ev)override;
+    virtual void processEvent(FKEventObject* ev)override;
+    virtual void processUpdateData(FKUpdateData* data)override;
+    FKClientInfrastructure* _infr;
+};
+
 #endif

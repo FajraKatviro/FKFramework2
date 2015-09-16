@@ -94,14 +94,13 @@ void FKLocalCore::connectClientToServer(const QString address, const qint32 port
     }
     if(!server()){
         emit messageRequested(QString(tr("Unable start user: no server started")));
-        clientInfrastructure()->stopUser(usr);
         return;
     }
 
+    emit systemMessageRequested(QString(tr("Client connecting to server..")));
     FKLocalConnector* clientSideConnector=new FKLocalConnector(clientInfrastructure());
     FKLocalConnector* serverSideConnector=new FKLocalConnector(server());
     server()->incomeConnection(serverSideConnector);
     clientInfrastructure()->serverConnection(clientSideConnector);
     serverSideConnector->join(clientSideConnector);
-    emit systemMessageRequested(QString(tr("Client connecting to server..")));
 }

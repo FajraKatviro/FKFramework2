@@ -4,6 +4,7 @@
 
 #include <QVariant>
 #include <QFileInfo>
+#include <QPair>
 
 
 bool FKVersionString::operator>(const FKVersionString& other) const{
@@ -67,22 +68,33 @@ const FKVersionString FKVersionList::actual()const{
     return version;
 }
 
-const FKVersionList FKVersionList::operator-(const FKVersionList& other)const{
-    FKVersionList result(*this);
-    for(auto o=other._enteties.constBegin();o!=other._enteties.constEnd();++o){
-        auto n=result._enteties.begin();
-        while(n!=result._enteties.end()){
-            if((*n).path    ==(*o).path     &&
-               (*n).platform==(*o).platform &&
-               (*n).version ==(*o).version){
-                n=result._enteties.erase(n);
-            }else{
-                ++n;
-            }
+QPair<QString, qint64> FKVersionList::getInfo(const QString& path, const qint8 platform){
+    QPair<QString,qint64> result(QString(),-1);
+    for(auto f=_enteties.constBegin();f!=_enteties.constEnd();++f){
+        if(f->path==path && f->platform==platform){
+            result.first=f->version.string();
+            result.second=f->size;
         }
     }
     return result;
 }
+
+//const FKVersionList FKVersionList::operator-(const FKVersionList& other)const{
+//    FKVersionList result(*this);
+//    for(auto o=other._enteties.constBegin();o!=other._enteties.constEnd();++o){
+//        auto n=result._enteties.begin();
+//        while(n!=result._enteties.end()){
+//            if((*n).path    ==(*o).path     &&
+//               (*n).platform==(*o).platform &&
+//               (*n).version ==(*o).version){
+//                n=result._enteties.erase(n);
+//            }else{
+//                ++n;
+//            }
+//        }
+//    }
+//    return result;
+//}
 
 
 QDataStream& operator<<(QDataStream& stream, const FKVersionList& lst){

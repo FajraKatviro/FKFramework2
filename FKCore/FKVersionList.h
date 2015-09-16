@@ -33,7 +33,7 @@ public:
     //use path relative to rooms folder
 
     const FKVersionString actual()const;
-    const FKVersionList operator-(const FKVersionList& other)const;
+    //const FKVersionList operator-(const FKVersionList& other)const;
     //const FKVersionList operator+(const FKVersionList& other)const;
     //const FKVersionList operator[](const qint8 platform)const;
     //const FKVersionList operator[](const QList<qint8>& platforms)const;
@@ -47,6 +47,7 @@ public:
         const qint64 size=0;
     };
     inline const QList<FKVersionList::Data>& enteties()const{return _enteties;}
+    QPair<QString,qint64> getInfo(const QString& path,const qint8 platform);
 private:
     QList<FKVersionList::Data> _enteties;
 

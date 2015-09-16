@@ -4,12 +4,15 @@
 #include "FKClientInfrastructureConnectionManager.h"
 #include "FKBasicEvent.h"
 #include "FKRoomModule.h"
+#include "FKUpdateChannel.h"
 
 #include "FKAusviceData.h"
 #include "FKRoomInviteData.h"
 #include "FKRoomData.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
+#include "FKVersionList.h"
+
 
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
         FKInfrastructure(parent),_logged(false),_realmConnection(0),_serverConnection(0),_customServerId(-1){
@@ -78,6 +81,7 @@ void FKClientInfrastructure::submitLoginRealm(const QVariant& value){
     bool t=value.toBool();
     if(t){
         _logged=true;
+        todo; //_customServer=id;
         emit loggedIn();
     }else{
         emit messageRequested(QString(tr("Realm declined login command")));
@@ -290,36 +294,64 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
     }
 }
 
-void FKClientInfrastructure::respondCustomServer(const QVariant& value){
-    todo; //refactoring
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCustomServer()")
-    }
-    const FKAusviceData data(value);
-    QString error;
-    qint32 serverId;
-    QString password;
-    if(!data.isValid()){
-        error=QString(tr("Unable create custom server: request rejected by realm"));
-    }else{
-        serverId=data.serverId();
-        password=data.password();
-        if(serverId<=0){
-            error=QString(tr("Unable create custom server: realm provided no server id"));
-        }else if(password.isEmpty()){
-            error=QString(tr("Unable create custom server: realm provided no server password"));
-        }
-    }
+//void FKClientInfrastructure::respondCustomServer(const QVariant& value){
+//    todo; //refactoring
+//    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::customServer)){
+//        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCustomServer()")
+//    }
+//    const FKAusviceData data(value);
+//    QString error;
+//    qint32 serverId;
+//    QString password;
+//    if(!data.isValid()){
+//        error=QString(tr("Unable create custom server: request rejected by realm"));
+//    }else{
+//        serverId=data.serverId();
+//        password=data.password();
+//        if(serverId<=0){
+//            error=QString(tr("Unable create custom server: realm provided no server id"));
+//        }else if(password.isEmpty()){
+//            error=QString(tr("Unable create custom server: realm provided no server password"));
+//        }
+//    }
 
-    if(error.isEmpty()){
-        emit customServerRequested(serverId,password);
-    }else{
-        emit messageRequested(error);
-    }
-}
+//    if(error.isEmpty()){
+//        emit customServerRequested(serverId,password);
+//    }else{
+//        emit messageRequested(error);
+//    }
+//}
 
 void FKClientInfrastructure::incomeVersionData(const QVariant& value){
-    todo;
+    if(!_roomModule){
+        FK_MLOG("invalid income version list data case: no room module loaded")
+        return;
+    }
+    const FKVersionList newVersion(value);
+    if(!newVersion.isValid()){
+        FK_MLOG("invalid income version list data")
+        return;
+    }
+    _updates.channels.clear();
+    const FKVersionList currentVersion(_roomModule->version());
+
+    const QList<FKVersionList::Data> newList(newVersion.enteties());
+    const QList<FKVersionList::Data> currentList(currentVersion.enteties());
+    QList<QPair<QString,qint8>> filesList;
+    for(auto v=newList.constBegin();v!=newList.constEnd();++v){
+        filesList.append(QPair(v->path,v->platform));
+    }
+    for(auto v=currentList.constBegin();v!=currentList.constEnd();++v){
+        const QPair<QString,qint8> pair(v->path,v->platform);
+        if(!filesList.contains(pair))filesList.append(pair);
+    }
+
+    for(auto f=filesList.constBegin();f!=filesList.constEnd();++f){
+        auto newInfo=newVersion.getInfo(f->first,f->second);
+        auto currentInfo=currentVersion.getInfo(f->first,f->second);
+        _updates.channels.append(QSharedPointer<FKUpdateChannel>(new FKUpdateChannel(f->first,currentInfo.first,f->second,newInfo.first,newInfo.second)));
+    }
+    emit updateListChanged();
 }
 
 QStringList FKClientInfrastructure::userPool() const{
@@ -342,13 +374,13 @@ void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
     _customServerId=serverId;
 }
 
-qint32 FKClientInfrastructure::realmPort() const{
-    return 0;
-}
+//qint32 FKClientInfrastructure::realmPort() const{
+//    return 0;
+//}
 
-QString FKClientInfrastructure::realmIP() const{
-    return QString();
-}
+//QString FKClientInfrastructure::realmIP() const{
+//    return QString();
+//}
 
 void FKClientInfrastructure::realmConnection(FKConnector* connector){
     _realmConnection=new FKClientInfrastructureConnectionManager(this,connector,this);
@@ -372,7 +404,6 @@ void FKClientInfrastructure::connectorStatusChanged(){
         if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
             FK_MLOG("Unexpected behaivour in FKClientInfrastructure::connectorStatusChanged()")
         }
-        requestLoginServer();
     }else{
         _logged=false;
         emit disconnectedFromRealm();
@@ -386,6 +417,7 @@ void FKClientInfrastructure::serverConnectorStatusChanged(){
         if(!submitAnswer(FKInfrastructureType::Server,FKBasicEventSubject::connect)){
             FK_MLOG("Unexpected behaivour in FKClientInfrastructure::serverConnectorStatusChanged()")
         }
+        requestLoginServer();
     }else{
         _serverLogged=false;
         emit disconnectedFromServer();
@@ -417,9 +449,6 @@ void FKClientInfrastructure::startUser(const qint32 objectId){
     _users.insert(objectId,infr);
 
     connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-    //FKDataBase* db=new FKFSDB(_server);
-    //db->setPath(serverDatabasePath());
-    //_server->setDataBase(db);
     emit messageRequested(QString(tr("User infrastructure started")));
 }
 

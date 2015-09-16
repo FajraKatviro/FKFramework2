@@ -42,7 +42,7 @@ public:
     void respondEnterRoom(const QVariant& value);
     void respondCreateRoom(const QVariant& value);
     //void respondExitRoom(const QVariant& value);
-    void respondCustomServer(const QVariant& value);
+    //void respondCustomServer(const QVariant& value);
 
     void incomeVersionData(const QVariant& value);
 
@@ -54,8 +54,8 @@ public:
 
     void setCustomServerId(const qint32 serverId);
 
-    qint32 realmPort()const;
-    QString realmIP()const;
+//    qint32 realmPort()const;
+//    QString realmIP()const;
 public slots:
     void realmConnection(FKConnector* connector);
     void serverConnection(FKConnector* connector);
@@ -70,6 +70,7 @@ signals:
     void activeUsersChanged();
     void roomListChanged();
     void connectToServerRequest(const QString address,const qint32 port);
+    void updateListChanged();
     //void customServerRequested(const qint32 serverId,const QString password);
 private slots:
     void connectorStatusChanged();
