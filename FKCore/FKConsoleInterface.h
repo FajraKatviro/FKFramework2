@@ -14,8 +14,9 @@ public:
     FKConsoleInterface(QObject* parent=0);
     ~FKConsoleInterface();
 public slots:
-    void show();
-    void showMessage(const QString& m);
+    virtual void show()override;
+    virtual void showMessage(const QString& m)override;
+    virtual void showUpdateData()override;
 private:
     QThread _consoleReaderThread;
     FKConsoleReader* _consoleReader;

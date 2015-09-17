@@ -16,6 +16,7 @@ public:
 public slots:
     virtual void showMessage(const QString& m)=0;
     virtual void show()=0;
+    virtual void showUpdateData(){}
 signals:
     void quitApplicationRequested();
     void showMessageRequested(QString msg);

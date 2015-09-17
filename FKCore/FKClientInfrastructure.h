@@ -92,7 +92,7 @@ private:
 
     struct{
         QList<QSharedPointer<FKUpdateChannel>> channels;
-        qint32 size=0;
+        //qint32 size=0;
     }_updates;
 };
 

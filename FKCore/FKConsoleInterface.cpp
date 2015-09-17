@@ -50,6 +50,10 @@ void FKConsoleInterface::showMessage(const QString& m){
     out<<m<<endl;
 }
 
+void FKConsoleInterface::showUpdateData(){
+    showMessage("Update data recieved");
+}
+
 /*!
  * \fn void FKConsoleInterface::clientUsersRequested()
  * \brief Signal emitted when showUsers command recognized for active client

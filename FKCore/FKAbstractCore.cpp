@@ -232,6 +232,7 @@ void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
     //connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
     //connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
     connect(infr,SIGNAL(connectToServerRequest(QString,qint32)),SLOT(connectClientToServer(QString,qint32)));
+    connect(infr,SIGNAL(updateListChanged()),SIGNAL(clientGotUpdateList()));
 }
 
 /*!

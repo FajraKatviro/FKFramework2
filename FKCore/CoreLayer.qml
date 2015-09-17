@@ -8,4 +8,5 @@ Core{
     onSystemMessageRequested: ui.showMessage("::"+msg)
     onClientLoggedIn: {}
     onCustomServerReady: ui.showMessage(qsTr("Custom server sucessfully started"))
+    onClientGotUpdateList: ui.showUpdateData()
 }

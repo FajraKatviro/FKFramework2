@@ -32,6 +32,7 @@ signals:
     void clientConnectedToServer();
     void clientDisconnectedFromServer();
     void clientLoggedInServer();
+    void clientGotUpdateList();
     void serverConnectedToRealm();
     void serverDisconnectedFromRealm();
     void serverLoggedIn();
