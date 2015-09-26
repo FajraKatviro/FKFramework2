@@ -8,7 +8,7 @@ class FKConnectionManager;
 class FKObjectManager;
 class FKEventObject;
 class FKWorld;
-class FKInteractiveModel;
+//class FKInteractiveModel;
 
 class FKUserInfrastructure : public FKInfrastructure{
     Q_OBJECT
@@ -23,7 +23,7 @@ private slots:
 private:
     FKObjectManager* _om=nullptr;
     FKWorld* _world;
-    FKInteractiveModel* _im=nullptr;
+    //FKInteractiveModel* _im=nullptr;
     const qint32 _id;
 };
 

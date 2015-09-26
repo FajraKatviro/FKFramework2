@@ -8,8 +8,8 @@
 #include "FKClientInfrastructure.h"
 #include "FKFSDB.h"
 #include "FKVersionList.h"
+#include "FKRoomInviteData.h"
 
-#include "FKPostOperations.h"
 #include "FKOSType.h"
 #include "FKLogger.h"
 
@@ -26,6 +26,7 @@ FKAbstractCore::FKAbstractCore(QObject* parent):QObject(parent),
         _realm(0),_server(0),_infr(0){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
+    qRegisterMetaType<FKRoomInviteData>();
     FK_CEND
 }
 
@@ -233,6 +234,8 @@ void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
     //connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
     connect(infr,SIGNAL(connectToServerRequest(QString,qint32)),SLOT(connectClientToServer(QString,qint32)));
     connect(infr,SIGNAL(updateListChanged()),SIGNAL(clientGotUpdateList()));
+    connect(infr,SIGNAL(roomModuleChanged()),SIGNAL(uiSourceChanged()));
+    connect(infr,SIGNAL(roomModuleChanged()),SIGNAL(roomChanged()));
 }
 
 /*!
@@ -490,7 +493,11 @@ void FKAbstractCore::createRoomRequestRealm(const QString roomName, const QStrin
 }
 
 QString FKAbstractCore::uiSource() const{
-    return QString();
+    return _infr ? _infr->roomVisualizer() : QString();
+}
+
+FKRoomInfrastructure* FKAbstractCore::roomInfrastructure() const{
+    return _infr ? _infr->roomInfrastructure() : nullptr;
 }
 
 void FKAbstractCore::createCustomServerRequest(){

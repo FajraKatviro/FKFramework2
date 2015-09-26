@@ -2,118 +2,82 @@
 
 #include <QVariant>
 
+#include "FKLogger.h"
 #include "FKRoomDataFilter.h"
 
-const FKRoomData::Identifiers FKRoomData::identifiers;
+#include "FKRoomSettings.h"
 
-FKRoomData::FKRoomData(const qint32 server,const QString& newRoomType,const QString& ownerId,const QDateTime& roomCreationTime,const bool isCustom):
-        _roomType(newRoomType),_owner(ownerId),_creationTime(roomCreationTime),_custom(isCustom),
-        _maximumUsers(0),_users(0),_maximumActors(0),_actors(0),_server(server),_ready(false){
+FKRoomData::FKRoomData(const qint32 server,const QString& newRoomType,const QString& ownerId,const QDateTime& roomCreationTime,const bool isCustom){
+    _values.insert(FKRoomSettings::server,server);
+    _values.insert(FKRoomSettings::roomType,newRoomType);
+    _values.insert(FKRoomSettings::owner,ownerId);
+    _values.insert(FKRoomSettings::creationTime,roomCreationTime);
+    _values.insert(FKRoomSettings::isCustom,isCustom);
+    _values.insert(FKRoomSettings::isCreatedByUser,!ownerId.isEmpty());
 }
 
-FKRoomData::FKRoomData(const QVariant &data):_server(-1),_ready(false){
-    const QMap<QString,QVariant> map=data.toMap();
-    _roomType=map.value(identifiers.roomType).toString();
-    _owner=map.value(identifiers.owner).toString();
-    _creationTime=map.value(identifiers.creationTime).toDateTime();
-    _custom=map.value(identifiers.custom).toBool();
-    _maximumUsers=map.value(identifiers.maximumUsers).toInt();
-    _users=map.value(identifiers.users).toInt();
-    _maximumActors=map.value(identifiers.maximumActors).toInt();
-    _actors=map.value(identifiers.actors).toInt();
+FKRoomData::FKRoomData(const QVariant &data){
+    _values=data.value<QMap<qint32,QVariant>>();
 }
 
 FKRoomData::FKRoomData():FKRoomData(QVariant()){}
 
 FKRoomData::FKRoomData(const FKRoomData& other)
-    :_roomType(other._roomType)
-    ,_owner(other._owner)
-    ,_creationTime(other._creationTime)
-    ,_custom(other._custom)
-    ,_maximumUsers(other._maximumUsers)
-    ,_users(other._users)
-    ,_maximumActors(other._maximumActors)
-    ,_actors(other._maximumActors)
-    ,_server(other._server)
-    ,_ready(other._ready)
+    :_values(other._values)
 {}
 
 FKRoomData& FKRoomData::operator=(const FKRoomData& other){
-    _roomType=other._roomType;
-    _owner=other._owner;
-    _creationTime=other._creationTime;
-    _custom=other._custom;
-    _maximumUsers=other._maximumUsers;
-    _users=other._users;
-    _maximumActors=other._maximumActors;
-    _actors=other._maximumActors;
-    _server=other._server;
-    _ready=other._ready;
+    _values=other._values;
     return *this;
 }
 
 bool FKRoomData::isValid() const{
-    return !_roomType.isEmpty();
+    return !_values.isEmpty();
 }
 
 QVariant FKRoomData::toVariant() const{
-    QMap<QString,QVariant> data;
-    data.insert(identifiers.roomType,_roomType);
-    data.insert(identifiers.owner,_owner);
-    data.insert(identifiers.creationTime,_creationTime);
-    data.insert(identifiers.custom,_custom);
-    data.insert(identifiers.maximumUsers,_maximumUsers);
-    data.insert(identifiers.users,_users);
-    data.insert(identifiers.maximumActors,_maximumActors);
-    data.insert(identifiers.actors,_actors);
+    return _values;
+}
+
+QVariant FKRoomData::createDelta(const qint32 propName, const QVariant &value){
+    if(propName<=0 || !value.isValid()){
+        return QVariant();
+    }
+    QPair<qint32,QVariant> data(propName,value);
     return data;
 }
 
-QVariant FKRoomData::toCreationRequest() const{
-    QMap<QString,QVariant> data;
-    data.insert(identifiers.roomType,_roomType);
-    data.insert(identifiers.owner,_owner);
-    return data;
-}
-
-QVariant FKRoomData::createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange){
-    QMap<QString,QVariant> data;
-    if(maxUsersChange)data[identifiers.maximumUsers]=maxUsersChange;
-    if(usersChange)data[identifiers.users]=usersChange;
-    if(maxActorsChange)data[identifiers.maximumActors]=maxActorsChange;
-    if(actorsChange)data[identifiers.actors]=actorsChange;
-    return data.isEmpty() ? QVariant() : data;
-}
-
-void FKRoomData::change(const QVariant& delta){
-    QMap<QString,QVariant> map=delta.toMap();
-    _maximumUsers+=map.value(identifiers.maximumUsers).toInt();
-    _users+=map.value(identifiers.users).toInt();
-    _maximumActors+=map.value(identifiers.maximumActors).toInt();
-    _actors+=map.value(identifiers.actors).toInt();
+void FKRoomData::change(const QVariant& value){
+    QPair<qint32,QVariant> val=delta.value<QPair<qint32,QVariant>>();
+    if(val.first>0 && val.second.isValid()){
+        setValue(val.first,val.second);
+    }else{
+        FK_MLOG("Invalid room data change")
+    }
 }
 
 bool FKRoomData::fit(const FKRoomDataFilter& filter)const{
-    return _ready && (filter._empty || (
-               (filter._roomType.isEmpty()  || _roomType==filter._roomType)
-            && (filter._maximumUsersMax==0  || _maximumUsers<=filter._maximumUsersMax)
-            && (                              _maximumUsers>=filter._maximumUsersMin)
-            && (filter._usersMax==0         || _users<=filter._usersMax)
-            && (                              _users>=filter._usersMin)
-            && (filter._maximumActorsMax==0 || _maximumActors<=filter._maximumActorsMax)
-            && (                              _maximumActors>=filter._maximumActorsMin)
-            && (filter._actorsMax==0        || _actors<=filter._actorsMax)
-            && (                              _actors>=filter._actorsMin)
-            && (!filter._latest.isValid()   || _creationTime<=filter._latest)
-            && (!filter._earliest.isValid() || _creationTime>=filter._earliest)
-            && (filter._owner.isEmpty()     || _owner==filter._owner)
-            && ((filter._custom && _custom) || (filter._notCustom && !_custom))
-                          ));
+    return filter._empty || (
+               (filter._roomType.isEmpty()  || value(FKRoomSettings::roomType).toString()==filter._roomType)
+            && (filter._maximumUsersMax==0  || value(FKRoomSettings::maximumUsers).toInt()<=filter._maximumUsersMax)
+            && (                               value(FKRoomSettings::maximumUsers).toInt()>=filter._maximumUsersMin)
+            && (filter._usersMax==0         || value(FKRoomSettings::totalUsers).toInt()<=filter._usersMax)
+            && (                               value(FKRoomSettings::totalUsers).toInt()>=filter._usersMin)
+            && (filter._maximumActorsMax==0 || value(FKRoomSettings::maximumActors).toInt()<=filter._maximumActorsMax)
+            && (                               value(FKRoomSettings::maximumActors).toInt()>=filter._maximumActorsMin)
+            && (filter._actorsMax==0        || value(FKRoomSettings::totalActors).toInt()<=filter._actorsMax)
+            && (                               value(FKRoomSettings::totalActors).toInt()>=filter._actorsMin)
+            && (!filter._latest.isValid()   || value(FKRoomSettings::creationTime).toDateTime()<=filter._latest)
+            && (!filter._earliest.isValid() || value(FKRoomSettings::creationTime).toDateTime()>=filter._earliest)
+            && (filter._owner.isEmpty()     || value(FKRoomSettings::owner).toString()==filter._owner)
+            && ((filter._custom && value(FKRoomSettings::isCustom).toBool()) || (filter._notCustom && !value(FKRoomSettings::isCustom).toBool()))
+                );
 }
 
-void FKRoomData::changeUsers(const qint32 userCount){
-    _users+=userCount;
+QString FKRoomData::roomType() const{
+    return value(FKRoomSettings::roomType).toString();
 }
+
 
 const FKRoomRequestData::Identifiers FKRoomRequestData::identifiers;
 

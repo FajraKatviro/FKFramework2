@@ -2,10 +2,12 @@
 #define FKROOMDATA_H
 
 #include <QString>
-#include <QDateTime>
+#include <QMap>
 
 class FKRoomDataFilter;
 class QVariant;
+
+class QDateTime;
 
 class FKRoomData{
 public:
@@ -16,49 +18,16 @@ public:
     FKRoomData& operator=(const FKRoomData& other);
     bool isValid()const;
     QVariant toVariant()const;
-    QVariant toCreationRequest()const;
-    static QVariant createDelta(const qint32 maxActorsChange, const qint32 actorsChange, const qint32 maxUsersChange, const qint32 usersChange);
-    void change(const QVariant& delta);
+    static QVariant createDelta(const qint32 propName, const QVariant& value);
+    void change(const QVariant& value);
     bool fit(const FKRoomDataFilter& filter)const;
-    void setReady(const bool val){_ready=val;}
 
-    QString roomType()const{return _roomType;}
-    QString owner()const{return _owner;}
-    QDateTime creationTime()const{return _creationTime;}
-    bool isCustom()const{return _custom;}
-    qint32 maximumUsers()const{return _maximumUsers;}
-    qint32 users()const{return _users;}
-    qint32 maximumActors()const{return _maximumActors;}
-    qint32 actors()const{return _actors;}
-    qint32 server()const{return _server;}
-    bool ready()const{return _ready;}
+    void setValue(const qint32 propName,const QVariant& value);
+    QVariant value(const qint32 propName)const;
 
-    void changeUsers(const qint32 userCount);
+    QString roomType()const;
 private:
-    QString _roomType;
-    QString _owner;
-    QDateTime _creationTime;
-    bool _custom;
-    qint32 _maximumUsers;
-    qint32 _users;
-    qint32 _maximumActors;
-    qint32 _actors;
-    qint32 _server;
-    bool _ready;
-
-    static const struct Identifiers{
-        Identifiers():roomType("rt"),maximumUsers("mu"),users("cu"),
-            maximumActors("ma"),actors("ca"),creationTime("ct"),
-            custom("c"),owner("oc"){}
-        const QString roomType;
-        const QString maximumUsers;
-        const QString users;
-        const QString maximumActors;
-        const QString actors;
-        const QString creationTime;
-        const QString custom;
-        const QString owner;
-    } identifiers;
+    QMap<qint32,QVariant> _values;
 };
 
 class FKRoomRequestData{ //this class used for client->realm requests

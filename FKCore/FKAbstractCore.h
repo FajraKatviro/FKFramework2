@@ -12,7 +12,7 @@ class QDir;
 class FKRealm;
 class FKServerInfrastructure;
 class FKClientInfrastructure;
-class FKUserInfrastructure;
+class FKRoomInfrastructure;
 enum class FKInfrastructureType:qint8;
 
 class FKCORESHARED_EXPORT FKAbstractCore:public QObject{
@@ -20,6 +20,7 @@ class FKCORESHARED_EXPORT FKAbstractCore:public QObject{
     Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
     Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
     Q_PROPERTY(QString uiSource READ uiSource NOTIFY uiSourceChanged)
+    Q_PROPERTY(FKRoomInfrastructure* room READ roomInfrastructure NOTIFY roomChanged)
 public:
     FKAbstractCore(QObject* parent=0);
     ~FKAbstractCore();
@@ -40,6 +41,7 @@ signals:
     void waitingForServerAnswerChanged();
     void realmStarted();
     void uiSourceChanged();
+    void roomChanged();
 public slots:
     virtual bool startRealm(const int port=0)=0;
     virtual bool startServer(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
@@ -78,6 +80,7 @@ public slots:
     void createRoomRequestRealm(const QString roomName, const QString roomType);
     //void createCustomServerRequest();
     QString uiSource()const;
+    FKRoomInfrastructure* roomInfrastructure()const;
 protected:
     //void addPostExecutionCommand(const QString& command);
     //virtual FKFilesList buildApplicationFilesList()const;

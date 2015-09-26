@@ -10,7 +10,7 @@
 FKUserInfrastructure::FKUserInfrastructure(const qint32 id,FKWorld* worldObject,QObject* parent)
         :FKInfrastructure(parent),_world(worldObject),_id(id){
     FK_CBEGIN
-    _im=new FKInteractiveModel(this);
+    //_im=new FKInteractiveModel(this);
     FK_CEND
 }
 

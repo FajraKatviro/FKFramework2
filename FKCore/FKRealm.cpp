@@ -5,6 +5,8 @@
 #include "FKBasicEvent.h"
 #include "FKRoomDataFilter.h"
 
+#include <QStringList>
+
 #include "FKAusviceData.h"
 #include "FKRoomInviteData.h"
 #include "FKBasicEventSubjects.h"
@@ -722,6 +724,23 @@ void FKRealm::joinRoomRequested(const QString& clientId, const QVariant& data){
     }
 }
 
+void FKRealm::clientDisonnectedFromServer(const qint32 serverId, const QVariant& data){
+    auto s=_serverConnections.value(serverId,nullptr);
+    const QString client=data.toString();
+    if(!client.isEmpty()){
+        auto i=s->clients.find(client);
+        if(i!=s->clients.end()){
+            database()->removeIndex(_dbPath.clientLastServerIndex(client));
+            database()->removeIndex(_dbPath.clientLastUsersIndex(client));
+            s->clients.erase(i);
+        }else{
+            FK_MLOGV("Server tries disconnect not connected client",serverId)
+        }
+    }else{
+        FK_MLOGV("Server tries disconnect invalid client",serverId)
+    }
+}
+
 //void FKRealm::createRoomRespond(const qint32 serverId, const QVariant& data){
 //    QString room=getServerRoom(serverId);
 //    if(room.isEmpty()){
@@ -837,6 +856,7 @@ void FKRealm::roomStopped(const qint32 serverId){
             database()->removeIndex(_dbPath.clientLastUsersIndex(client));
         }
         s->room.clear();
+        s->clients.clear();
     }
 }
 

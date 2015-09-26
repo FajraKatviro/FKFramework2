@@ -41,7 +41,7 @@ SOURCES += \
     FKRoomInviteData.cpp \
     FKRoom.cpp \
     FKServerInfrastructure.cpp \
-    FKUserInfrastructureSlot.cpp \
+    FKClientInfrastructureReferent.cpp \
     FKServerConnectionManager.cpp \
     FKUsersStructure.cpp \
     FKUser.cpp \
@@ -93,7 +93,7 @@ HEADERS += \
     FKRoomInviteData.h \
     FKRoom.h \
     FKServerInfrastructure.h \
-    FKUserInfrastructureSlot.h \
+    FKClientInfrastructureReferent.h \
     FKServerConnectionManager.h \
     FKUsersStructure.h \
     FKUser.h \

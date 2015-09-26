@@ -9,7 +9,7 @@
 
 class FKConnector;
 class FKConnectionManager;
-class FKUserInfrastructure;
+class FKRoomInfrastructure;
 class FKRoomModule;
 class FKUpdateChannel;
 
@@ -26,6 +26,7 @@ public:
     void submitLoginRealm(const QVariant& value);
 
     void submitLoginServer(const QVariant& value);
+    void syncComplete(const QVariant& value);
 
     bool requestUserCreation(const QString& name);
     bool requestUserDeletion(const QString& name);
@@ -56,6 +57,8 @@ public:
 
 //    qint32 realmPort()const;
 //    QString realmIP()const;
+    QString roomVisualizer()const;
+    FKRoomInfrastructure* roomInfrastructure()const;
 public slots:
     void realmConnection(FKConnector* connector);
     void serverConnection(FKConnector* connector);
@@ -70,8 +73,10 @@ signals:
     void activeUsersChanged();
     void roomListChanged();
     void connectToServerRequest(const QString address,const qint32 port);
-    void updateListChanged();
+    //void updateListChanged();
     //void customServerRequested(const qint32 serverId,const QString password);
+
+    void roomModuleChanged();
 private slots:
     void connectorStatusChanged();
     void serverConnectorStatusChanged();
@@ -84,7 +89,7 @@ private:
     QString _dynamicPassword;
     FKConnectionManager* _realmConnection;
     FKConnectionManager* _serverConnection;
-    QMap<qint32,FKUserInfrastructure*> _users;
+    FKRoomInfrastructure* _roomInfrastructure=nullptr;
     QStringList _userPool;
     QStringList _roomList;
     qint32 _customServerId;

@@ -10,8 +10,9 @@
 class FKConnector;
 class FKConnectionManager;
 class FKUserInfrastructureSlot;
-class FKUserInfrastructureAlias;
+class FKClientInfrastructureReferent;
 class FKServerConnectionManager;
+class FKEventObject;
 class FKRoom;
 class FKRoomModule;
 class FKObjectManager;
@@ -39,7 +40,7 @@ public:
     void createRoomRequested(const QVariant& data);
 
     void clientInvited(const QVariant& data);
-    //void submitLoginUser(const QVariant& data);
+    void syncRequest(FKServerConnectionManager* guest,const QVariant& data);
 
     void messageFromRealm(const QString& msg);
 
@@ -48,21 +49,26 @@ public:
     virtual qint32 userPort()const{return 0;}
 public slots:
     void realmConnection(FKConnector* connector);
-    //void userConnection(FKConnector* connector);
+    void clientConnection(FKConnector* connector);
 signals:
     void connectedToRealm();
     void disconnectedFromRealm();
     void loggedIn();
 private slots:
     void realmConnectorStatusChanged();
-    void roomDataChanged(const qint32 maxActorsDelta, const qint32 actorsDelta, const qint32 maxUsersDelta, const qint32 usersDelta);
-    void roomStarted();
+    void roomDataChanged(const QString propName, const QVariant value);
+    void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
+    //void roomStarted();
     void roomStopped();
+    void dispatchEvent(FKEventObject* ev);
 private:
     bool checkRealm();
     bool hasRoom()const;
     bool createRoom(const FKRoomData& roomData);
     bool checkInviteData(const FKRoomInviteData& data);
+    void syncClient(FKClientInfrastructureReferent* client);
+    void dropClient(const QString& clientName);
+    void notifyRealmClientDropped(const QString& clientName);
     virtual FKDataBase* createRoomDatabase();
     bool _logged;
     FKConnectionManager* _realmConnection;
@@ -70,9 +76,9 @@ private:
     FKRoomModule* _roomModule;
     FKRoom* _room;
     QSet<FKServerConnectionManager*> _guests;
-    QMap<QString,FKUserInfrastructureAlias*> _clients;
-    QMap<QString,FKUserInfrastructureSlot*> _users;
-    QMap<qint32,FKUserInfrastructureSlot*> _userObjects;
+    QMap<QString,FKClientInfrastructureReferent*> _clients; //this for chat message to client
+    QMap<QString,qint32> _users; //this for chat message to user
+    QMap<qint32,FKClientInfrastructureReferent*> _referents; //this for event dispatch
     FKIDGenerator _idgenerator;
     qint32 _id;
 };

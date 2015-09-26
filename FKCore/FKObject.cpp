@@ -944,6 +944,7 @@ void FKObject::initVisibleProperties(FKObject* watcher, const QList<qint32>& rec
 }
 
 void FKObject::initCommonProperties(const QList<qint32>& recievers){
+    friend class FKRoom;
     _om->shareObject(this,recievers);
     FKEventObject* event;
     QList<qint32> props(commonPropertyList());

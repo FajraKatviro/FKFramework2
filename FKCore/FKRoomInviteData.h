@@ -3,6 +3,7 @@
 
 #include <QMap>
 #include <QString>
+#include <QMetaType>
 
 class QString;
 class QStringList;
@@ -54,5 +55,6 @@ private:
         const QString roomType;
     } identifiers;
 };
+Q_DECLARE_METATYPE(FKRoomInviteData)
 
 #endif // FKROOMINVITEDATA_H

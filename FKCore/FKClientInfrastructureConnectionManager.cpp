@@ -64,6 +64,8 @@ void FKClientInfrastructureConnectionManagerS::processBasicEvent(FKBasicEvent* e
     ev->deleteLater();
     if(subject==FKBasicEventSubject::login){
         _infr->submitLoginRealm(value);
+    }else if(subject==FKBasicEventSubject::sync){
+        _infr->syncComplete(value);
     }else if(subject==FKBasicEventSubject::version){
         _infr->incomeVersionData(value);
     }else{

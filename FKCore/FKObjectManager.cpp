@@ -15,7 +15,7 @@
  * \brief Constructs object with given parent
  */
 
-FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_objectPool(20),_db(0),_roomModule(0){
+FKObjectManager::FKObjectManager(QObject* parent):QObject(parent),_objectPool(20),_db(0){
     FK_CBEGIN
     FK_CEND
 }

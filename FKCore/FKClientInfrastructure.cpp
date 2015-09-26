@@ -99,9 +99,20 @@ void FKClientInfrastructure::submitLoginServer(const QVariant& value){
             startUser((*u).toInt());
         }
         emit loggedInServer();
+        if(!requestAnswer(FKInfrastructureType::Server,FKBasicEventSubject::sync)){
+            FK_MLOG("Unexpected behaivour in FKClientInfrastructure::submitLoginServer() sync wait")
+        }
     }else{
         emit messageRequested(QString(tr("Server declined login command")));
     }
+}
+
+void FKClientInfrastructure::syncComplete(const QVariant& value){
+    Q_UNUSED(value)
+    if(!submitAnswer(FKInfrastructureType::Server,FKBasicEventSubject::sync)){
+        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::syncComplete()")
+    }
+    _roomInfrastructure->onSyncCompleted();
 }
 
 bool FKClientInfrastructure::requestUserCreation(const QString& name){
@@ -279,7 +290,14 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
             }else{
                 emit messageRequested(QString(tr("Unable load room module %1. Use chat room instead")).arg(invite.roomType()));
                 _roomModule->deleteLater();
-                _roomModule=nullptr;
+                _roomModule=new FKRoomModule(this);
+                if(_roomModule->load()){
+                    success=true;
+                }else{
+                    emit messageRequested(QString(tr("Unable load chat room module")));
+                    _roomModule->deleteLater();
+                    _roomModule=nullptr;
+                }
             }
         }else{
             emit messageRequested(QString(tr("Unable load room module: another one is loaded")));
@@ -289,7 +307,9 @@ void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
     }
 
     if(success){
+        _roomInfrastructure=_roomModule->createRoomInfrastructure();
         _dynamicPassword=invite.password();
+        emit roomModuleChanged();
         emit connectToServerRequest(invite.address(),invite.port());
     }
 }
@@ -351,7 +371,7 @@ void FKClientInfrastructure::incomeVersionData(const QVariant& value){
         auto currentInfo=currentVersion.getInfo(f->first,f->second);
         _updates.channels.append(QSharedPointer<FKUpdateChannel>(new FKUpdateChannel(f->first,currentInfo.first,f->second,newInfo.first,newInfo.second)));
     }
-    emit updateListChanged();
+    //emit updateListChanged();
 }
 
 QStringList FKClientInfrastructure::userPool() const{
@@ -372,6 +392,14 @@ void FKClientInfrastructure::messageFromRealm(const QString& msg){
 
 void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
     _customServerId=serverId;
+}
+
+QString FKClientInfrastructure::roomVisualizer() const{
+    return _roomModule ? _roomModule->visualizer() : QString();
+}
+
+FKRoomInfrastructure* FKClientInfrastructure::roomInfrastructure() const{
+    return _roomInfrastructure;
 }
 
 //qint32 FKClientInfrastructure::realmPort() const{
@@ -437,18 +465,11 @@ void FKClientInfrastructure::requestLoginServer(){
 }
 
 void FKClientInfrastructure::startUser(const qint32 objectId){
-    if(objectId==0){
+    if(objectId<=0){
         emit messageRequested(QString(tr("Unable start user infrastructure: object id not recognized")));
         return;
     }
-    if(_users.contains(objectId)){
-        emit messageRequested(QString(tr("Unable start user infrastructure %1: already started")).arg(QString::number(objectId)));
-        return;
-    }
-    FKUserInfrastructure* infr=new FKUserInfrastructure(this);
-    _users.insert(objectId,infr);
-
-    connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+    _roomInfrastructure->addUser(objectId);
     emit messageRequested(QString(tr("User infrastructure started")));
 }
 

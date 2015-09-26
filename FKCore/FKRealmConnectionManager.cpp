@@ -181,11 +181,13 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
     const QVariant value=ev->value();
     ev->deleteLater();
     if(subject==FKBasicEventSubject::roomData){
-        todo;//realm()->refreshRoomData(_id,value);
+        realm()->refreshRoomData(_id,value);
     }else if(subject==FKBasicEventSubject::registerRoomType){
         realm()->registerServerRoomType(_id,value);
     }else if(subject==FKBasicEventSubject::removeRoomType){
         realm()->removeServerRoomType(_id,value);
+    }else if(subject==FKBasicEventSubject::dropClient){
+        realm()->clientDisonnectedFromServer(_id,value);
     }else if(subject==FKBasicEventSubject::stopRoom){
         todo;//realm()->roomStopped(_id,value);
     }else{

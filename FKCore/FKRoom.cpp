@@ -46,8 +46,8 @@ qint32 FKRoom::usersSize() const{
     return servant ? ro_usersSize() : _usersSize;
 }
 
-
 bool FKRoom::addUsers(const FKRoomInviteData& data){
+    todo; //refactoring
     QList<qint32> userId;
     if(data.isValid()){
         qint32 usersInRoom=usersSize();
@@ -67,4 +67,20 @@ bool FKRoom::addUsers(const FKRoomInviteData& data){
         }
     }
     return false;
+}
+
+void FKRoom::enableUsers(const QList<qint32> userList){
+    for(qint32 id:userList){
+        FKObject* user=getObject(id);
+        if(user){
+            user->initCommonProperties(userList);
+            user->startTotalWatching(this);
+            FKObject* actor=getObject(user->getProperty(FKIdentifiers::actorId).toInt());
+            if(actor){
+                user->startTotalWatching(actor);
+                actor->allowControlBy(user);
+                actor->allowEmitBy(user);
+            }
+        }
+    }
 }

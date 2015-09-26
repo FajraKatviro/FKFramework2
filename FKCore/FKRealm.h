@@ -23,7 +23,7 @@ public:
     void stopServerConnection(const qint32 serverId);
     void stopClientConnection(const QString& clientId);
     //void refreshRoomList(const QString& clientId,const QVariant& filters);
-    //void refreshRoomData(const qint32 serverId, const QVariant& data);
+    void refreshRoomData(const qint32 serverId, const QVariant& data);
     void dropRealm();
     FKInfrastructureType infrastructureType()const;
 
@@ -44,6 +44,8 @@ public:
     void joinRoomRequested(const QString& clientId, const QVariant& data);
     //void createRoomRespond(const qint32 serverId, const QVariant& data);
     //void enterRoomRespond(const qint32 serverId, const QVariant& data);
+
+    void clientDisonnectedFromServer(const qint32 serverId,const QVariant& data);
 
     void roomStopped(const qint32 serverId, const QVariant& data); //implementation for connector
     void roomStopped(const qint32 serverId);

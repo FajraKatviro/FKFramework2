@@ -100,7 +100,7 @@ void FKLocalCore::connectClientToServer(const QString address, const qint32 port
     emit systemMessageRequested(QString(tr("Client connecting to server..")));
     FKLocalConnector* clientSideConnector=new FKLocalConnector(clientInfrastructure());
     FKLocalConnector* serverSideConnector=new FKLocalConnector(server());
-    server()->incomeConnection(serverSideConnector);
+    server()->clientConnection(serverSideConnector);
     clientInfrastructure()->serverConnection(clientSideConnector);
     serverSideConnector->join(clientSideConnector);
 }

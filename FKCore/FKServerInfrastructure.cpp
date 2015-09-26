@@ -1,6 +1,6 @@
 #include "FKServerInfrastructure.h"
 
-#include "FKUserInfrastructureSlot.h"
+#include "FKClientInfrastructureReferent.h"
 #include "FKServerConnectionManager.h"
 #include "FKBasicEvent.h"
 #include "FKObjectManager.h"
@@ -170,26 +170,59 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
 
 void FKServerInfrastructure::clientInvited(const QVariant& data){
     FKRoomInviteData invite(data);
-    QVariant ret;
-    if(_room->addUsers(invite)){
-        //FKRoomInviteData answer(invite.client(),userPort());
-        todo; //delayed creation and id send, check reconnection on userConnection, create user object
-        FKUserInfrastructureAlias* userAlias=new FKUserInfrastructureAlias(invite.client());
-        _clients.insert(invite.client(),userAlias);
-        foreach(QString u,invite.users()){
-            const qint32 id=_idgenerator.take();
-            FKUserInfrastructureSlot* userSlot=new FKUserInfrastructureSlot(userAlias,id,createUserInvitePassword());
-            userAlias->addUser(userSlot);
-            _users.insert(u,userSlot);
-            answer.addUser(u,userSlot->password());
+    if(invite.isValid()){
+        if(!_room){
+            notifyRealmClientDropped(invite.client());
+        }else{
+            _room->addUsers(invite);
         }
-        ret=answer.toVariant();
     }else{
-        FKRoomInviteData answer(invite.client());
-        ret=answer.toVariant();
+        FK_MLOG("Invalid invite client data recieved")
     }
-    FKBasicEvent ev(FKBasicEventSubject::joinRoom,ret);
-    _realmConnection->sendBasicEvent(&ev);
+}
+
+void FKServerInfrastructure::syncRequest(FKServerConnectionManager* guest, const QVariant& data){
+    bool success=false;
+    FKAusviceData ausvice(data);
+    if(!ausvice.isValid()){
+        FK_MLOG("Server guest provided invalid ausvice data")
+        dropGuestConnection(guest);
+        return;
+    }
+
+    if(ausvice.clientId().isEmpty()){
+        FK_MLOG("Server guest provided empty client name")
+        dropGuestConnection(guest);
+        return;
+    }
+    if(!isClientId(ausvice.clientId())){
+        FK_MLOG("Server guest provided invalid client name")
+        dropGuestConnection(guest);
+        return;
+    }
+    if(!_roomModule){
+        FK_MLOG("Server guest attempt login with no room")
+        dropGuestConnection(guest);
+        return;
+    }
+    auto i=_clients.find(ausvice.clientId());
+    if(referent==_clients.end()){
+        auto referent=new FKClientInfrastructureReferent(ausvice.clientId(),ausvice.password());
+        connect(referent,SIGNAL(actionRequested(FKEventObject*)),_om,SLOT(externalAction(FKEventObject*)));
+        i=_clients.insert(ausvice.clientId(),referent);
+    }else if(i.value()->isConnected()){
+        emit messageRequested(QString(tr("Warning! Dublicate client login attemption: %1")).arg(ausvice.clientId()));
+        dropGuestConnection(guest);
+        return;
+    }else if(i.value()->password()!=data.password()){
+        emit messageRequested(QString(tr("Warning! Client password does not match while login attemption: %1")).arg(ausvice.clientId()));
+        dropGuestConnection(guest);
+        return;
+    }
+    i.value()->setConnected(guest->connector());
+    _guests.remove(guest);
+    guest->deleteLater();
+    syncClient(i.value());
 }
 
 void FKServerInfrastructure::messageFromRealm(const QString& msg){
@@ -208,6 +241,12 @@ void FKServerInfrastructure::realmConnection(FKConnector* connector){
     }
 }
 
+void FKServerInfrastructure::clientConnection(FKConnector* connector){
+    auto* mgr=new FKServerConnectionManager(this,connector,this);
+    _guests.insert(mgr);
+    emit messageRequested(QString(tr("Server got new income connection")));
+}
+
 void FKServerInfrastructure::realmConnectorStatusChanged(){
     if(_realmConnection->isActive()){
         if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
@@ -221,27 +260,55 @@ void FKServerInfrastructure::realmConnectorStatusChanged(){
     }
 }
 
-void FKServerInfrastructure::roomDataChanged(const qint32 maxActorsDelta,const qint32 actorsDelta, const qint32 maxUsersDelta, const qint32 usersDelta){
+void FKServerInfrastructure::roomDataChanged(const QString propName, const QVariant value){
     if(!_logged){
         FK_MLOG("Warning! Unable send room data delta to realm: server is not logged in")
         return;
     }
 
-    QVariant delta=FKRoomData::createDelta(maxActorsDelta,actorsDelta,maxUsersDelta,usersDelta);
+    QVariant delta=FKRoomData::createDelta(propName,value);
     if(delta.isValid()){
         FKBasicEvent ev(FKBasicEventSubject::roomData,delta);
         _realmConnection->sendBasicEvent(&ev);
     }
 }
 
-void FKServerInfrastructure::roomStarted(){
-    if(!_logged){
-        FK_MLOG("Warning! Unable send room started event to realm: server is not logged in")
-        return;
+void FKServerInfrastructure::clientInviteResolved(const FKRoomInviteData data, const QList<qint32> userObjects){
+    if(userObjects.isEmpty()){
+        notifyRealmClientDropped(data.client());
+    }else{
+        auto i=_clients.find(data.client());
+        if(i==_clients.end()){
+            auto referent=new FKClientInfrastructureReferent(data.client(),data.password());
+            connect(referent,SIGNAL(actionRequested(FKEventObject*)),_om,SLOT(externalAction(FKEventObject*)));
+            i=_clients.insert(data.client(),referent);
+        }else if(i.value()->isInvited()){
+            emit messageRequested(QString(tr("Warning! Dublicate client invite resolve attemption: %1")).arg(data.client()));
+            return;
+        }else if(i.value()->password()!=data.password()){
+            i.value()->dropConnection();
+            i.value()->setPassword(data.password());
+        }
+        const qint32 listSize=userObjects.size();
+        QStringList userNames(data.users());
+        for(qint32 ind=0;ind<listSize;++ind){
+            i.value()->addUser(userObjects.at(ind));
+            _users.insert(userNames.at(ind),userObjects.at(ind));
+            _referents.insert(userObjects.at(ind),i.value());
+        }
+        i.value()->setInvited();
+        syncClient(i.value());
     }
-    FKBasicEvent ev(FKBasicEventSubject::startRoom);
-    _realmConnection->sendBasicEvent(&ev);
 }
+
+//void FKServerInfrastructure::roomStarted(){
+//    if(!_logged){
+//        FK_MLOG("Warning! Unable send room started event to realm: server is not logged in")
+//        return;
+//    }
+//    FKBasicEvent ev(FKBasicEventSubject::startRoom);
+//    _realmConnection->sendBasicEvent(&ev);
+//}
 
 void FKServerInfrastructure::roomStopped(){
     if(!_logged){
@@ -250,6 +317,25 @@ void FKServerInfrastructure::roomStopped(){
     }
     FKBasicEvent ev(FKBasicEventSubject::stopRoom);
     _realmConnection->sendBasicEvent(&ev);
+}
+
+void FKServerInfrastructure::dispatchEvent(FKEventObject* ev){
+    QList<FKClientInfrastructureReferent*> recievers;
+    for(auto i=ev->recievers().constBegin();i!=ev->recievers().constEnd();++i){
+        auto referent=_referents.find(*i);
+        if(referent!=_referents.constEnd()){
+            recievers.append(referent.value());
+        }else{
+            emit messageRequested(QString(tr("Unable dispatch event: %1 user not found")).arg(QString::number(*i)));
+        }
+    }
+    for(auto r=recievers.constBegin();r!=recievers.constEnd();++r){
+        (*r)->pushEvent(ev);
+    }
+    for(auto r=recievers.constBegin();r!=recievers.constEnd();++r){
+        (*r)->sendEvent();
+    }
+    ev->deleteLater();
 }
 
 bool FKServerInfrastructure::checkRealm(){
@@ -279,10 +365,11 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
                 FK_MLOGV("Invalid room module",roomData.roomType())
                 if(room)_om->deleteObject(room);
                 _roomModule->deleteLater();
-                _roomModule=0;
+                _roomModule=nullptr;
             }else{
                 _om->setRoomModule(_roomModule);
-                connect(_room,SIGNAL(roomDataChanged(qint32,qint32,qint32,qint32)),SLOT(roomDataChanged(qint32,qint32,qint32,qint32)));
+                connect(_room,SIGNAL(roomDataChanged(QString,QVariant)),SLOT(roomDataChanged(QString,QVariant)));
+                connect(_room,SIGNAL(clientInviteResolved(FKRoomInviteData,QList<qint32>)),SLOT(clientInviteResolved(FKRoomInviteData,QList<qint32>)));
                 _room->setup(roomData);
                 FK_MLOG("room created on server")
                 answer=true;
@@ -290,7 +377,7 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
         }else{
             FK_MLOGV("Unable load room module",roomData.roomType())
             _roomModule->deleteLater();
-            _roomModule=0;
+            _roomModule=nullptr;
         }
     }else{
         FK_MLOG("room module is not empty")
@@ -298,7 +385,25 @@ bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
     return answer;
 }
 
+void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){
+    if(client->isActive()){
+        FKBasicEvent startSync(FKBasicEventSubject::login,client->users());
+        client->sendBasicEvent(&startSync);
+        _room->enableUsers(client->users());
+        FKBasicEvent finishSync(FKBasicEventSubject::sync);
+        client->sendBasicEvent(&finishSync);
+    }
+}
 
+void FKServerInfrastructure::dropClient(const QString& clientName){
+    todo; //remove from maps
+    notifyRealmClientDropped(clientName);
+}
+
+void FKServerInfrastructure::notifyRealmClientDropped(const QString& clientName){
+    FKBasicEvent ev(FKBasicEventSubject::dropClient,clientName);
+    _realmConnection->sendBasicEvent(&ev);
+}
 
 FKDataBase* FKServerInfrastructure::createRoomDatabase(){
     FKDataBase* db=new FKFSDB(this);
