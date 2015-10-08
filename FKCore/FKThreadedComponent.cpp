@@ -22,7 +22,7 @@ void FKThreadedComponent::stopComponent(){
     }
 }
 
-bool FKThreadedComponent::started() const{
+bool FKThreadedComponent::isRunning() const{
     return _componentThread.isRunning();
 }
 

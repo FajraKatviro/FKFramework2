@@ -5,8 +5,5 @@ Core{
     property UserInterface userInterface
 
     onMessageRequested: ui.showMessage(msg)
-    onSystemMessageRequested: ui.showMessage("::"+msg)
-    onClientLoggedIn: {}
-    onCustomServerReady: ui.showMessage(qsTr("Custom server sucessfully started"))
-    onClientGotUpdateList: ui.showUpdateData()
+    Component.onCompleted: initComponents()
 }

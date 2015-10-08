@@ -1,30 +1,19 @@
 import QtQuick 2.3
 import FKApp 1.0
 
-Item{
-    Loader{
+QtObject{
+    default property var appComponents: [ ]
+
+    ConsoleUserInterfaceLayer{
         id: uiLoader
-        source: coreComponent.uiSource === "" ? "ConsoleUserInterfaceLayer.qml" : coreComponent.uiSource
+        core: coreComponent
     }
 
     CoreLayer{
         id: coreComponent
+        userInterface: uiLoader
        // onRealmStarted: startServer()
        // onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
-    }
-
-    Binding{
-        target: coreComponent
-        property: 'userInterface'
-        value: uiLoader.item
-        when: uiLoader.status == Loader.Ready
-    }
-
-    Binding{
-        target: uiLoader.item
-        property: 'core'
-        value: coreComponent
-        when: uiLoader.status == Loader.Ready
     }
 
     Component.onCompleted:{

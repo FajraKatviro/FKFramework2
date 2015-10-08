@@ -178,12 +178,16 @@ FKAbstractCore::~FKAbstractCore(){
 }
 
 bool FKAbstractCore::startRealmInfrastructure(const qint32 port){
-    _realmComponent->startComponent();
-    _realmComponent->setPort(port);
+    if(!_realmComponent->isRunning()){
+        _realmComponent->startComponent();
+        _realmComponent->setPort(port);
+    }
 }
 
 bool FKAbstractCore::stopRealmInfrastructure(){
-    _realmComponent->stopComponent();
+    if(_realmComponent->isRunning()){
+        _realmComponent->stopComponent();
+    }
 }
 
 void FKAbstractCore::quitApplication(){

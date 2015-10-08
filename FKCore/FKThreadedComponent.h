@@ -14,7 +14,7 @@ public:
     ~FKThreadedComponent();
     virtual void startComponent(){}
     virtual void stopComponent();
-    bool started()const;
+    bool isRunning()const;
     void setComponentFactory(FKAbstractFactoryObjectCreator* creator);
 protected:
     void startComponent(QObject* object);
