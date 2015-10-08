@@ -1,7 +1,7 @@
 #CONFIG += fkrooms
 CONFIG += fkapp
 CONFIG += fktools
-#CONFIG += fktests
+CONFIG += fktests
 
 TEMPLATE = subdirs
 
