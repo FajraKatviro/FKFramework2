@@ -49,10 +49,25 @@ public:
 
     void roomStopped(const qint32 serverId, const QVariant& data); //implementation for connector
     void roomStopped(const qint32 serverId);
+public slots:
+    virtual void setPort(const qint32 /*port*/){}
+    void incomeConnection(FKConnector* connector);
 
     QStringList userList()const;
-public slots:
-    void incomeConnection(FKConnector* connector);
+    QStringList getUserList(const QString clientId)const;
+
+    QStringList clientList()const;
+    QStringList connectedClientList()const;
+    QStringList activeClientList()const;
+
+    QStringList serverList()const;
+    QList<qint32> connectedServerList()const;
+    QStringList serverAvaliableRoomTypes(const qint32 serverId)const;
+
+    QStringList getRegisteredRoomTypes()const;
+    QStringList getServersForRoomType(const QString roomType)const;
+
+    QStringList getRoomList(const QVariant filters)const;
 private:
     bool isServerConnected(const qint32 id)const;
     bool isServerRegistered(const qint32 id)const;
@@ -64,11 +79,9 @@ private:
     QString getServerPassword(const qint32 id)const;
     QString getClientPassword(const QString& id)const;
     QString getServerOwner(const qint32 id)const;
-    QStringList getUserList(const QString& clientId)const;
     QStringList getLastUsers(const QString& clientId)const;
     QString getLastRoom(const QString& clientId)const;
     bool isClientInRoom(const QString& clientId)const;
-    QStringList getRegisteredRoomTypes()const;
     bool isRoomTypeRegistered(const QString& roomType)const;
     bool hasActiveServersForRoomType(const QString& roomType)const;
     bool isRoomTypeRegistered(const QString& roomType,const qint32 serverId)const;
@@ -87,7 +100,6 @@ private:
     void removeRoomTypeFromDatabase(const QString& roomType);
     void registerNewRoomType(const qint32 serverId,const QString& roomType);
     void removeRoomTypeFromDatabase(const qint32 serverId,const QString& roomType);
-    //QStringList getRoomList(const QVariant& filters)const;
     //QString getServerRoom(const qint32 serverId)const;
     //QString getClientRoom(const QString& clientId)const;
     //qint32 getUserActive(const QString& clientId, const QString& userName);

@@ -51,7 +51,11 @@ SOURCES += \
     FKUpdateData.cpp \
     FKUpdateChannel.cpp \
     FKVersionList.cpp \
-    FKPathResolver.cpp
+    FKPathResolver.cpp \
+    FKRoomInfrastructure.cpp \
+    FKRoomEngine.cpp \
+    FKRoomContext.cpp \
+    FKThreadedComponent.cpp
 
 HEADERS += \
     fkcore_global.h \
@@ -105,7 +109,11 @@ HEADERS += \
     FKUpdateChannel.h \
     FKUpdateChannelStatus.h \
     FKVersionList.h \
-    FKPathResolver.h
+    FKPathResolver.h \
+    FKRoomInfrastructure.h \
+    FKRoomEngine.h \
+    FKRoomContext.h \
+    FKThreadedComponent.h
 
 include(../FKFramework.pri)
 include(fkservice/FKCore_service.pri)

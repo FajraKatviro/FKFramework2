@@ -958,7 +958,7 @@ void FKRealm::removeRoomTypeFromDatabase(const qint32 serverId, const QString& r
     if(server)server->roomTypes.removeAll(roomType);
 }
 
-QStringList FKRealm::getRoomList(const QVariant& filters) const{
+QStringList FKRealm::getRoomList(const QVariant filters) const{
     QStringList lst;
     FKRoomDataFilter f(filters);
     for(auto i=_activeRooms.constBegin();i!=_activeRooms.constEnd();++i){
@@ -1004,7 +1004,7 @@ qint32 FKRealm::getCustomServer(const QString& clientId) const{
     return database()->getValue(_dbPath.clientCustomServerIndex(clientId),false).number();
 }
 
-QStringList FKRealm::getServersForRoomType(const QString& roomType) const{
+QStringList FKRealm::getServersForRoomType(const QString roomType) const{
     return database()->getProperties(_dbPath.roomTypeIndex(roomType));
 }
 
@@ -1234,8 +1234,36 @@ QString FKRealm::getServerOwner(const qint32 id) const{
     return database()->getValue(_dbPath.serverOwnerIndex(id),false).string();
 }
 
-QStringList FKRealm::getUserList(const QString& clientId) const{
+QStringList FKRealm::getUserList(const QString clientId) const{
     return database()->getProperties(_dbPath.clientUsersIndex(clientId));
+}
+
+QStringList FKRealm::clientList() const{
+    return database()->getProperties(_dbPath.clientsIndex());
+}
+
+QStringList FKRealm::connectedClientList() const{
+    return _clientConnections.keys();
+}
+
+QStringList FKRealm::activeClientList() const{
+    QStringList lst;
+    for(auto s=_serverConnections.constBegin();s!=_serverConnections.constEnd();++s){
+        lst.append(s.value()->clients);
+    }
+    return lst;
+}
+
+QStringList FKRealm::serverList() const{
+    return database()->getProperties(_dbPath.serversIndex());
+}
+
+QList<qint32> FKRealm::connectedServerList() const{
+    return _serverConnections.keys();
+}
+
+QStringList FKRealm::serverAvaliableRoomTypes(const qint32 serverId) const{
+    return database()->getProperties(_dbPath.serverRoomTypesIndex(serverId));
 }
 
 bool FKRealm::isClientInRoom(const QString& clientId) const{

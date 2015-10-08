@@ -30,3 +30,17 @@ QString FKPathResolver::roomFileBackupPath(const QString& path, qint8 platform, 
             arg(FKPathResolver::roomsFolder).
             arg(path);
 }
+
+QString FKPathResolver::realmDatabasePath(){
+    return QString("%1/../%2/%3").
+            arg(QCoreApplication::applicationDirPath()).
+            arg(FKPathResolver::databaseFolder).
+            arg(FKPathResolver::realmFolder);
+}
+
+QString FKPathResolver::serverDatabasePath(){
+    return QString("%1/../%2/%3").
+            arg(QCoreApplication::applicationDirPath()).
+            arg(FKPathResolver::databaseFolder).
+            arg(FKPathResolver::serverFolder);
+}

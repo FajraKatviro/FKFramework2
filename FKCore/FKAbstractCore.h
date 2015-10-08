@@ -5,114 +5,127 @@
 #include <QMap>
 #include <QStringList>
 
+#include "FKThreadedComponent.h"
+
 #include "fkcore_global.h"
 
-class QDir;
+class FKConnector;
 
-class FKRealm;
-class FKServerInfrastructure;
-class FKClientInfrastructure;
-class FKRoomInfrastructure;
-enum class FKInfrastructureType:qint8;
+class FKRealmComponent:FKThreadedComponent{
+    Q_OBJECT
+public:
+    FKRealmComponent(QObject* parent = nullptr);
+    ~FKRealmComponent();
+    virtual void startComponent()override;
+public slots:
+    QStringList userList()const;
+    QStringList userList(const QString clientId)const;
+    QStringList clientList()const;
+    QStringList connectedClientList()const;
+    QStringList activeClientList()const;
+    QStringList serverList()const;
+    QStringList serverList(const QString roomType)const;
+    QList<qint32> connectedServerList()const;
+    QStringList roomTypeList()const;
+    QStringList roomTypeList(const qint32 serverId)const;
+    QStringList activeRoomList()const;
+    QStringList activeRoomList(const QVariant filter)const;
+
+//    void createClientRecord(const QString clientName, const QString password);
+//    void deleteClientRecord(const QString clientName);
+//    void createServerRecord(const QString password);
+//    void deleteServerRecord(const qint32 serverId);
+//    void registerRoomType(const QString roomType);
+//    void removeRoomType(const QString roomType);
+//    void createRoomRequest(const QString roomName, const QString roomType);
+    void setPort(const qint32 port);
+    void guestConnection(FKConnector* connector);
+signals:
+    void messageRequested(const QString msg);
+    void started();
+};
+
+class FKServerComponent:FKThreadedComponent{
+    Q_OBJECT
+public:
+    FKServerComponent(QObject* parent = nullptr);
+    ~FKServerComponent();
+    //virtual void startComponent()override;
+public slots:
+//    void ausvise(const qint32 id, const QString password);
+//    void registerRoomType(const QString roomType);
+//    void removeRoomType(const QString roomType);
+signals:
+    void messageRequested(const QString msg);
+    void connectedToRealm();
+    void disconnectedFromRealm();
+    void loggedIn();
+};
+
+class FKClientComponent:FKThreadedComponent{
+    Q_OBJECT
+    //Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
+    //Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
+public:
+    FKClientComponent(QObject* parent = nullptr);
+    ~FKClientComponent();
+//    virtual void startComponent()override;
+//    bool waitingForRealmAnswer()const;
+//    bool waitingForServerAnswer()const;
+public slots:
+//    void ausvise(const QString id, const QString password);
+//    void createUserRecord(const QString& name);
+//    void deleteUserRecord(const QString& name);
+//    void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);
+//    void joinRoomRequest(const QString roomName, const QStringList users);
+//    QStringList userList()const;
+signals:
+    void messageRequested(const QString msg);
+    void waitingForRealmAnswerChanged();
+    void waitingForServerAnswerChanged();
+
+    void connectedToRealm();
+    void disconnectedFromRealm();
+    void loggedInRealm();
+    void connectedToServer();
+    void disconnectedFromServer();
+    void loggedInServer();
+    void gotUpdateList();
+};
 
 class FKCORESHARED_EXPORT FKAbstractCore:public QObject{
     Q_OBJECT
-    Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
-    Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
-    Q_PROPERTY(QString uiSource READ uiSource NOTIFY uiSourceChanged)
-    Q_PROPERTY(FKRoomInfrastructure* room READ roomInfrastructure NOTIFY roomChanged)
+    Q_PROPERTY(FKRealmComponent* realmComponent READ realmComponent NOTIFY realmComponentChanged)
+    Q_PROPERTY(FKServerComponent* serverComponent READ serverComponent NOTIFY serverComponentChanged)
+    Q_PROPERTY(FKClientComponent* clientComponent READ clientComponent NOTIFY clientComponentChanged)
 public:
     FKAbstractCore(QObject* parent=0);
     ~FKAbstractCore();
+    inline FKRealmComponent*  realmComponent()const{return _realmComponent;}
+    inline FKServerComponent* serverComponent()const{return _serverComponent;}
+    inline FKClientComponent* clientComponent()const{return _clientComponent;}
+public slots:
+    virtual bool startRealmInfrastructure(const qint32 port=0);
+    //virtual bool startServerInfrastructure(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
+    //virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString())=0;
+    virtual bool stopRealmInfrastructure();
+    //virtual bool stopServerInfrastructure()=0;
+    //virtual bool stopClientInfrastructure()=0;
+    void quitApplication();
+    void initComponents();
 signals:
     void messageRequested(const QString msg);
-    void systemMessageRequested(const QString msg);
-    void clientConnectedToRealm();
-    void clientDisconnectedFromRealm();
-    void clientLoggedIn();
-    void clientConnectedToServer();
-    void clientDisconnectedFromServer();
-    void clientLoggedInServer();
-    void clientGotUpdateList();
-    void serverConnectedToRealm();
-    void serverDisconnectedFromRealm();
-    void serverLoggedIn();
-    void waitingForRealmAnswerChanged();
-    void waitingForServerAnswerChanged();
-    void realmStarted();
-    void uiSourceChanged();
-    void roomChanged();
-public slots:
-    virtual bool startRealm(const int port=0)=0;
-    virtual bool startServer(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
-    virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString())=0;
-    void ausviseClientInfrastructure(const QString id, const QString password);
-    void ausviseServerInfrastructure(const qint32 id, const QString password);
-    bool createUserRecord(const QString& name);
-    bool deleteUserRecord(const QString& name);
-
-    virtual bool stopRealm()=0;
-    virtual bool stopServer()=0;
-    virtual bool stopClientManager()=0;
-
-    //void setApplicationFilesList(){_appFilesList=buildApplicationFilesList();}
-    //const FKFilesList& applicationFilesList()const{return _appFilesList;}
-
-    void quitApplication();
-    //void restartApplication();
-
-    bool waitingForRealmAnswer()const;
-    bool waitingForServerAnswer()const;
-    QStringList userList()const;
-    QStringList realmUserList()const;
-
-    void createClientRecord(const QString clientName, const QString password);
-    void deleteClientRecord(const QString clientName);
-    void createServerRecord(const QString password);
-    void deleteServerRecord(const qint32 serverId);
-    void registerRoomType(const QString roomType);
-    void registerServerRoomType(const QString roomType);
-    void removeRoomType(const QString roomType);
-    void removeServerRoomType(const QString roomType);
-
-    void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);
-    void joinRoomRequest(const QString roomName, const QStringList users);
-    void createRoomRequestRealm(const QString roomName, const QString roomType);
-    //void createCustomServerRequest();
-    QString uiSource()const;
-    FKRoomInfrastructure* roomInfrastructure()const;
+    void realmComponentChanged();
+    void serverComponentChanged();
+    void clientComponentChanged();
 protected:
-    //void addPostExecutionCommand(const QString& command);
-    //virtual FKFilesList buildApplicationFilesList()const;
+    virtual void createComponents();
+    virtual void installComponents();
+    virtual void installComponentFactories();
 
-    void setRealm(FKRealm* realm);
-    void setServer(FKServerInfrastructure* server);
-    void setClientInfrastructure(FKClientInfrastructure* infr);
-    FKRealm* realm();
-    FKServerInfrastructure* server();
-    FKClientInfrastructure* clientInfrastructure();
-
-    virtual QString realmDatabasePath()const;
-    virtual QString serverDatabasePath()const;
-    static QDir& changeDir(QDir& dir,const QString& name);
-private slots:
-    void waitingForAnswerChanged(FKInfrastructureType t);
-    void serverConnectedToRealmSlot();
-    void serverDisconnectedFromRealmSlot();
-    void serverLoggedInSlot();
-
-    virtual void connectClientToServer(const QString address,const qint32 port);
-private:
-    //FKFilesList _appFilesList;
-
-    FKRealm* _realm;
-    FKServerInfrastructure* _server;
-    FKClientInfrastructure* _infr;
-
-    //qint32 _customServerId;
-    //QString _customServerPassword;
+    FKRealmComponent* _realmComponent=nullptr;
+    FKServerComponent* _serverComponent=nullptr;
+    FKClientComponent* _clientComponent=nullptr;
 };
-
-
 
 #endif // FKABSTRACTCORE_H
