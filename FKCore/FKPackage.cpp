@@ -2,6 +2,7 @@
 
 #include "FKLogger.h"
 
+#include <QDataStream>
 #include <QSharedPointer>
 #include <QFile>
 

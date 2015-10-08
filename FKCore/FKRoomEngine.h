@@ -25,16 +25,16 @@ public:
     FKRoomContext* defaultContext()const;
     QQmlListProperty<FKRoomContext> userContexts()const;
 public slots:
-    void loadModule(const QString& moduleName);
-    void releaseModule();
-    void createServerContext();
-    void releaseServerContext();
-    void createUserContext(const qint32 rootId, bool defaultContext);
+//    void loadModule(const QString& moduleName);
+//    void releaseModule();
+//    void createServerContext();
+//    void releaseServerContext();
+//    void createUserContext(const qint32 rootId, bool defaultContext);
 
-    void processAction(FKEventObject* ev);
-    void processEvent(FKEventObject* ev);
-    void processMessage(FKMessage* msg);
-    void processInstruction(FKInstructionObject* instruction);
+//    void processAction(FKEventObject* ev);
+//    void processEvent(FKEventObject* ev);
+//    void processMessage(FKMessage* msg);
+//    void processInstruction(FKInstructionObject* instruction);
 signals:
     void defaultContextChanged();
     void userContextsChanged();

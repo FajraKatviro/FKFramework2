@@ -41,6 +41,13 @@ FKConsoleInterface::~FKConsoleInterface(){
     FK_DEND
 }
 
+void FKConsoleInterface::setWelcomeString(const QString arg){
+    if(welcomeString()!=arg){
+        _welcomeString=arg;
+        emit welcomeStringChanged();
+    }
+}
+
 /*!
  * \brief Print given message to console
  */
@@ -52,6 +59,10 @@ void FKConsoleInterface::showMessage(const QString& m){
 
 void FKConsoleInterface::showUpdateData(){
     showMessage("Update data recieved");
+}
+
+QString FKConsoleInterface::welcomeString() const{
+    return _welcomeString;
 }
 
 /*!

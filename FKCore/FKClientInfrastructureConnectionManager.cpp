@@ -80,7 +80,7 @@ void FKClientInfrastructureConnectionManagerS::processEvent(FKEventObject* ev){
 }
 
 void FKClientInfrastructureConnectionManagerS::processUpdateData(FKUpdateData* data){
-    _infr->incomeUpdateData(data);
+    //_infr->incomeUpdateData(data);
 }
 
 //void FKClientInfrastructureConnectionManagerS::processMessage(FKMessage* msg){

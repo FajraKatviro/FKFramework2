@@ -3,7 +3,7 @@
 
 #include "FKAbstractCore.h"
 
-class FKCORESHARED_EXPORT FKLocalCore : public FKAbstractCore{
+class FKCORESHARED_EXPORT FKLocalCore : public FKSimpleCore{
     Q_OBJECT
 public:
     FKLocalCore();
@@ -19,7 +19,7 @@ public slots:
     bool stopClientManager(){return true;/*todo*/}
     bool quitRoom(){return true;/*todo*/}
 private slots:
-    virtual void connectClientToServer(const QString address,const qint32 port)override;
+    virtual void connectClientToServer(const QString address,const qint32 port);
 };
 
 #endif // FKLOCALCORE_H

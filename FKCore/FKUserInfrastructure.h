@@ -3,6 +3,7 @@
 
 #include "FKInfrastructure.h"
 #include <QSharedPointer>
+#include <QVariant>
 
 class FKConnectionManager;
 class FKObjectManager;

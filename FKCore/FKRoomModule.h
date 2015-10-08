@@ -14,7 +14,7 @@ class FKPackageManager;
 class FKRoomModule:public QObject{
     Q_OBJECT
 public:
-    FKRoomModule(const QString& module=QString("FKChatRoom"),QObject* parent=0);
+    FKRoomModule(QObject* parent=0,const QString& module=QString("FKChatRoom"));
     ~FKRoomModule();
     bool load();
 

@@ -1,4 +1,4 @@
-#include "FKAbstractCore.h"
+#include "FKSimpleCore.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -29,11 +29,11 @@ void FKRealmComponent::startComponent(){
         FKRealm* realm=static_cast<FKRealm*>(componentFactory()->newInstance());
         connect(realm,SIGNAL(messageRequested(QString)),this,SIGNAL(messageRequested(QString)));
         QString dbPath(FKPathResolver::realmDatabasePath());
-        QDir::mkpath(dbPath);
+        QDir(dbPath).mkpath(".");
         FKDataBase* db=new FKFSDB(realm);
         db->setPath(dbPath);
         realm->setDataBase(db);
-        startComponent(realm);
+        FKThreadedComponent::startComponent(realm);
         emit messageRequested(QString(tr("Realm started")));
         emit started();
     }
@@ -49,7 +49,7 @@ QStringList FKRealmComponent::userList() const{
 
 QStringList FKRealmComponent::userList(const QString clientId) const{
     QStringList lst;
-    if(!getValue(lst,"getUserList"),clientId){
+    if(!getValue(lst,"getUserList",clientId)){
         FK_MLOG("Unable get user list")
     }
     return lst;
@@ -158,13 +158,13 @@ FKClientComponent::~FKClientComponent(){
     FK_DBEGIN
     FK_DEND
 }
-FKAbstractCore::FKAbstractCore(QObject* parent):QObject(parent){
+FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
     qRegisterMetaType<FKRoomInviteData>();
-    qRegisterMetaType<FKRealmComponent>();
-    qRegisterMetaType<FKServerComponent>();
-    qRegisterMetaType<FKClientComponent>();
+    //qmlRegisterType<FKRealmComponent*>();
+    //qRegisterMetaType<FKServerComponent*>();
+    //qRegisterMetaType<FKClientComponent*>();
     FK_CEND
 }
 
@@ -172,47 +172,51 @@ FKAbstractCore::FKAbstractCore(QObject* parent):QObject(parent){
  * \brief Deletes core object
  */
 
-FKAbstractCore::~FKAbstractCore(){
+FKSimpleCore::~FKSimpleCore(){
     FK_DBEGIN
     FK_DEND
 }
 
-bool FKAbstractCore::startRealmInfrastructure(const qint32 port){
+bool FKSimpleCore::startRealmInfrastructure(const qint32 port){
     if(!_realmComponent->isRunning()){
         _realmComponent->startComponent();
         _realmComponent->setPort(port);
+        return true;
     }
+    return false;
 }
 
-bool FKAbstractCore::stopRealmInfrastructure(){
+bool FKSimpleCore::stopRealmInfrastructure(){
     if(_realmComponent->isRunning()){
         _realmComponent->stopComponent();
+        return true;
     }
+    return false;
 }
 
-void FKAbstractCore::quitApplication(){
+void FKSimpleCore::quitApplication(){
     qApp->quit();
 }
 
-void FKAbstractCore::initComponents(){
+void FKSimpleCore::initComponents(){
     createComponents();
     installComponents();
     installComponentFactories();
 }
 
-void FKAbstractCore::createComponents(){
+void FKSimpleCore::createComponents(){
     _realmComponent=new FKRealmComponent(this);
     _serverComponent=new FKServerComponent(this);
     _clientComponent=new FKClientComponent(this);
 }
 
-void FKAbstractCore::installComponents(){
+void FKSimpleCore::installComponents(){
     connect(_realmComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
     connect(_serverComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
     connect(_clientComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
 }
 
-void FKAbstractCore::installComponentFactories(){
+void FKSimpleCore::installComponentFactories(){
     _realmComponent->setComponentFactory(new FKFactoryObjectCreator<FKRealm>());
     _serverComponent->setComponentFactory(new FKFactoryObjectCreator<FKServerInfrastructure>());
     _clientComponent->setComponentFactory(new FKFactoryObjectCreator<FKClientInfrastructure>());

@@ -1,5 +1,7 @@
 #include "FKEventObject.h"
 
+#include <QDataStream>
+
 #include "FKMessage.h"
 
 #include "FKLogger.h"

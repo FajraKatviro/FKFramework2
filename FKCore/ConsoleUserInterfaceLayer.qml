@@ -1,4 +1,4 @@
-import QtQml 2.0
+import QtQml 2.2
 import FKApp 1.0
 
 UserInterface{
@@ -25,6 +25,8 @@ UserInterface{
     //onCreateRoomRequested: core.createRoomRequest(roomName,roomType,users)
     //onCreateRoomRequestedRealm: core.createRoomRequestRealm(roomName,roomType)
     //onJoinRoomRequested: core.joinRoomRequest(roomName,users)
+
+    welcomeString: qsTr("Welcome to FKApplication!")
 
     Component.onCompleted: show()
 }

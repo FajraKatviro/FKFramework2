@@ -4,12 +4,12 @@
 #include "FKInfrastructure.h"
 
 #include <QSet>
+#include <QVariant>
 
 #include "FKIDGenerator.h"
 
 class FKConnector;
 class FKConnectionManager;
-class FKUserInfrastructureSlot;
 class FKClientInfrastructureReferent;
 class FKServerConnectionManager;
 class FKEventObject;
@@ -41,6 +41,7 @@ public:
 
     void clientInvited(const QVariant& data);
     void syncRequest(FKServerConnectionManager* guest,const QVariant& data);
+    void stopGuestConnection(FKServerConnectionManager* guest);
 
     void messageFromRealm(const QString& msg);
 
@@ -56,8 +57,8 @@ signals:
     void loggedIn();
 private slots:
     void realmConnectorStatusChanged();
-    void roomDataChanged(const QString propName, const QVariant value);
-    void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
+    void roomDataChanged(const qint32 propName, const QVariant value);
+    //void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
     //void roomStarted();
     void roomStopped();
     void dispatchEvent(FKEventObject* ev);

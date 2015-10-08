@@ -16,7 +16,7 @@ public:
     bool operator==(const FKVersionString& other)const;
     bool operator!=(const FKVersionString& other)const;
 private:
-    const QString _str;
+    QString _str;
     QList<qint32> numbers()const;
 };
 
@@ -41,13 +41,13 @@ public:
     struct Data{
         Data(const QString& path,const FKVersionString& version,const qint8 platform,const qint64 size):
             path(path),version(version),platform(platform),size(size){}
-        const QString path;
-        const FKVersionString version;
-        const qint8 platform=0;
-        const qint64 size=0;
+        QString path;
+        FKVersionString version;
+        qint8 platform=0;
+        qint64 size=0;
     };
     inline const QList<FKVersionList::Data>& enteties()const{return _enteties;}
-    QPair<QString,qint64> getInfo(const QString& path,const qint8 platform);
+    QPair<QString,qint64> getInfo(const QString& path,const qint8 platform)const;
 private:
     QList<FKVersionList::Data> _enteties;
 

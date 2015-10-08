@@ -1,9 +1,10 @@
 #ifndef FKUPDATECHANNEL_H
 #define FKUPDATECHANNEL_H
 
-#include "FKUpdateChannelStatus.h"
-
 #include <QFile>
+#include <QMap>
+
+#include "FKUpdateChannelStatus.h"
 
 class FKUpdateChannel{
 public:

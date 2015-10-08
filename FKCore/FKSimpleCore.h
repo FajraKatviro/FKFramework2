@@ -1,9 +1,10 @@
-#ifndef FKABSTRACTCORE_H
-#define FKABSTRACTCORE_H
+#ifndef FKSIMPLECORE_H
+#define FKSIMPLECORE_H
 
 #include <QObject>
 #include <QMap>
 #include <QStringList>
+#include <QVariant>
 
 #include "FKThreadedComponent.h"
 
@@ -11,7 +12,7 @@
 
 class FKConnector;
 
-class FKRealmComponent:FKThreadedComponent{
+class FKRealmComponent:public FKThreadedComponent{
     Q_OBJECT
 public:
     FKRealmComponent(QObject* parent = nullptr);
@@ -45,7 +46,7 @@ signals:
     void started();
 };
 
-class FKServerComponent:FKThreadedComponent{
+class FKServerComponent:public FKThreadedComponent{
     Q_OBJECT
 public:
     FKServerComponent(QObject* parent = nullptr);
@@ -62,7 +63,7 @@ signals:
     void loggedIn();
 };
 
-class FKClientComponent:FKThreadedComponent{
+class FKClientComponent:public FKThreadedComponent{
     Q_OBJECT
     //Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
     //Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
@@ -93,14 +94,14 @@ signals:
     void gotUpdateList();
 };
 
-class FKCORESHARED_EXPORT FKAbstractCore:public QObject{
+class FKCORESHARED_EXPORT FKSimpleCore:public QObject{
     Q_OBJECT
     Q_PROPERTY(FKRealmComponent* realmComponent READ realmComponent NOTIFY realmComponentChanged)
     Q_PROPERTY(FKServerComponent* serverComponent READ serverComponent NOTIFY serverComponentChanged)
     Q_PROPERTY(FKClientComponent* clientComponent READ clientComponent NOTIFY clientComponentChanged)
 public:
-    FKAbstractCore(QObject* parent=0);
-    ~FKAbstractCore();
+    FKSimpleCore(QObject* parent=0);
+    ~FKSimpleCore();
     inline FKRealmComponent*  realmComponent()const{return _realmComponent;}
     inline FKServerComponent* serverComponent()const{return _serverComponent;}
     inline FKClientComponent* clientComponent()const{return _clientComponent;}
@@ -128,4 +129,4 @@ protected:
     FKClientComponent* _clientComponent=nullptr;
 };
 
-#endif // FKABSTRACTCORE_H
+#endif

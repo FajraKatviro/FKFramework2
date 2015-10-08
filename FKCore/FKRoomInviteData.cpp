@@ -15,7 +15,7 @@ FKRoomInviteData::FKRoomInviteData(const QString& client, const QString& passwor
 FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true){
     QMap<QString,QVariant> dataMap=data.toMap();
     auto i=dataMap.constFind(identifiers.client);
-    QStringList userList, passwordList;
+    QStringList userList;
     if(i!=dataMap.constEnd()){
         _client=i.value().toString();
     }
@@ -49,7 +49,7 @@ FKRoomInviteData::FKRoomInviteData(const QVariant& data):_port(-1),_isValid(true
     }
     if(_isValid){
         _isValid =  (!userList.isEmpty() &&
-                     !client.isEmpty()) ||
+                     !_client.isEmpty()) ||
                     (!_roomType.isEmpty() &&
                      !_address.isEmpty() &&
                      _port>=0);

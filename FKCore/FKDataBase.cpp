@@ -1,5 +1,7 @@
 #include "FKDataBase.h"
 
+#include <QDataStream>
+
 #include "FKLogger.h"
 
 /*!

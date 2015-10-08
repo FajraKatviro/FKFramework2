@@ -2,6 +2,7 @@
 #define FKROOMINFRASTRUCTURE_H
 
 #include <QObject>
+#include <QMap>
 
 class FKObjectManager;
 class FKUserInfrastructure;

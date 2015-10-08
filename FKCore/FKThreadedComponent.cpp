@@ -1,5 +1,7 @@
 #include "FKThreadedComponent.h"
 
+#include "FKFactory.h"
+
 #include "FKLogger.h"
 
 FKThreadedComponent::FKThreadedComponent(QObject *parent):QObject(parent){
@@ -14,7 +16,7 @@ FKThreadedComponent::~FKThreadedComponent(){
 }
 
 void FKThreadedComponent::stopComponent(){
-    if(started()){
+    if(isRunning()){
         connect(_componentObject,SIGNAL(destroyed(QObject*)),&_componentThread,SLOT(quit()));
         _componentObject->deleteLater();
         _componentObject=nullptr;

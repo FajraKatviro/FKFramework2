@@ -75,6 +75,11 @@ public:
     bool forbidControl();
     bool forbidControlBy(FKObject* actor,const qint32 action);
     bool forbidControlBy(FKObject* actor);
+
+    QVariant getProperty(const qint32 id)const;
+    QVariant getValue(const qint32 id)const;
+    void setProperty(const qint32 id,const QVariant& value);
+    void setValue(const qint32 id,const QVariant& value);
 public slots:
     bool forbidEmitBy(FKObject* user);
 signals:
@@ -99,11 +104,6 @@ protected:
     void doEvent(const qint32 target,const qint32 subject,const QVariant& value=QVariant(),FKObject* reciever=0);
     void doEvent(const qint32 target, const qint32 subject, FKObject* reciever);
     void doAction(const qint32 target,const qint32 subject,const QVariant& value=QVariant());
-
-    QVariant getProperty(const qint32 id)const;
-    QVariant getValue(const qint32 id)const;
-    void setProperty(const qint32 id,const QVariant& value);
-    void setValue(const qint32 id,const QVariant& value);
 
     void logConstructor();
     void logDestructor();

@@ -1,8 +1,8 @@
 #include "FKPathResolver.h"
 
-#include "FKOSType.h"
-
 #include <QCoreApplication>
+
+#include "FKOSType.h"
 
 QString FKPathResolver::roomFilePath(const QString& path,const qint8 platform){
     return QString("%1/../%2/%3/%4").

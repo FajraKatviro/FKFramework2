@@ -1,5 +1,8 @@
 #include "FKRoom.h"
 
+#include "FKLogger.h"
+#include "FKRoomSettings.h"
+
 #include "FKUser.h"
 #include "FKRoomInviteData.h"
 
@@ -49,23 +52,23 @@ qint32 FKRoom::usersSize() const{
 bool FKRoom::addUsers(const FKRoomInviteData& data){
     todo; //refactoring
     QList<qint32> userId;
-    if(data.isValid()){
-        qint32 usersInRoom=usersSize();
-        qint32 usersToAdd=data.users().count();
-        if(getSetting(FKRoomSettings::MaximumUsers).toInt()-usersInRoom>=usersToAdd){
-            if(usersToAdd==1 || getSetting(FKRoomSettings::Neighbours).toBool()){
-                foreach(auto userName,data.users()){
-                    FKUser* user=createObject<FKUser>();
-                    userId.append(user->getId());
-                }
-                //todo: keep user objects somewhere
-                emit roomDataChanged(0,0,0,usersToAdd);
-                //updateCommon("o_usersSize");
-                applyUpdates();
-                return true;
-            }
-        }
-    }
+//    if(data.isValid()){
+//        qint32 usersInRoom=usersSize();
+//        qint32 usersToAdd=data.users().count();
+//        if(getSetting(FKRoomSettings::MaximumUsers).toInt()-usersInRoom>=usersToAdd){
+//            if(usersToAdd==1 || getSetting(FKRoomSettings::Neighbours).toBool()){
+//                foreach(auto userName,data.users()){
+//                    FKUser* user=createObject<FKUser>();
+//                    userId.append(user->getId());
+//                }
+//                //todo: keep user objects somewhere
+//                //emit roomDataChanged(0,0,0,usersToAdd);
+//                //updateCommon("o_usersSize");
+//                applyUpdates();
+//                return true;
+//            }
+//        }
+//    }
     return false;
 }
 
@@ -73,7 +76,7 @@ void FKRoom::enableUsers(const QList<qint32> userList){
     for(qint32 id:userList){
         FKObject* user=getObject(id);
         if(user){
-            user->initCommonProperties(userList);
+            //user->initCommonProperties(userList);
             user->startTotalWatching(this);
             FKObject* actor=getObject(user->getProperty(FKIdentifiers::actorId).toInt());
             if(actor){

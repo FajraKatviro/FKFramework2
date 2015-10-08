@@ -20,18 +20,18 @@ protected:
     void startComponent(QObject* object);
     QObject* component()const;
     template<typename ReturnType>
-    bool getValue(ReturnType& returnValue,const char* methodName){
+    bool getValue(ReturnType& returnValue,const char* methodName)const{
         return QMetaObject::invokeMethod(_componentObject,methodName,Qt::BlockingQueuedConnection,Q_RETURN_ARG(ReturnType,returnValue));
     }
     template<typename ReturnType,typename ArgType>
-    bool getValue(ReturnType& returnValue,const char* methodName,const ArgType& argValue){
+    bool getValue(ReturnType& returnValue,const char* methodName,const ArgType& argValue)const{
         return QMetaObject::invokeMethod(_componentObject,methodName,Qt::BlockingQueuedConnection,Q_RETURN_ARG(ReturnType,returnValue),Q_ARG(ArgType,argValue));
     }
-    bool callMethod(const char* methodName){
+    bool callMethod(const char* methodName)const{
         return QMetaObject::invokeMethod(_componentObject,methodName,Qt::QueuedConnection);
     }
     template<typename ArgType>
-    bool callMethod(const char* methodName,const ArgType& argValue){
+    bool callMethod(const char* methodName,const ArgType& argValue)const{
         return QMetaObject::invokeMethod(_componentObject,methodName,Qt::QueuedConnection,Q_ARG(ArgType,argValue));
     }
 protected:

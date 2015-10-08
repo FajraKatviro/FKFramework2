@@ -1,6 +1,7 @@
-CONFIG += fkrooms
+#CONFIG += fkrooms
 CONFIG += fkapp
 CONFIG += fktools
+#CONFIG += fktests
 
 TEMPLATE = subdirs
 
@@ -27,4 +28,8 @@ CONFIG(fkapp){
 
 CONFIG(fktools){
     SUBDIRS += FKTools
+}
+
+CONFIG(fktests){
+    SUBDIRS += FKTests
 }

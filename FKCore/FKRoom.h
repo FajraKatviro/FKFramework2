@@ -4,8 +4,10 @@
 #include "FKObject.h"
 
 class FKVersionList;
-class FKRoomData;
+//class FKRoomData;
 class FKRoomInviteData;
+
+#include "FKRoomData.h"
 
 class FKCORESHARED_EXPORT FKRoom:public FKObject{
     Q_OBJECT
@@ -21,7 +23,7 @@ protected:
     inline void setSetting(const qint32 setting,const QVariant& value){_roomSettings.setValue(setting,value);}
 signals:
     void roomDataChanged(const QString propName, const QVariant value);
-    void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
+    //void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
 private:
     qint32 ro_usersSize()const;
     void wo_usersSize(const qint32 size);

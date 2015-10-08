@@ -48,7 +48,7 @@ public:
     void incomeVersionData(const QVariant& value);
 
     QStringList userPool()const;
-    QStringList activeUsers()const;
+    //QStringList activeUsers()const;
     QList<QSharedPointer<FKUpdateChannel>> updates()const;
 
     void messageFromRealm(const QString& msg);

@@ -36,7 +36,7 @@ bool FKRoomData::isValid() const{
 }
 
 QVariant FKRoomData::toVariant() const{
-    return _values;
+    return QVariant::fromValue(_values);
 }
 
 QVariant FKRoomData::createDelta(const qint32 propName, const QVariant &value){
@@ -44,11 +44,11 @@ QVariant FKRoomData::createDelta(const qint32 propName, const QVariant &value){
         return QVariant();
     }
     QPair<qint32,QVariant> data(propName,value);
-    return data;
+    return QVariant::fromValue(data);
 }
 
 void FKRoomData::change(const QVariant& value){
-    QPair<qint32,QVariant> val=delta.value<QPair<qint32,QVariant>>();
+    QPair<qint32,QVariant> val=value.value<QPair<qint32,QVariant>>();
     if(val.first>0 && val.second.isValid()){
         setValue(val.first,val.second);
     }else{
@@ -72,6 +72,14 @@ bool FKRoomData::fit(const FKRoomDataFilter& filter)const{
             && (filter._owner.isEmpty()     || value(FKRoomSettings::owner).toString()==filter._owner)
             && ((filter._custom && value(FKRoomSettings::isCustom).toBool()) || (filter._notCustom && !value(FKRoomSettings::isCustom).toBool()))
                 );
+}
+
+void FKRoomData::setValue(const qint32 propName, const QVariant &value){
+    _values[propName]=value;
+}
+
+QVariant FKRoomData::value(const qint32 propName) const{
+    return _values.value(propName);
 }
 
 QString FKRoomData::roomType() const{

@@ -40,6 +40,10 @@ void FKRoomContext::setRootEntity(QObject* entity){
     }
 }
 
+bool FKRoomContext::addClient(const FKRoomInviteData &invite){
+    todo;
+}
+
 void FKRoomContext::completeSync(){
     _syncComplete=true;
     emit syncCompleteChanged();
@@ -73,12 +77,10 @@ void FKRoomContext::eventRecycler(FKEventObject* ev){
 }
 
 void FKRoomContext::installObjectManager(){
-    friend class FKRoomEngine;
     installObjectManager(_om);
 }
 
 void FKRoomContext::setUser(const qint32 id){
-    friend class FKRoomEngine;
     _userId=id;
 }
 

@@ -1,17 +1,15 @@
-import QtQuick 2.3
+import QtQml 2.2
 import FKApp 1.0
 
 QtObject{
-    default property var appComponents: [ ]
-
-    ConsoleUserInterfaceLayer{
-        id: uiLoader
+    property var ui: ConsoleUserInterfaceLayer{
+        id: uiComponent
         core: coreComponent
     }
 
-    CoreLayer{
+    property var core: CoreLayer{
         id: coreComponent
-        userInterface: uiLoader
+        userInterface: uiComponent
        // onRealmStarted: startServer()
        // onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
     }

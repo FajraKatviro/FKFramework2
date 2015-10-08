@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QString>
+#include <QMap>
 
 namespace FKOSType{
     const qint8 common=0;

@@ -6,10 +6,10 @@
 #include <QMap>
 #include <QDir>
 
-qint64 FKUpdateChannel::blockSize=1024;
+const qint64 FKUpdateChannel::blockSize=1024;
 
 FKUpdateChannel::FKUpdateChannel(const QString& path, const QString& version, const qint8 platform, const QString& newVersion, const qint64 newSize)
-        :_path(path),_oldVersion(version),_platform(platform),_newVersion(newVersion),_newSize(newSize){
+        :_path(path),_oldVersion(version),_newVersion(newVersion),_platform(platform),_newSize(newSize){
     QFileInfo srcFile(FKPathResolver::roomFilePath(path,platform));
     QDir srcDir(srcFile.dir());
     srcDir.mkpath(".");

@@ -2,6 +2,7 @@
 
 #include "FKLogger.h"
 
+#include <QDataStream>
 #include <QVariant>
 
 FKUpdateData::FKUpdateData():FKSystemObject(){
@@ -15,7 +16,7 @@ FKUpdateData::~FKUpdateData(){
 }
 
 FKUpdateData::FKUpdateData(const QString& src, const qint32 index)
-        :FKSystemObject(),_index(index),_src(src){
+        :FKSystemObject(),_index(index),_path(src){
     FK_CBEGIN
     FK_CEND
 }
@@ -36,6 +37,15 @@ QString FKUpdateData::path() const{
 
 qint32 FKUpdateData::index() const{
     return _index;
+}
+
+FKSystemObject *FKUpdateData::clone() const{
+    FKUpdateData* obj = new FKUpdateData();
+    obj->_index=_index;
+    obj->_path=_path;
+    obj->_data=_data;
+    obj->_final=_final;
+    return obj;
 }
 
 bool FKUpdateData::packObject(QDataStream& stream) const{

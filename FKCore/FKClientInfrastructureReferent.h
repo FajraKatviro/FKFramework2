@@ -18,8 +18,8 @@ public:
     bool isActive()const;
     bool isInvited()const;
     bool isConnected()const;
-    void setInvited()const;
-    void setConnected(FKConnector* connector)const;
+    void setInvited();
+    void setConnected(FKConnector* connector);
     void addUser(const qint32 userId);
     void dropConnection();
     QList<qint32> users()const;

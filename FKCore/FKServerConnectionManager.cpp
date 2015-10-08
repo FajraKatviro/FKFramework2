@@ -55,7 +55,7 @@ void FKServerConnectionManager::processBasicEvent(FKBasicEvent* ev){
     ev->deleteLater();
 }
 
-void FKServerConnectionManager::processEvent(FKEvent* ev){
+void FKServerConnectionManager::processEvent(FKEventObject* ev){
     FK_MLOGV("Unexpected event from guest to server",ev->subject())
     ev->deleteLater();
 }
@@ -172,7 +172,7 @@ void FKServerConnectionManagerU::processBasicEvent(FKBasicEvent* ev){
 }
 
 void FKServerConnectionManagerU::processEvent(FKEventObject* ev){
-    _referent->incomeAction(ev);
+    //_referent->incomeAction(ev);
 }
 
 void FKServerConnectionManagerU::incomeMessageError(const QString& msgType, const QString& reason){

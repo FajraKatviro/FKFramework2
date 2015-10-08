@@ -4,6 +4,7 @@
 #include "FKSystemObject.h"
 
 class FKUpdateData:public FKSystemObject{
+    Q_OBJECT
 public:
     FKUpdateData();
     ~FKUpdateData();
@@ -15,6 +16,7 @@ public:
     QString path()const;
     qint32 index()const;
 private:
+    virtual FKSystemObject* clone() const override;
     virtual bool packObject(QDataStream& stream)const override;
     virtual bool loadObject(QDataStream& stream)override;
     qint32 _index=-1;

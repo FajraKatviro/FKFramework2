@@ -21,6 +21,8 @@ public:
 
     void setRecievers(const QList<qint32>& recievers);
 
+    FKSystemObject* clone() const;
+
     static FKMessage* eventError(FKEventObject* errorSource, const QString& reason);
     static FKEventObject* makeAction(const qint32 object,const qint32 subject,const QVariant& value,const qint32 client,const qint32 emitter);
     static FKEventObject* makeEvent(const qint32 object,const qint32 subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);
@@ -32,7 +34,6 @@ private:
     FKEventObject(const qint32 object,const qint32 subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);
     bool packObject(QDataStream &stream)const;
     bool loadObject(QDataStream &stream);
-    FKSystemObject* clone() const;
     qint32 _object;
     qint32 _subject;
     QVariant _value;

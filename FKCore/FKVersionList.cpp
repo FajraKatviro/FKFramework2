@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QFileInfo>
 #include <QPair>
-
+#include <QDataStream>
 
 bool FKVersionString::operator>(const FKVersionString& other) const{
     QList<qint32> mLst(numbers()), oLst(other.numbers());
@@ -37,7 +37,7 @@ bool FKVersionString::operator!=(const FKVersionString& other) const{
 
 QList<qint32> FKVersionString::numbers()const{
     QList<qint32> lst;
-    QStringList versions(other.string().split('.'));
+    QStringList versions(string().split('.'));
     qint32 size=versions.size();
     for(qint32 i=0;i<4;++i){
         lst.append(i < size ? versions.at(i).toInt() : 0);
@@ -61,14 +61,14 @@ void FKVersionList::addFile(const QString& path, const QString& version, const Q
 
 const FKVersionString FKVersionList::actual()const{
     FKVersionString version;
-    for(auto f=_enteties.constBegin();f!=_files.constEnd();++f){
+    for(auto f=_enteties.constBegin();f!=_enteties.constEnd();++f){
         if((*f).version>version)
             version=(*f).version;
     }
     return version;
 }
 
-QPair<QString, qint64> FKVersionList::getInfo(const QString& path, const qint8 platform){
+QPair<QString, qint64> FKVersionList::getInfo(const QString& path, const qint8 platform)const{
     QPair<QString,qint64> result(QString(),-1);
     for(auto f=_enteties.constBegin();f!=_enteties.constEnd();++f){
         if(f->path==path && f->platform==platform){

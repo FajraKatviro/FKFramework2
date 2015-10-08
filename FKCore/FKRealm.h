@@ -4,6 +4,7 @@
 #include "FKInfrastructure.h"
 
 #include <QSet>
+#include <QVariant>
 
 #include "FKRealmDBMap.h"
 #include "FKRoomData.h"
@@ -109,7 +110,6 @@ private:
     //void setClientRoomState(const QString& clientId, FKClientRoomState state)const;
     //bool isCustomServerRequested(const QString& clientId)const;
     qint32 getCustomServer(const QString& clientId)const;
-    QStringList getServersForRoomType(const QString& roomType)const;
     QString getServerRoomType(const qint32 serverId)const;
     //QString getServerIP(const qint32 serverId);
     //FKAusviceData customServerPreserve(const QString& clientId);

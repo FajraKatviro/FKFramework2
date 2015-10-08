@@ -13,7 +13,7 @@ CONFIG(debug, debug|release):{
     DEPENDPATH += $$PWD/build/fkbin
 }
 
-DEFINES += FK_NO_TODO
+#DEFINES += FK_NO_TODO
 
 win32{
     CONFIG(release, debug|release){

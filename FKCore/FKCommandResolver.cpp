@@ -15,9 +15,9 @@ void FKCommandResolver::processInput(QString input){
     }else if(isCommand(input,FKCommands::startClient)){
         emit startClientInfrastructureRequested();
     }else if(isCommand(input,FKCommands::createUser)){
-        requestCreateUser(input);
+        //requestCreateUser(input);
     }else if(isCommand(input,FKCommands::deleteUser)){
-        requestDeleteUser(input);
+        //requestDeleteUser(input);
     }else if(isCommand(input,FKCommands::showUsers)){
         showUsers(input);
     }else if(isCommand(input,FKCommands::loginClient)){

@@ -3,13 +3,14 @@
 #include "FKPackageManager.h"
 #include "FKPackage.h"
 #include "FKRoomLoader.h"
+#include "FKVersionList.h"
 
 #include "FKLogger.h"
 
 QMutex FKRoomModule::listMutex;
 QMap<QString,qint32> FKRoomModule::loadedModules;
 
-FKRoomModule::FKRoomModule(const QString& module,QObject* parent):QObject(parent),_loaded(false),_module(module),_room(0){
+FKRoomModule::FKRoomModule(QObject* parent, const QString& module):QObject(parent),_loaded(false),_module(module),_room(0){
     FK_CBEGIN
     FK_CEND
 }

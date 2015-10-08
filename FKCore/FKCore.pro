@@ -9,7 +9,7 @@ DEFINES += FKCORE_LIBRARY
 SOURCES += \
     FKApplication.cpp \
     FKUserInterface.cpp \
-    FKAbstractCore.cpp \
+    FKSimpleCore.cpp \
     FKObjectManager.cpp \
     FKDataBase.cpp \
     FKSystemObject.cpp \
@@ -19,7 +19,7 @@ SOURCES += \
     FKObject.cpp \
     FKFSDB.cpp \
     FKConsoleInterface.cpp \
-    FKLocalCore.cpp \
+    \ #FKLocalCore.cpp \
     FKConsoleReader.cpp \
     FKPacker.cpp \
     FKConnector.cpp \
@@ -61,7 +61,7 @@ HEADERS += \
     fkcore_global.h \
     FKApplication.h \
     FKUserInterface.h \
-    FKAbstractCore.h \
+    FKSimpleCore.h \
     FKObjectManager.h \
     FKDataBase.h \
     FKIDGenerator.h \
@@ -73,7 +73,7 @@ HEADERS += \
     FKObject.h \
     FKFSDB.h \
     FKConsoleInterface.h \
-    FKLocalCore.h \
+    \ #FKLocalCore.h \
     FKConsoleReader.h \
     FKPacker.h \
     FKConnector.h \
