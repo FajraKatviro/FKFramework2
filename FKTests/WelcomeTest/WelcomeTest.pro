@@ -1,4 +1,3 @@
-QT += testlib
 QT -= gui
 
 SOURCES += main.cpp

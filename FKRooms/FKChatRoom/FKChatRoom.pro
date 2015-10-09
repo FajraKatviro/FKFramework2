@@ -17,4 +17,4 @@ SOURCES += FKChatRoom.cpp
 HEADERS += FKChatRoom.h\
         fkchatroom_global.h
 
-include(../../FKRoomPlugin.pri)
+include(../FKRoomPlugin.pri)

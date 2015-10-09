@@ -3,15 +3,11 @@ CONFIG += c++14
 CONFIG(debug, debug|release):{
     DEFINES+= FK_DEBUG
     DEFINES+= FK_NO_CONSTRUCTORS
-
-    DESTDIR=      $$PWD/build/fkbind
-    LIBS +=     -L$$PWD/build/fkbind
-    DEPENDPATH += $$PWD/build/fkbind
-} else {
-    DESTDIR =     $$PWD/build/fkbin
-    LIBS +=     -L$$PWD/build/fkbin
-    DEPENDPATH += $$PWD/build/fkbin
 }
+
+DESTDIR =     $$OUT_PWD/..
+LIBS +=     -L$$OUT_PWD/..
+DEPENDPATH += $$OUT_PWD/..
 
 #DEFINES += FK_NO_TODO
 
