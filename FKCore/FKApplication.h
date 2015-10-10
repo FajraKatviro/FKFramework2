@@ -6,6 +6,9 @@
 
 #include "fkcore_global.h"
 
+class FKSimpleCore;
+class FKUserInterface;
+
 class FKCORESHARED_EXPORT FKApplication:public QObject{
     Q_OBJECT
 public:
@@ -15,6 +18,10 @@ public:
     template <class FKCore> bool setCore();
     template <class FKUI> bool setUserInterface();
     bool setInterfaceBridge(const QString& bridgeType);
+
+    //next 2 functions provided for tests
+    FKSimpleCore* getCore()const;
+    FKUserInterface* getUi()const;
 private:
     virtual void prepare();
     virtual void initLayer();

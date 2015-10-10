@@ -13,6 +13,7 @@ public:
     FKUserInterface(QObject* parent);
     ~FKUserInterface();
     virtual void installCommandsResolver(FKCommandResolver* resolver);
+    FKCommandResolver* commandResolver()const;
 public slots:
     virtual void showMessage(const QString& m)=0;
     virtual void show()=0;
@@ -44,6 +45,8 @@ signals:
 protected:
     void requestCreateUser(const QString& arg);
     void requestDeleteUser(const QString& arg);
+private:
+    FKCommandResolver* _commandResolver=nullptr;
 };
 
 #endif

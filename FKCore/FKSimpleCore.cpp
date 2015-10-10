@@ -41,7 +41,7 @@ void FKRealmComponent::startComponent(){
 
 QStringList FKRealmComponent::userList() const{
     QStringList lst;
-    if(!getValue(lst,"userList")){
+    if(!FK_THREAD_GETTER(QStringList,lst,userList)){
         FK_MLOG("Unable get user list")
     }
     return lst;
@@ -49,7 +49,7 @@ QStringList FKRealmComponent::userList() const{
 
 QStringList FKRealmComponent::userList(const QString clientId) const{
     QStringList lst;
-    if(!getValue(lst,"getUserList",clientId)){
+    if(!FK_THREAD_GETTER_ARG(QStringList,lst,getUserList,QString,clientId)){
         FK_MLOG("Unable get user list")
     }
     return lst;
@@ -57,7 +57,7 @@ QStringList FKRealmComponent::userList(const QString clientId) const{
 
 QStringList FKRealmComponent::clientList() const{
     QStringList lst;
-    if(!getValue(lst,"clientList")){
+    if(!FK_THREAD_GETTER(QStringList,lst,clientList)){
         FK_MLOG("Unable get client list")
     }
     return lst;
@@ -65,7 +65,7 @@ QStringList FKRealmComponent::clientList() const{
 
 QStringList FKRealmComponent::connectedClientList() const{
     QStringList lst;
-    if(!getValue(lst,"connectedClientList")){
+    if(!FK_THREAD_GETTER(QStringList,lst,connectedClientList)){
         FK_MLOG("Unable get client list")
     }
     return lst;
@@ -73,7 +73,7 @@ QStringList FKRealmComponent::connectedClientList() const{
 
 QStringList FKRealmComponent::activeClientList() const{
     QStringList lst;
-    if(!getValue(lst,"connectedClientList")){
+    if(!FK_THREAD_GETTER(QStringList,lst,connectedClientList)){
         FK_MLOG("Unable get client list")
     }
     return lst;
@@ -81,7 +81,7 @@ QStringList FKRealmComponent::activeClientList() const{
 
 QStringList FKRealmComponent::serverList() const{
     QStringList lst;
-    if(!getValue(lst,"serverList")){
+    if(!FK_THREAD_GETTER(QStringList,lst,serverList)){
         FK_MLOG("Unable get server list")
     }
     return lst;
@@ -89,7 +89,7 @@ QStringList FKRealmComponent::serverList() const{
 
 QStringList FKRealmComponent::serverList(const QString roomType) const{
     QStringList lst;
-    if(!getValue(lst,"getServersForRoomType",roomType)){
+    if(!FK_THREAD_GETTER_ARG(QStringList,lst,getServersForRoomType,QString,roomType)){
         FK_MLOG("Unable get server list")
     }
     return lst;
@@ -97,7 +97,7 @@ QStringList FKRealmComponent::serverList(const QString roomType) const{
 
 QList<qint32> FKRealmComponent::connectedServerList() const{
     QList<qint32> lst;
-    if(!getValue(lst,"connectedServerList")){
+    if(!FK_THREAD_GETTER(QList<qint32>,lst,connectedServerList)){
         FK_MLOG("Unable get server list")
     }
     return lst;
@@ -105,7 +105,7 @@ QList<qint32> FKRealmComponent::connectedServerList() const{
 
 QStringList FKRealmComponent::roomTypeList() const{
     QStringList lst;
-    if(!getValue(lst,"getRegisteredRoomTypes")){
+    if(!FK_THREAD_GETTER(QStringList,lst,getRegisteredRoomTypes)){
         FK_MLOG("Unable get room type list")
     }
     return lst;
@@ -113,7 +113,7 @@ QStringList FKRealmComponent::roomTypeList() const{
 
 QStringList FKRealmComponent::roomTypeList(const qint32 serverId) const{
     QStringList lst;
-    if(!getValue(lst,"serverAvaliableRoomTypes",serverId)){
+    if(!FK_THREAD_GETTER_ARG(QStringList,lst,serverAvaliableRoomTypes,qint32,serverId)){
         FK_MLOG("Unable get room type list")
     }
     return lst;
@@ -125,18 +125,18 @@ QStringList FKRealmComponent::activeRoomList() const{
 
 QStringList FKRealmComponent::activeRoomList(const QVariant filter) const{
     QStringList lst;
-    if(!getValue(lst,"getRoomList",filter)){
+    if(!FK_THREAD_GETTER_ARG(QStringList,lst,getRoomList,QVariant,filter)){
         FK_MLOG("Unable get room list")
     }
     return lst;
 }
 
 void FKRealmComponent::setPort(const qint32 port){
-    callMethod("setPort",port);
+    FK_THREAD_CALL_ARG(setPort,qint32,port);
 }
 
 void FKRealmComponent::guestConnection(FKConnector* connector){
-    callMethod("incomeConnection",connector);
+    FK_THREAD_CALL_ARG(incomeConnection,FKConnector*,connector);
 }
 
 FKServerComponent::FKServerComponent(QObject* parent):FKThreadedComponent(parent){

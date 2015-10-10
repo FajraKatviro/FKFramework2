@@ -3,7 +3,9 @@
 
 #include <QObject>
 
-class FKCommandResolver : public QObject{
+#include "fkcore_global.h"
+
+class FKCORESHARED_EXPORT FKCommandResolver : public QObject{
     Q_OBJECT
 public:
     explicit FKCommandResolver(QObject *parent = 0);

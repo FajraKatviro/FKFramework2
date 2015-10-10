@@ -11,6 +11,8 @@ FKThreadedComponent::FKThreadedComponent(QObject *parent):QObject(parent){
 
 FKThreadedComponent::~FKThreadedComponent(){
     FK_DBEGIN
+    _componentThread.quit();
+    _componentThread.wait();
     delete _componentFactory;
     FK_DEND
 }

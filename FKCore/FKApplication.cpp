@@ -7,6 +7,9 @@
 #include "FKObject.h"
 #include "FKRoom.h"
 
+#include "FKSimpleCore.h"
+#include "FKUserInterface.h"
+
 #include "FKLogger.h"
 
 /*!
@@ -57,6 +60,14 @@ bool FKApplication::setInterfaceBridge(const QString& bridgeType){
     return false;
 }
 
+FKSimpleCore* FKApplication::getCore() const{
+    return _qmlEngine->rootObjects().at(0)->property("core").value<FKSimpleCore*>();
+}
+
+FKUserInterface* FKApplication::getUi() const{
+    return _qmlEngine->rootObjects().at(0)->property("ui").value<FKUserInterface*>();
+}
+
 /*!
  * \brief Make additional initialization
  */
@@ -80,7 +91,6 @@ void FKApplication::prepare(){
  */
 
 void FKApplication::initLayer(){
-//    qmlRegisterSingletonType(QUrl(_interfaceBridge),"FKApp",1,0,"UI");
     _qmlEngine=new QQmlApplicationEngine(QUrl(_interfaceBridge),this);
 }
 

@@ -5,9 +5,9 @@ UserInterface{
     property Core core
 
     onQuitApplicationRequested: core.quitApplication()
-    onStartRealmRequested: core.startRealm()
-    onStartServerInfrastructureRequested: core.startServer()
-    onStartClientInfrastructureRequested: core.startClient()
+    onStartRealmRequested: core.startRealmInfrastructure()
+    onStartServerInfrastructureRequested: core.startServerInfrastructure()
+    onStartClientInfrastructureRequested: core.startClientInfrastructure()
     //onCreateUserRequested: core.createUserRecord(userName)
     //onDeleteUserRequested: core.deleteUserRecord(userName)
     //onClientUsersRequested: showMessage(core.userList())

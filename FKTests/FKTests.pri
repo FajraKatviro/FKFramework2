@@ -6,12 +6,15 @@ CONFIG(debug, debug|release):{
     DEFINES+= FK_NO_CONSTRUCTORS
 }
 
-DESTDIR = $$PWD/../tests
+DESTDIR =     $$PWD/../tests/bin
 LIBS+=      -L$$OUT_PWD/../..
 DEPENDPATH+=  $$OUT_PWD/../..
 
-INCLUDEPATH += $$PWD/../FKUtility
+INCLUDEPATH += $$PWD/../FKUtility $$PWD
 INCLUDEPATH += $$PWD/../FKCore
 
 LIBS += -lFKCore
+
+HEADERS += \
+    $$PWD/FKConsoleTester.h
 

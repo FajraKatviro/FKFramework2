@@ -48,6 +48,11 @@ void FKUserInterface::installCommandsResolver(FKCommandResolver* resolver){
     connect(resolver,&FKCommandResolver::registerRoomTypeRequested,this,&FKUserInterface::registerRoomTypeRequested);
     connect(resolver,&FKCommandResolver::removeServerRoomTypeRequested,this,&FKUserInterface::removeServerRoomTypeRequested);
     connect(resolver,&FKCommandResolver::removeRoomTypeRequested,this,&FKUserInterface::removeRoomTypeRequested);
+    _commandResolver=resolver;
+}
+
+FKCommandResolver*FKUserInterface::commandResolver() const{
+    return _commandResolver;
 }
 
 /*!

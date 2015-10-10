@@ -1,23 +1,16 @@
 #include <QtTest/QtTest>
+#include "FKConsoleTester.h"
 
-#include "FKApplication.h"
-#include "FKSimpleCore.h"
-#include "FKConsoleInterface.h"
-
-class Tester: public QObject{
+class Tester:public FKConsoleTester{
     Q_OBJECT
 private slots:
     void welcomeTest();
 };
 
 void Tester::welcomeTest(){
-    FKApplication app;
-    app.setCore<FKSimpleCore>();
-    app.setUserInterface<FKConsoleInterface>();
-    app.setInterfaceBridge(QStringLiteral("ConsoleBridge"));
-    app.start();
-
-    QCOMPARE(1, 1);
+    sendCommand("start realm");
+    bool realmStarted=app.getCore()->realmComponent()->isRunning();
+    QCOMPARE(realmStarted, true);
 }
 
 QTEST_MAIN(Tester)

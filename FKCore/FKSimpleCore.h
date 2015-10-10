@@ -12,7 +12,7 @@
 
 class FKConnector;
 
-class FKRealmComponent:public FKThreadedComponent{
+class FKCORESHARED_EXPORT FKRealmComponent:public FKThreadedComponent{
     Q_OBJECT
 public:
     FKRealmComponent(QObject* parent = nullptr);
@@ -46,7 +46,7 @@ signals:
     void started();
 };
 
-class FKServerComponent:public FKThreadedComponent{
+class FKCORESHARED_EXPORT FKServerComponent:public FKThreadedComponent{
     Q_OBJECT
 public:
     FKServerComponent(QObject* parent = nullptr);
@@ -63,7 +63,7 @@ signals:
     void loggedIn();
 };
 
-class FKClientComponent:public FKThreadedComponent{
+class FKCORESHARED_EXPORT FKClientComponent:public FKThreadedComponent{
     Q_OBJECT
     //Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
     //Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
