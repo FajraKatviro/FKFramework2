@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     WelcomeTest \
-    RoomTypeRealmRegistration
+    RoomTypeRealmRegistration \
+    Realm_001_StartStop
