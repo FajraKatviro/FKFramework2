@@ -15,6 +15,7 @@ public:
     FKConsoleInterface(QObject* parent=0);
     ~FKConsoleInterface();
     void setWelcomeString(const QString arg);
+    void disableConsoleReader();
 public slots:
     virtual void show()override;
     virtual void showMessage(const QString& m)override;

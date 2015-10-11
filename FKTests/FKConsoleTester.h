@@ -14,6 +14,7 @@ public:
         app.setUserInterface<FKConsoleInterface>();
         app.setInterfaceBridge(QStringLiteral("ConsoleBridge"));
         app.start();
+        static_cast<FKConsoleInterface*>(app.getUi())->disableConsoleReader();
     }
 protected:
     void sendCommand(QString msg){

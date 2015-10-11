@@ -9,35 +9,28 @@ private slots:
 
 void Tester::test(){
     sendCommand("start realm");
-    QVERIFY2(app.getCore()->realmComponent()->isRunning(),
-             "Start failed");
+    QTRY_VERIFY(app.getCore()->realmComponent()->isRunning());
 
     sendCommand("stop realm");
-    QVERIFY2(!app.getCore()->realmComponent()->isRunning(),
-             "Stop failed");
+    QTRY_VERIFY(!app.getCore()->realmComponent()->isRunning());
 
     sendCommand("start realm");
-    QVERIFY2(app.getCore()->realmComponent()->isRunning(),
-             "Restart failed");
+    QTRY_VERIFY(app.getCore()->realmComponent()->isRunning());
 
     sendCommand("stop realm");
-    QVERIFY2(!app.getCore()->realmComponent()->isRunning(),
-             "Restop failed");
+    QTRY_VERIFY(!app.getCore()->realmComponent()->isRunning());
 
     sendCommand("start realm");
     sendCommand("stop realm");
-    QVERIFY2(!app.getCore()->realmComponent()->isRunning(),
-             "Fast calls failed");
+    QTRY_VERIFY(!app.getCore()->realmComponent()->isRunning());
 
     sendCommand("start realm");
     sendCommand("start realm");
-    QVERIFY2(app.getCore()->realmComponent()->isRunning(),
-             "Double start failed");
+    QTRY_VERIFY(app.getCore()->realmComponent()->isRunning());
 
     sendCommand("stop realm");
     sendCommand("stop realm");
-    QVERIFY2(!app.getCore()->realmComponent()->isRunning(),
-             "Double stop failed");
+    QTRY_VERIFY(!app.getCore()->realmComponent()->isRunning());
 }
 
 QTEST_MAIN(Tester)

@@ -38,10 +38,13 @@ protected:
     }
 protected:
     inline FKAbstractFactoryObjectCreator* componentFactory(){return _componentFactory;}
+private slots:
+    void componentThreadQuit();
 private:
     FKAbstractFactoryObjectCreator* _componentFactory=nullptr;
     QObject* _componentObject=nullptr;
     QThread _componentThread;
+    bool _stopRequested=false;
 };
 
 #define FK_THREAD_GETTER(RetType,retValue,methodName)                       getValue(retValue,#RetType,#methodName)

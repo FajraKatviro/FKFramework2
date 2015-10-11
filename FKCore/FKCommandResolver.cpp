@@ -42,6 +42,8 @@ void FKCommandResolver::processInput(QString input){
         registerRoomType(input);
     }else if(isCommand(input,FKCommands::removeRoomType)){
         removeRoomType(input);
+    }else if(isCommand(input,FKCommands::stopRealm)){
+        emit stopRealmRequested();
     }else{
         emit message(QString(tr("Unknown command")));
     }
@@ -57,6 +59,7 @@ void FKCommandResolver::printHelp(){
                 QString(tr("%1\tquit application\n")).arg(FKCommands::quit.rightJustified(commandWidth))+
                 QString(tr("%1\tshow this help message\n")).arg(FKCommands::help.rightJustified(commandWidth))+
                 QString(tr("%1\tstart realm infrastructure\n")).arg(FKCommands::startRealm.rightJustified(commandWidth))+
+                QString(tr("%1\tstop realm infrastructure\n")).arg(FKCommands::stopRealm.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate new client record for started realm\n")).arg(FKCommands::createClient.rightJustified(commandWidth))+
                 QString(tr("%1\tdelete client record for started realm\n")).arg(FKCommands::deleteClient.rightJustified(commandWidth))+
                 QString(tr("%1\tcreate new server record for started realm\n")).arg(FKCommands::createServer.rightJustified(commandWidth))+

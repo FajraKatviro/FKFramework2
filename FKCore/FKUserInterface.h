@@ -22,6 +22,7 @@ signals:
     void quitApplicationRequested();
     void showMessageRequested(QString msg);
     void startRealmRequested();
+    void stopRealmRequested();
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
     void createClientRequested(const QString clientName,const QString password);

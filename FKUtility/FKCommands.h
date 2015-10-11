@@ -7,6 +7,7 @@ namespace FKCommands {
     const QString quit=QStringLiteral("quit");
     const QString help=QStringLiteral("help");
     const QString startRealm=QStringLiteral("start realm");
+    const QString stopRealm=QStringLiteral("stop realm");
     const QString startClient=QStringLiteral("start client");
     const QString startServer=QStringLiteral("start server");
     const QString createUser=QStringLiteral("create user");

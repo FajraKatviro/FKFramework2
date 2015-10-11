@@ -15,6 +15,7 @@ signals:
     void message(const QString msg);
     void quitApplicationRequested();
     void startRealmRequested();
+    void stopRealmRequested();
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
     void clientUsersRequested();

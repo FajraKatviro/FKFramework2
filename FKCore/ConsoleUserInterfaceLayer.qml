@@ -6,6 +6,7 @@ UserInterface{
 
     onQuitApplicationRequested: core.quitApplication()
     onStartRealmRequested: core.startRealmInfrastructure()
+    onStopRealmRequested: core.stopRealmInfrastructure()
     onStartServerInfrastructureRequested: core.startServerInfrastructure()
     onStartClientInfrastructureRequested: core.startClientInfrastructure()
     //onCreateUserRequested: core.createUserRecord(userName)

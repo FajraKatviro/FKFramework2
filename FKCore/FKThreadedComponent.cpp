@@ -13,16 +13,18 @@ FKThreadedComponent::~FKThreadedComponent(){
     FK_DBEGIN
     _componentThread.quit();
     _componentThread.wait();
+    delete _componentObject;
     delete _componentFactory;
     FK_DEND
 }
 
 void FKThreadedComponent::stopComponent(){
     if(isRunning()){
-        connect(_componentObject,SIGNAL(destroyed(QObject*)),&_componentThread,SLOT(quit()));
+        if(_stopRequested)return;
+        connect(_componentObject,SIGNAL(destroyed(QObject*)),SLOT(componentThreadQuit()));
         _componentObject->deleteLater();
         _componentObject=nullptr;
-        _componentThread.wait();
+        _stopRequested=true;
     }
 }
 
@@ -43,5 +45,11 @@ void FKThreadedComponent::startComponent(QObject* object){
 
 QObject* FKThreadedComponent::component() const{
     return _componentObject;
+}
+
+void FKThreadedComponent::componentThreadQuit(){
+    _stopRequested=false;
+    _componentThread.quit();
+    _componentThread.wait();
 }
 

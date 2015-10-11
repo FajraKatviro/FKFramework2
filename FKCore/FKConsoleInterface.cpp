@@ -37,7 +37,7 @@ FKConsoleInterface::~FKConsoleInterface(){
     showMessage(QString(tr("Application execution complete. Press \"ENTER\" to exit.")));
     _consoleReader->setEnabled(false);
     _consoleReaderThread.quit();
-    _consoleReaderThread.wait();
+    _consoleReaderThread.wait(500);
     FK_DEND
 }
 
@@ -46,6 +46,10 @@ void FKConsoleInterface::setWelcomeString(const QString arg){
         _welcomeString=arg;
         emit welcomeStringChanged();
     }
+}
+
+void FKConsoleInterface::disableConsoleReader(){
+    _consoleReader->setEnabled(false);
 }
 
 /*!
