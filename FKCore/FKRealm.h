@@ -32,8 +32,6 @@ public:
     void deleteClientRecord(const QString& clientName);
     qint32 createServerRecord(const QString& password);
     void deleteServerRecord(const qint32 serverId);
-    void registerRoomType(const QString& roomType);
-    void removeRoomType(const QString& roomType);
     void createRoomRealmRequest(const QString& roomName,const QString& roomType);
 
     void registerServerRoomType(const qint32 serverId, const QVariant& data);
@@ -53,6 +51,9 @@ public:
 public slots:
     virtual void setPort(const qint32 /*port*/){}
     void incomeConnection(FKConnector* connector);
+
+    void registerRoomType(QString roomType);
+    void removeRoomType(QString roomType);
 
     QStringList userList()const;
     QStringList getUserList(const QString clientId)const;

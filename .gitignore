@@ -5,5 +5,8 @@ makefile*
 *.debug
 *.release
 /build
+/debug
+/release
+/tests
 /thirdparty
 FKFramework.pro.user

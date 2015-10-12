@@ -131,12 +131,33 @@ QStringList FKRealmComponent::activeRoomList(const QVariant filter) const{
     return lst;
 }
 
+void FKRealmComponent::registerRoomType(const QString roomType){
+    if(!FK_THREAD_CALL_ARG(registerRoomType,QString,roomType)){
+        FK_MLOG("Unable register room type for realm")
+    }
+}
+
+void FKRealmComponent::removeRoomType(const QString roomType){
+    if(!FK_THREAD_CALL_ARG(removeRoomType,QString,roomType)){
+        FK_MLOG("Unable remove room type from realm")
+    }
+}
+
 void FKRealmComponent::setPort(const qint32 port){
-    FK_THREAD_CALL_ARG(setPort,qint32,port);
+    if(!FK_THREAD_CALL_ARG(setPort,qint32,port)){
+        FK_MLOG("Unable set realm port")
+    }
 }
 
 void FKRealmComponent::guestConnection(FKConnector* connector){
-    FK_THREAD_CALL_ARG(incomeConnection,FKConnector*,connector);
+    if(!FK_THREAD_CALL_ARG(incomeConnection,FKConnector*,connector)){
+        FK_MLOG("Unable add realm guest connection")
+    }
+}
+
+void FKRealmComponent::componentThreadQuit(){
+    FKThreadedComponent::componentThreadQuit();
+    emit messageRequested(QString("Realm stopped"));
 }
 
 FKServerComponent::FKServerComponent(QObject* parent):FKThreadedComponent(parent){

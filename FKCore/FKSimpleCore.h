@@ -36,11 +36,13 @@ public slots:
 //    void deleteClientRecord(const QString clientName);
 //    void createServerRecord(const QString password);
 //    void deleteServerRecord(const qint32 serverId);
-//    void registerRoomType(const QString roomType);
-//    void removeRoomType(const QString roomType);
+    void registerRoomType(const QString roomType);
+    void removeRoomType(const QString roomType);
 //    void createRoomRequest(const QString roomName, const QString roomType);
     void setPort(const qint32 port);
     void guestConnection(FKConnector* connector);
+protected slots:
+    virtual void componentThreadQuit()override;
 signals:
     void messageRequested(const QString msg);
     void started();
@@ -96,9 +98,9 @@ signals:
 
 class FKCORESHARED_EXPORT FKSimpleCore:public QObject{
     Q_OBJECT
-    Q_PROPERTY(FKRealmComponent* realmComponent READ realmComponent NOTIFY realmComponentChanged)
-    Q_PROPERTY(FKServerComponent* serverComponent READ serverComponent NOTIFY serverComponentChanged)
-    Q_PROPERTY(FKClientComponent* clientComponent READ clientComponent NOTIFY clientComponentChanged)
+    Q_PROPERTY(FKRealmComponent* realm READ realmComponent NOTIFY realmComponentChanged)
+    Q_PROPERTY(FKServerComponent* server READ serverComponent NOTIFY serverComponentChanged)
+    Q_PROPERTY(FKClientComponent* client READ clientComponent NOTIFY clientComponentChanged)
 public:
     FKSimpleCore(QObject* parent=0);
     ~FKSimpleCore();

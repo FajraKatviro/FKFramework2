@@ -313,7 +313,8 @@ void FKRealm::deleteServerRecord(const qint32 serverId){
  * \brief Register room type to allow request rooms of that type.
  */
 
-void FKRealm::registerRoomType(const QString& roomType){
+void FKRealm::registerRoomType(QString roomType){
+    roomType=roomType.toLower();
     QString error;
     bool check=true;
     if(roomType.isEmpty()){
@@ -334,7 +335,8 @@ void FKRealm::registerRoomType(const QString& roomType){
     }
 }
 
-void FKRealm::removeRoomType(const QString& roomType){
+void FKRealm::removeRoomType(QString roomType){
+    roomType=roomType.toLower();
     QString error;
     bool check=true;
     if(roomType.isEmpty()){

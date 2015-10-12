@@ -38,8 +38,8 @@ protected:
     }
 protected:
     inline FKAbstractFactoryObjectCreator* componentFactory(){return _componentFactory;}
-private slots:
-    void componentThreadQuit();
+protected slots:
+    virtual void componentThreadQuit();
 private:
     FKAbstractFactoryObjectCreator* _componentFactory=nullptr;
     QObject* _componentObject=nullptr;
