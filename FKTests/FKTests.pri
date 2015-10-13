@@ -1,4 +1,4 @@
-QT += testlib qml
+QT += testlib qml xml
 CONFIG += c++14
 
 CONFIG(debug, debug|release):{
