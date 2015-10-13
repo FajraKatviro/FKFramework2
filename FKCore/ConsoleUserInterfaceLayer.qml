@@ -9,6 +9,18 @@ UserInterface{
     onStopRealmRequested: core.stopRealmInfrastructure()
     onRegisterRoomTypeRequested: core.realm.registerRoomType(roomType)
     onRemoveRoomTypeRequested: core.realm.removeRoomType(roomType)
+    onShowRoomTypesRequested: {
+        var roomTypeList = core.realm.roomTypeList(serverId);
+        var total=roomTypeList.length;
+        if(total>0){
+            showMessage(qsTr("Room types registered in realm (%1 total):").arg(total));
+            for(var i=0;i<total;++i){
+                showMessage(roomTypeList[i]);
+            }
+        }else{
+            showMessage(qsTr("No room types found"));
+        }
+    }
 
     onStartServerInfrastructureRequested: core.startServerInfrastructure()
     onStartClientInfrastructureRequested: core.startClientInfrastructure()

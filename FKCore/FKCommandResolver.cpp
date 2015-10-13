@@ -42,6 +42,8 @@ void FKCommandResolver::processInput(QString input){
         registerRoomType(input);
     }else if(isCommand(input,FKCommands::removeRoomType)){
         removeRoomType(input);
+    }else if(isCommand(input,FKCommands::showRoomTypes)){
+        showRoomTypes(input);
     }else if(isCommand(input,FKCommands::stopRealm)){
         emit stopRealmRequested();
     }else{
@@ -66,6 +68,7 @@ void FKCommandResolver::printHelp(){
                 QString(tr("%1\tdelete server record for started realm\n")).arg(FKCommands::deleteServer.rightJustified(commandWidth))+
                 QString(tr("%1\tregister room type for started realm. Use %2 option to register avaliable room type for current server\n")).arg(FKCommands::registerRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                 QString(tr("%1\tremove room type for started realm. Use %2 option to remove registered room type from current server\n")).arg(FKCommands::removeRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
+                QString(tr("%1\tshow registered room types for started realm. Use %2 option to show for current server instead\n")).arg(FKCommands::showRoomTypes.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                 QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                 QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
                 QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
@@ -222,6 +225,22 @@ void FKCommandResolver::removeRoomType(QString arg){
             }else{
                 emit removeRoomTypeRequested(rt);
             }
+        }
+    }
+}
+
+void FKCommandResolver::showRoomTypes(QString arg){
+    arg=arg.trimmed();
+    bool server=hasKey(arg,FKCommandOptions::server);
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+    if(!splitArg.isEmpty()){
+        emit message(QString(tr("Invalid arguments provided")));
+    }else{
+        if(server){
+            emit showServerRoomTypesRequested();
+        }else{
+            qint32 serverId=-1; //raw list
+            emit showRoomTypesRequested(serverId);
         }
     }
 }

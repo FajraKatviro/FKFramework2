@@ -12,9 +12,8 @@ namespace FKCommands {
     const QString startServer=QStringLiteral("start server");
     const QString createUser=QStringLiteral("create user");
     const QString deleteUser=QStringLiteral("delete user");
-    const QString selectUser=QStringLiteral("select user");
-    const QString deselectUser=QStringLiteral("dismiss user");
     const QString showUsers=QStringLiteral("show users");
+    const QString showRoomTypes=QStringLiteral("show room types");
     const QString loginClient=QStringLiteral("login client");
     const QString loginServer=QStringLiteral("login server");
     const QString createClient=QStringLiteral("create client");

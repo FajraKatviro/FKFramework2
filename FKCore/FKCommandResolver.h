@@ -33,6 +33,8 @@ signals:
     void registerRoomTypeRequested(const QString roomType);
     void removeServerRoomTypeRequested(const QString roomType);
     void removeRoomTypeRequested(const QString roomType);
+    void showServerRoomTypesRequested();
+    void showRoomTypesRequested(const qint32 serverId);
 private:
     QString welcomeString()const;
     void printHelp();
@@ -49,6 +51,7 @@ private:
     void joinRoom(QString arg);
     void registerRoomType(QString arg);
     void removeRoomType(QString arg);
+    void showRoomTypes(QString arg);
 };
 
 #endif // FKCOMMANDRESOLVER_H

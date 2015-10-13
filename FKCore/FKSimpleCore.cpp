@@ -103,18 +103,19 @@ QList<qint32> FKRealmComponent::connectedServerList() const{
     return lst;
 }
 
-QStringList FKRealmComponent::roomTypeList() const{
+QStringList FKRealmComponent::roomTypeList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,getRegisteredRoomTypes)){
-        FK_MLOG("Unable get room type list")
+        emit messageRequested(QString(tr("Unable asquire room type list from realm")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::roomTypeList(const qint32 serverId) const{
+QStringList FKRealmComponent::roomTypeList(const qint32 serverId){
+    if(serverId<0)return roomTypeList();
     QStringList lst;
     if(!FK_THREAD_GETTER_ARG(QStringList,lst,serverAvaliableRoomTypes,qint32,serverId)){
-        FK_MLOG("Unable get room type list")
+        emit messageRequested(QString(tr("Unable asquire room type list from realm for %1 server")).arg(QString::number(serverId)));
     }
     return lst;
 }
