@@ -10,3 +10,4 @@ makefile*
 /tests
 /thirdparty
 FKFramework.pro.user
+FKTests/ConsoleAppTest/result.txt
