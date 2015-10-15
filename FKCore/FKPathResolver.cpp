@@ -44,3 +44,9 @@ QString FKPathResolver::serverDatabasePath(){
             arg(FKPathResolver::databaseFolder).
             arg(FKPathResolver::serverFolder);
 }
+
+QString FKPathResolver::databasePath(){
+    return QString("%1/../%2").
+            arg(QCoreApplication::applicationDirPath()).
+            arg(FKPathResolver::databaseFolder);
+}

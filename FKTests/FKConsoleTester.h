@@ -9,6 +9,7 @@
 #include "FKSimpleCore.h"
 #include "FKConsoleInterface.h"
 #include "FKCommandResolver.h"
+#include "FKPathResolver.h"
 
 class Handler:public QXmlDefaultHandler{
     bool fatalError(const QXmlParseException &/*exception*/){return false;}
@@ -19,8 +20,11 @@ class Handler:public QXmlDefaultHandler{
         if(localName == "Worksheet"){
             _actualSheet = atts.value("ss:Name");
             _actualRow = 0;
+        }else if(localName == "Row"){
+            _column=0;
         }else if(localName == "Data" && _actualRow>0 && _actualSheet == _targetSheet){
             _doRead = true;
+            ++_column;
         }
         return true;
     }
@@ -30,9 +34,11 @@ class Handler:public QXmlDefaultHandler{
         if(localName == "Row"){
             ++_actualRow;
         }else if(localName == "Data"){
-            _doRead = false;
-            if(!_readen.isEmpty()){
-                _collected.append(_readen);
+            if(_doRead){
+                _doRead = false;
+                if(_column!=2){
+                    _collected.append(_readen);
+                }
                 _readen.clear();
             }
         }
@@ -50,6 +56,7 @@ class Handler:public QXmlDefaultHandler{
     QString _readen;
     QStringList _collected;
     bool _doRead=false;
+    qint32 _column;
 public:
     Handler(const QString targetSheet):QXmlDefaultHandler(),_targetSheet(targetSheet){}
     QStringList collected()const{return _collected;}
@@ -66,8 +73,10 @@ public:
         static_cast<FKConsoleInterface*>(app.getUi())->disableConsoleReader();
     }
 protected:
-    void sendCommand(QString msg){
-        app.getUi()->commandResolver()->processInput(msg);
+    void sendCommand(QString msg,QString arg=QString()){
+        if(!msg.isEmpty()){
+            app.getUi()->commandResolver()->processInput(msg+" "+arg);
+        }
     }
     void loadTestData(const qint32 columnCount){
         QFile f(QFINDTESTDATA("testData.xml"));
@@ -90,6 +99,10 @@ protected:
                 }
             }
         }
+    }
+    bool resetDatabase(){
+        QDir dir(FKPathResolver::databasePath());
+        return dir.removeRecursively();
     }
     FKApplication app;
 };

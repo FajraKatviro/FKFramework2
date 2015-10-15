@@ -6,11 +6,11 @@ FKCommandResolver::FKCommandResolver(QObject *parent):QObject(parent){}
 
 
 void FKCommandResolver::processInput(QString input){
-    if(isCommand(input,FKCommands::quit)){
+    if(isCommand(input,FKCommands::quit,true)){
         emit quitApplicationRequested();
-    }else if(isCommand(input,FKCommands::help)){
+    }else if(isCommand(input,FKCommands::help,true)){
         printHelp();
-    }else if(isCommand(input,FKCommands::startRealm)){
+    }else if(isCommand(input,FKCommands::startRealm,true)){
         emit startRealmRequested();
     }else if(isCommand(input,FKCommands::startClient)){
         emit startClientInfrastructureRequested();
@@ -20,6 +20,8 @@ void FKCommandResolver::processInput(QString input){
         //requestDeleteUser(input);
     }else if(isCommand(input,FKCommands::showUsers)){
         showUsers(input);
+    }else if(isCommand(input,FKCommands::showServers)){
+        showServers(input);
     }else if(isCommand(input,FKCommands::loginClient)){
         loginClient(input);
     }else if(isCommand(input,FKCommands::createClient)){
@@ -30,7 +32,7 @@ void FKCommandResolver::processInput(QString input){
         createServer(input);
     }else if(isCommand(input,FKCommands::deleteServer)){
         deleteServer(input);
-    }else if(isCommand(input,FKCommands::startServer)){
+    }else if(isCommand(input,FKCommands::startServer,true)){
         emit startServerInfrastructureRequested();
     }else if(isCommand(input,FKCommands::loginServer)){
         loginServer(input);
@@ -44,7 +46,7 @@ void FKCommandResolver::processInput(QString input){
         removeRoomType(input);
     }else if(isCommand(input,FKCommands::showRoomTypes)){
         showRoomTypes(input);
-    }else if(isCommand(input,FKCommands::stopRealm)){
+    }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
     }else{
         emit message(QString(tr("Unknown command")));
@@ -58,31 +60,35 @@ QString FKCommandResolver::welcomeString() const{
 void FKCommandResolver::printHelp(){
     const qint32 commandWidth=16;
     emit message(QString(tr("Use following commands to manage application:\n"))+
-                QString(tr("%1\tquit application\n")).arg(FKCommands::quit.rightJustified(commandWidth))+
-                QString(tr("%1\tshow this help message\n")).arg(FKCommands::help.rightJustified(commandWidth))+
-                QString(tr("%1\tstart realm infrastructure\n")).arg(FKCommands::startRealm.rightJustified(commandWidth))+
-                QString(tr("%1\tstop realm infrastructure\n")).arg(FKCommands::stopRealm.rightJustified(commandWidth))+
-                QString(tr("%1\tcreate new client record for started realm\n")).arg(FKCommands::createClient.rightJustified(commandWidth))+
-                QString(tr("%1\tdelete client record for started realm\n")).arg(FKCommands::deleteClient.rightJustified(commandWidth))+
-                QString(tr("%1\tcreate new server record for started realm\n")).arg(FKCommands::createServer.rightJustified(commandWidth))+
-                QString(tr("%1\tdelete server record for started realm\n")).arg(FKCommands::deleteServer.rightJustified(commandWidth))+
-                QString(tr("%1\tregister room type for started realm. Use %2 option to register avaliable room type for current server\n")).arg(FKCommands::registerRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
-                QString(tr("%1\tremove room type for started realm. Use %2 option to remove registered room type from current server\n")).arg(FKCommands::removeRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
-                QString(tr("%1\tshow registered room types for started realm. Use %2 option to show for current server instead\n")).arg(FKCommands::showRoomTypes.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
-                QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
-                QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
-                QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
-                QString(tr("%1\tsubmit current server on connected realm\n")).arg(FKCommands::loginServer.rightJustified(commandWidth))+
-                QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
-                QString(tr("%1\tdelete existing user for current client\n")).arg(FKCommands::deleteUser.rightJustified(commandWidth))+
-                QString(tr("%1\tjoin existing room by current client\n")).arg(FKCommands::joinRoom.rightJustified(commandWidth))+
-                QString(tr("%1\tcreate room for current client. Realm admin should use %2 option to create empty room for random server\n")).arg(FKCommands::createRoom.rightJustified(commandWidth)).arg(FKCommandOptions::realm)+
-                QString(tr("%1\tshow list of existing users. Use %2 option to show all users registered on realm")).arg(FKCommands::showUsers.rightJustified(commandWidth)).arg(FKCommandOptions::realm)
+                 QString(tr("%1\tquit application\n")).arg(FKCommands::quit.rightJustified(commandWidth))+
+                 QString(tr("%1\tshow this help message\n")).arg(FKCommands::help.rightJustified(commandWidth))+
+                 QString(tr("%1\tstart realm infrastructure\n")).arg(FKCommands::startRealm.rightJustified(commandWidth))+
+                 QString(tr("%1\tstop realm infrastructure\n")).arg(FKCommands::stopRealm.rightJustified(commandWidth))+
+                 QString(tr("%1\tcreate new client record for started realm\n")).arg(FKCommands::createClient.rightJustified(commandWidth))+
+                 QString(tr("%1\tdelete client record for started realm\n")).arg(FKCommands::deleteClient.rightJustified(commandWidth))+
+                 QString(tr("%1\tcreate new server record for started realm\n")).arg(FKCommands::createServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tdelete server record for started realm\n")).arg(FKCommands::deleteServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tregister room type for started realm. Use %2 option to register avaliable room type for current server\n")).arg(FKCommands::registerRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
+                 QString(tr("%1\tremove room type for started realm. Use %2 option to remove registered room type from current server\n")).arg(FKCommands::removeRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
+                 QString(tr("%1\tshow registered room types for started realm. Use %2 option to show for current server instead\n")).arg(FKCommands::showRoomTypes.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
+                 QString(tr("%1\tshow registered servers for started realm\n")).arg(FKCommands::showServers.rightJustified(commandWidth))+
+                 QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
+                 QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
+                 QString(tr("%1\tsubmit current server on connected realm\n")).arg(FKCommands::loginServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
+                 QString(tr("%1\tdelete existing user for current client\n")).arg(FKCommands::deleteUser.rightJustified(commandWidth))+
+                 QString(tr("%1\tjoin existing room by current client\n")).arg(FKCommands::joinRoom.rightJustified(commandWidth))+
+                 QString(tr("%1\tcreate room for current client. Realm admin should use %2 option to create empty room for random server\n")).arg(FKCommands::createRoom.rightJustified(commandWidth)).arg(FKCommandOptions::realm)+
+                 QString(tr("%1\tshow list of existing users. Use %2 option to show all users registered on realm")).arg(FKCommands::showUsers.rightJustified(commandWidth)).arg(FKCommandOptions::realm)
                 );
 }
 
-bool FKCommandResolver::isCommand(QString& arg, const QString& command){
+bool FKCommandResolver::isCommand(QString& arg, const QString& command,const bool exactMatch){
     //if(QRegExp(someExpr).exactMatch(arg)){
+    if(exactMatch){
+        return arg.trimmed()==command;
+    }
     if(arg==command || arg.startsWith(command+QString(" "))){
         arg.remove(0,command.length()+1);
         return true;
@@ -242,5 +248,16 @@ void FKCommandResolver::showRoomTypes(QString arg){
             qint32 serverId=-1; //raw list
             emit showRoomTypesRequested(serverId);
         }
+    }
+}
+
+void FKCommandResolver::showServers(QString arg){
+    arg=arg.trimmed();
+    QStringList splitArg=arg.split(' ',QString::SkipEmptyParts);
+    if(!splitArg.size()>1){
+        emit message(QString(tr("Invalid arguments provided")));
+    }else{
+        QString roomType=splitArg.isEmpty() ? "" : splitArg.first();
+        emit showServersRequested(roomType);
     }
 }

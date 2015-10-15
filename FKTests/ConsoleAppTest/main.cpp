@@ -4,16 +4,30 @@
 class Tester:public FKConsoleTester{
     Q_OBJECT
 private slots:
+    void initTestCase();
+    void cleanup();
+
     void realmStarted();
     void realmStarted_data();
 
     void realmRoomTypeRegistered();
     void realmRoomTypeRegistered_data();
 
-    void realmRoomTypesCount();
-    void realmRoomTypesCount_data();
+    void realmServerRegistered();
+    void realmServerRegistered_data();
+
+    void realmClientRegistered();
+    void realmClientRegistered_data();
 private:
 };
+
+void Tester::initTestCase(){
+    QVERIFY(resetDatabase());
+}
+
+void Tester::cleanup(){
+
+}
 
 void Tester::realmStarted_data(){
     QTest::addColumn<QString>("command");
@@ -34,31 +48,74 @@ void Tester::realmRoomTypeRegistered_data(){
     QTest::addColumn<QString>("arg");
     QTest::addColumn<QString>("containTest");
     QTest::addColumn<QString>("result");
+    QTest::addColumn<QString>("count");
 
-    loadTestData(4);
+    loadTestData(5);
 }
 void Tester::realmRoomTypeRegistered(){
     QFETCH(QString,command);
     QFETCH(QString,arg);
     QFETCH(QString,containTest);
     QFETCH(QString,result);
+    QFETCH(QString,count);
 
-    sendCommand(command+" "+arg);
-    QTRY_COMPARE(app.getCore()->realmComponent()->roomTypeList().contains(containTest), result=="true");
+    sendCommand(command,arg);
+    if(!containTest.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->roomTypeList().contains(containTest), result=="true");
+    }
+    if(!count.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->roomTypeList().size(),count.toInt());
+    }
 }
 
-void Tester::realmRoomTypesCount_data(){
+void Tester::realmServerRegistered_data(){
     QTest::addColumn<QString>("command");
+    QTest::addColumn<QString>("arg");
+    QTest::addColumn<QString>("containTest");
     QTest::addColumn<QString>("result");
+    QTest::addColumn<QString>("count");
 
-    loadTestData(2);
+    loadTestData(5);
 }
-void Tester::realmRoomTypesCount(){
+void Tester::realmServerRegistered(){
     QFETCH(QString,command);
+    QFETCH(QString,arg);
+    QFETCH(QString,containTest);
     QFETCH(QString,result);
+    QFETCH(QString,count);
 
-    sendCommand(command);
-    QTRY_COMPARE(app.getCore()->realmComponent()->roomTypeList().size(),result.toInt());
+    sendCommand(command,arg);
+    if(!containTest.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->serverList().contains(containTest), result=="true");
+    }
+    if(!count.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->serverList().size(),count.toInt());
+    }
+}
+
+void Tester::realmClientRegistered_data(){
+    QTest::addColumn<QString>("command");
+    QTest::addColumn<QString>("arg");
+    QTest::addColumn<QString>("containTest");
+    QTest::addColumn<QString>("result");
+    QTest::addColumn<QString>("count");
+
+    loadTestData(5);
+}
+void Tester::realmClientRegistered(){
+    QFETCH(QString,command);
+    QFETCH(QString,arg);
+    QFETCH(QString,containTest);
+    QFETCH(QString,result);
+    QFETCH(QString,count);
+
+    sendCommand(command,arg);
+    if(!containTest.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->clientList().contains(containTest), result=="true");
+    }
+    if(!count.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->clientList().size(),count.toInt());
+    }
 }
 
 QTEST_MAIN(Tester)

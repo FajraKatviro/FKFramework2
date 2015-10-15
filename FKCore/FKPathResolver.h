@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include "fkcore_global.h"
+
 namespace FKPathResolver{
     const QString downloadFolder("download");
     const QString backupFolder("backup");
@@ -11,11 +13,12 @@ namespace FKPathResolver{
     const QString serverFolder("server");
     const QString databaseFolder("data");
 
-    QString roomFilePath(const QString& path, const qint8 platform);
-    QString roomFileDownloadPath(const QString& path, const qint8 platform);
-    QString roomFileBackupPath(const QString& path, qint8 platform, const QString& store);
-    QString realmDatabasePath();
-    QString serverDatabasePath();
+    QString FKCORESHARED_EXPORT roomFilePath(const QString& path, const qint8 platform);
+    QString FKCORESHARED_EXPORT roomFileDownloadPath(const QString& path, const qint8 platform);
+    QString FKCORESHARED_EXPORT roomFileBackupPath(const QString& path, qint8 platform, const QString& store);
+    QString FKCORESHARED_EXPORT realmDatabasePath();
+    QString FKCORESHARED_EXPORT serverDatabasePath();
+    QString FKCORESHARED_EXPORT databasePath();
 }
 
 #endif // FKPATHRESOLVER_H

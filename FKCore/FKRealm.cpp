@@ -277,7 +277,7 @@ void FKRealm::deleteClientRecord(const QString& clientName){
  * \brief Try create new record for server with given password. Returns server id on success or -1 on fail.
  */
 
-qint32 FKRealm::createServerRecord(const QString& password){
+qint32 FKRealm::createServerRecord(const QString password){
     if(password.isEmpty()){
         emit messageRequested(QString(tr("Unable create server record: empty password provided")));
         return -1;

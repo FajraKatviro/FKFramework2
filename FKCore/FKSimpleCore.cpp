@@ -39,66 +39,67 @@ void FKRealmComponent::startComponent(){
     }
 }
 
-QStringList FKRealmComponent::userList() const{
+QStringList FKRealmComponent::userList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,userList)){
-        FK_MLOG("Unable get user list")
+        emit messageRequested(QString(tr("Unable get user list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::userList(const QString clientId) const{
+QStringList FKRealmComponent::userList(const QString clientId){
     QStringList lst;
     if(!FK_THREAD_GETTER_ARG(QStringList,lst,getUserList,QString,clientId)){
-        FK_MLOG("Unable get user list")
+        emit messageRequested(QString(tr("Unable get user list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::clientList() const{
+QStringList FKRealmComponent::clientList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,clientList)){
-        FK_MLOG("Unable get client list")
+        emit messageRequested(QString(tr("Unable get client list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::connectedClientList() const{
+QStringList FKRealmComponent::connectedClientList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,connectedClientList)){
-        FK_MLOG("Unable get client list")
+        emit messageRequested(QString(tr("Unable get client list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::activeClientList() const{
+QStringList FKRealmComponent::activeClientList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,connectedClientList)){
-        FK_MLOG("Unable get client list")
+        emit messageRequested(QString(tr("Unable get client list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::serverList() const{
+QStringList FKRealmComponent::serverList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,serverList)){
-        FK_MLOG("Unable get server list")
+        emit messageRequested(QString(tr("Unable get server list")));
     }
     return lst;
 }
 
-QStringList FKRealmComponent::serverList(const QString roomType) const{
+QStringList FKRealmComponent::serverList(const QString roomType){
+    if(roomType.isEmpty())return serverList();
     QStringList lst;
     if(!FK_THREAD_GETTER_ARG(QStringList,lst,getServersForRoomType,QString,roomType)){
-        FK_MLOG("Unable get server list")
+        emit messageRequested(QString(tr("Unable get server list for %1 room type")).arg(roomType));
     }
     return lst;
 }
 
-QList<qint32> FKRealmComponent::connectedServerList() const{
+QList<qint32> FKRealmComponent::connectedServerList(){
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,connectedServerList)){
-        FK_MLOG("Unable get server list")
+        emit messageRequested(QString(tr("Unable get server list")));
     }
     return lst;
 }
@@ -120,39 +121,51 @@ QStringList FKRealmComponent::roomTypeList(const qint32 serverId){
     return lst;
 }
 
-QStringList FKRealmComponent::activeRoomList() const{
+QStringList FKRealmComponent::activeRoomList(){
     return activeRoomList(QVariant());
 }
 
-QStringList FKRealmComponent::activeRoomList(const QVariant filter) const{
+QStringList FKRealmComponent::activeRoomList(const QVariant filter){
     QStringList lst;
     if(!FK_THREAD_GETTER_ARG(QStringList,lst,getRoomList,QVariant,filter)){
-        FK_MLOG("Unable get room list")
+        emit messageRequested(QString(tr("Unable get room list")));
     }
     return lst;
 }
 
+void FKRealmComponent::createServerRecord(const QString password){
+    if(!FK_THREAD_CALL_ARG(createServerRecord,QString,password)){
+        emit messageRequested(QString(tr("Unable create server record for realm")));
+    }
+}
+
+void FKRealmComponent::deleteServerRecord(const qint32 serverId){
+    if(!FK_THREAD_CALL_ARG(deleteServerRecord,qint32,serverId)){
+        emit messageRequested(QString(tr("Unable remove server record from realm")));
+    }
+}
+
 void FKRealmComponent::registerRoomType(const QString roomType){
     if(!FK_THREAD_CALL_ARG(registerRoomType,QString,roomType)){
-        FK_MLOG("Unable register room type for realm")
+        emit messageRequested(QString(tr("Unable register room type for realm")));
     }
 }
 
 void FKRealmComponent::removeRoomType(const QString roomType){
     if(!FK_THREAD_CALL_ARG(removeRoomType,QString,roomType)){
-        FK_MLOG("Unable remove room type from realm")
+        emit messageRequested(QString(tr("Unable remove room type from realm")));
     }
 }
 
 void FKRealmComponent::setPort(const qint32 port){
     if(!FK_THREAD_CALL_ARG(setPort,qint32,port)){
-        FK_MLOG("Unable set realm port")
+        emit messageRequested(QString(tr("Unable set realm port")));
     }
 }
 
 void FKRealmComponent::guestConnection(FKConnector* connector){
     if(!FK_THREAD_CALL_ARG(incomeConnection,FKConnector*,connector)){
-        FK_MLOG("Unable add realm guest connection")
+        emit messageRequested(QString(tr("Unable add realm guest connection")));
     }
 }
 

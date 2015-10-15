@@ -19,23 +19,23 @@ public:
     ~FKRealmComponent();
     virtual void startComponent()override;
 public slots:
-    QStringList userList()const;
-    QStringList userList(const QString clientId)const;
-    QStringList clientList()const;
-    QStringList connectedClientList()const;
-    QStringList activeClientList()const;
-    QStringList serverList()const;
-    QStringList serverList(const QString roomType)const;
-    QList<qint32> connectedServerList()const;
+    QStringList userList();
+    QStringList userList(const QString clientId);
+    QStringList clientList();
+    QStringList connectedClientList();
+    QStringList activeClientList();
+    QStringList serverList();
+    QStringList serverList(const QString roomType);
+    QList<qint32> connectedServerList();
     QStringList roomTypeList();
     QStringList roomTypeList(const qint32 serverId);
-    QStringList activeRoomList()const;
-    QStringList activeRoomList(const QVariant filter)const;
+    QStringList activeRoomList();
+    QStringList activeRoomList(const QVariant filter);
 
 //    void createClientRecord(const QString clientName, const QString password);
 //    void deleteClientRecord(const QString clientName);
-//    void createServerRecord(const QString password);
-//    void deleteServerRecord(const qint32 serverId);
+    void createServerRecord(const QString password);
+    void deleteServerRecord(const qint32 serverId);
     void registerRoomType(const QString roomType);
     void removeRoomType(const QString roomType);
 //    void createRoomRequest(const QString roomName, const QString roomType);

@@ -7,16 +7,17 @@
  xmlns:html="http://www.w3.org/TR/REC-html40">
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <Author>Fajrega Koto</Author>
-  <LastAuthor>Fajrega Koto</LastAuthor>
+  <LastAuthor>Fajra Katviro</LastAuthor>
   <Created>2015-10-13T09:10:29Z</Created>
-  <LastSaved>2015-10-13T09:11:02Z</LastSaved>
+  <LastSaved>2015-10-15T12:41:00Z</LastSaved>
   <Version>12.00</Version>
  </DocumentProperties>
  <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
-  <WindowHeight>12405</WindowHeight>
-  <WindowWidth>17100</WindowWidth>
+  <WindowHeight>2028</WindowHeight>
+  <WindowWidth>9264</WindowWidth>
   <WindowTopX>360</WindowTopX>
-  <WindowTopY>45</WindowTopY>
+  <WindowTopY>48</WindowTopY>
+  <TabRatio>788</TabRatio>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -35,70 +36,48 @@
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
    </Borders>
   </Style>
-  <Style ss:ID="s64">
-   <Interior ss:Color="#FF0000" ss:Pattern="Solid"/>
+  <Style ss:ID="s63">
+   <Interior/>
+  </Style>
+  <Style ss:ID="s65">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s67">
+   <Alignment ss:Horizontal="Left" ss:Vertical="Bottom"/>
+  </Style>
+  <Style ss:ID="s68">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="2"/>
+   </Borders>
+  </Style>
+  <Style ss:ID="s71">
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+   <Borders>
+    <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+   </Borders>
   </Style>
  </Styles>
- <Worksheet ss:Name="realmStarted">
-  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="11" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:AutoFitWidth="0" ss:Width="78"/>
-   <Column ss:AutoFitWidth="0" ss:Width="87"/>
-   <Column ss:AutoFitWidth="0" ss:Width="69"/>
-   <Row ss:AutoFitHeight="0">
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Data</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Command</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Expected</Data></Cell>
+ <Worksheet ss:Name="testCases">
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="2" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="14.4">
+   <Column ss:AutoFitWidth="0" ss:Width="100.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="82.199999999999989"/>
+   <Column ss:AutoFitWidth="0" ss:Width="72.599999999999994"/>
+   <Column ss:AutoFitWidth="0" ss:Width="391.20000000000005"/>
+   <Row>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Case</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Function</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s71"><Data ss:Type="String">Description</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0">
+   <Row>
+    <Cell><Data ss:Type="String">checkRealm</Data></Cell>
+    <Cell><Data ss:Type="String">realmStarted</Data></Cell>
     <Cell><Data ss:Type="String">start</Data></Cell>
-    <Cell><Data ss:Type="String">start realm</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">stop</Data></Cell>
-    <Cell><Data ss:Type="String">stop realm</Data></Cell>
-    <Cell><Data ss:Type="String">false</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">restart</Data></Cell>
-    <Cell><Data ss:Type="String">start realm</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">restop</Data></Cell>
-    <Cell><Data ss:Type="String">stop realm</Data></Cell>
-    <Cell><Data ss:Type="String">false</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">double start1</Data></Cell>
-    <Cell><Data ss:Type="String">start realm</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">double start2</Data></Cell>
-    <Cell><Data ss:Type="String">start realm</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">invalid stop</Data></Cell>
-    <Cell><Data ss:Type="String">stop realm arg</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">double stop1</Data></Cell>
-    <Cell><Data ss:Type="String">stop realm</Data></Cell>
-    <Cell><Data ss:Type="String">false</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">double stop2</Data></Cell>
-    <Cell><Data ss:Type="String">stop realm</Data></Cell>
-    <Cell><Data ss:Type="String">false</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">invalid start</Data></Cell>
-    <Cell><Data ss:Type="String">start realm arg</Data></Cell>
-    <Cell ss:StyleID="s64"><Data ss:Type="String">true</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -107,52 +86,11 @@
     <Footer x:Margin="0.3"/>
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
-   <Unsynced/>
    <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>13</ActiveRow>
-     <ActiveCol>4</ActiveCol>
-     <RangeSelection>R13C5:R14C5</RangeSelection>
-    </Pane>
-   </Panes>
-   <ProtectObjects>False</ProtectObjects>
-   <ProtectScenarios>False</ProtectScenarios>
-  </WorksheetOptions>
- </Worksheet>
- <Worksheet ss:Name="realmRoomTypeRegistered">
-  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="2" x:FullColumns="1"
-   x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="96"/>
-   <Column ss:AutoFitWidth="0" ss:Width="63.75" ss:Span="1"/>
-   <Column ss:Index="5" ss:AutoFitWidth="0" ss:Width="76.5"/>
-   <Row ss:AutoFitHeight="0" ss:Height="15.75">
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Data</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Command</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Argument</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Contain test</Data></Cell>
-    <Cell ss:StyleID="s62"><Data ss:Type="String">Expected</Data></Cell>
-   </Row>
-   <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">first</Data></Cell>
-    <Cell><Data ss:Type="String">add room type</Data></Cell>
-    <Cell><Data ss:Type="String">rt</Data></Cell>
-    <Cell><Data ss:Type="String">rt</Data></Cell>
-    <Cell><Data ss:Type="String">true</Data></Cell>
-   </Row>
-  </Table>
-  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
-   <PageSetup>
-    <Header x:Margin="0.3"/>
-    <Footer x:Margin="0.3"/>
-    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
-   </PageSetup>
-   <Unsynced/>
-   <Panes>
-    <Pane>
-     <Number>3</Number>
-     <ActiveRow>4</ActiveRow>
+     <ActiveRow>11</ActiveRow>
      <ActiveCol>3</ActiveCol>
     </Pane>
    </Panes>
@@ -160,30 +98,37 @@
    <ProtectScenarios>False</ProtectScenarios>
   </WorksheetOptions>
  </Worksheet>
- <Worksheet ss:Name="realmRoomTypesCount">
-  <Table ss:ExpandedColumnCount="3" ss:ExpandedRowCount="4" x:FullColumns="1"
+ <Worksheet ss:Name="realmStarted">
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="5" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
-   <Column ss:Index="2" ss:AutoFitWidth="0" ss:Width="102.75"/>
+   <Column ss:AutoFitWidth="0" ss:Width="78" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="87"/>
    <Column ss:AutoFitWidth="0" ss:Width="69"/>
-   <Row ss:AutoFitHeight="0" ss:Height="15.75">
+   <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s62"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Description</Data></Cell>
     <Cell ss:StyleID="s62"><Data ss:Type="String">Command</Data></Cell>
     <Cell ss:StyleID="s62"><Data ss:Type="String">Expected</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">first</Data></Cell>
-    <Cell><Data ss:Type="String">show room types</Data></Cell>
-    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">start</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">start realm</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">second</Data></Cell>
-    <Cell><Data ss:Type="String">add room type ff</Data></Cell>
-    <Cell><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">stop</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">stop realm</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
-    <Cell><Data ss:Type="String">third</Data></Cell>
-    <Cell><Data ss:Type="String">remove room type ff</Data></Cell>
-    <Cell><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">invalid stop</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">stop realm arg</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">invalid start</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">start realm arg</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">false</Data></Cell>
    </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
@@ -196,8 +141,248 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>3</ActiveRow>
+     <ActiveRow>19</ActiveRow>
      <ActiveCol>2</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="realmRoomTypeRegistered">
+  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="11" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="62.400000000000006" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63.599999999999994" ss:Span="1"/>
+   <Column ss:Index="6" ss:AutoFitWidth="0" ss:Width="64.8"/>
+   <Column ss:StyleID="s67" ss:AutoFitWidth="0" ss:Width="75.600000000000009"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.75">
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Description</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Command</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Argument</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Contain test</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Expected</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">Expected count</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count0</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">0</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count1</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count2</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">2</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count3</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">3</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count4</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">4</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count5</Data></Cell>
+    <Cell ss:Index="7"><Data ss:Type="Number">5</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">add valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">add room type</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">add invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">add room type</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">remove valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove room type</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">remove invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove room type</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>18</ActiveRow>
+     <ActiveCol>4</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="realmServerRegistered">
+  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="21" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="67.8" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63.599999999999994"/>
+   <Column ss:StyleID="s67" ss:AutoFitWidth="0" ss:Width="63.599999999999994"/>
+   <Column ss:AutoFitWidth="0" ss:Width="76.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="81"/>
+   <Row ss:AutoFitHeight="0" ss:Height="15.75">
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Description</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Command</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Argument</Data></Cell>
+    <Cell ss:StyleID="s65"><Data ss:Type="String">Contain test</Data></Cell>
+    <Cell ss:StyleID="s62"><Data ss:Type="String">Expected</Data></Cell>
+    <Cell ss:StyleID="s68"><Data ss:Type="String">Expected count</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count0</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">0</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count1</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">1</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count2</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">2</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count3</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">3</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count4</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">4</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">count5</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"><Data ss:Type="Number">5</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">contain1</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">contain2</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">contain3</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">contain4</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">contain5</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">not contain1</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">1</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">not contain2</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">2</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">not contain3</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">3</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">not contain4</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">4</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">not contain5</Data></Cell>
+    <Cell ss:Index="5"><Data ss:Type="Number">5</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">add valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">create server</Data></Cell>
+    <Cell><Data ss:Type="String">passw1</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">add invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">create server</Data></Cell>
+    <Cell><Data ss:Type="String">&amp;passw</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">remove valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove server</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"/>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">remove invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove server</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s67"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Print>
+    <ValidPrinterInfo/>
+    <PaperSizeIndex>9</PaperSizeIndex>
+    <HorizontalResolution>-3</HorizontalResolution>
+    <VerticalResolution>0</VerticalResolution>
+   </Print>
+   <TopRowVisible>2</TopRowVisible>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>18</ActiveRow>
+     <ActiveCol>1</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

@@ -35,10 +35,11 @@ signals:
     void removeRoomTypeRequested(const QString roomType);
     void showServerRoomTypesRequested();
     void showRoomTypesRequested(const qint32 serverId);
+    void showServersRequested(const QString roomType);
 private:
     QString welcomeString()const;
     void printHelp();
-    static bool isCommand(QString& arg, const QString& command);
+    static bool isCommand(QString& arg, const QString& command,const bool exactMatch=false);
     static bool hasKey(QString& arg, const QString& key);
     void showUsers(QString& arg);
     void loginClient(const QString& arg);
@@ -52,6 +53,7 @@ private:
     void registerRoomType(QString arg);
     void removeRoomType(QString arg);
     void showRoomTypes(QString arg);
+    void showServers(QString arg);
 };
 
 #endif // FKCOMMANDRESOLVER_H
