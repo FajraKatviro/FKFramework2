@@ -44,6 +44,7 @@ signals:
     void showRoomTypesRequested(const qint32 serverId);
     void showServerRoomTypesRequested();
     void showServersRequested(const QString roomType);
+    void showClientsRequested();
     void clientUsersRequested();
     void realmUsersRequested();
 protected:

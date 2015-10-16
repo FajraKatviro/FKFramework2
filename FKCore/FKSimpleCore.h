@@ -32,8 +32,8 @@ public slots:
     QStringList activeRoomList();
     QStringList activeRoomList(const QVariant filter);
 
-//    void createClientRecord(const QString clientName, const QString password);
-//    void deleteClientRecord(const QString clientName);
+    void createClientRecord(const QString clientName, const QString password);
+    void deleteClientRecord(const QString clientName);
     void createServerRecord(const QString password);
     void deleteServerRecord(const qint32 serverId);
     void registerRoomType(const QString roomType);

@@ -11,6 +11,7 @@ class FKRoomInfrastructure : public QObject{
     Q_OBJECT
 public:
     explicit FKRoomInfrastructure(QObject* parent=0);
+    ~FKRoomInfrastructure();
     void addUser(const qint32 id);
     void onSyncCompleted();
 signals:

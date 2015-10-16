@@ -1,5 +1,4 @@
-*.pro.user
-FKFramework.pro.user.3.3-pre1
+*.pro.user*
 *.o
 makefile*
 *.debug
@@ -8,6 +7,7 @@ makefile*
 /debug
 /release
 /tests
+/tools
 /thirdparty
-FKFramework.pro.user
 FKTests/ConsoleAppTest/result.txt
+FKTests/ConsoleAppTest/result.xml

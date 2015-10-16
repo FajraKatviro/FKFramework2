@@ -1,8 +1,18 @@
 #include "FKCommandResolver.h"
 
+#include "FKLogger.h"
+
 #include "FKCommands.h"
 
-FKCommandResolver::FKCommandResolver(QObject *parent):QObject(parent){}
+FKCommandResolver::FKCommandResolver(QObject *parent):QObject(parent){
+    FK_CBEGIN
+    FK_CEND
+}
+
+FKCommandResolver::~FKCommandResolver(){
+    FK_DBEGIN
+    FK_DEND
+}
 
 
 void FKCommandResolver::processInput(QString input){
@@ -22,6 +32,8 @@ void FKCommandResolver::processInput(QString input){
         showUsers(input);
     }else if(isCommand(input,FKCommands::showServers)){
         showServers(input);
+    }else if(isCommand(input,FKCommands::showClients)){
+        emit showClientsRequested();
     }else if(isCommand(input,FKCommands::loginClient)){
         loginClient(input);
     }else if(isCommand(input,FKCommands::createClient)){
@@ -49,6 +61,18 @@ void FKCommandResolver::processInput(QString input){
     }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
     }else{
+        todo; //show connected servers
+        todo; //show connected clients
+        todo; //show active clients
+        todo; //show client users
+        todo; //show active users
+        todo; //show client active users
+        todo; //show started rooms
+        todo; //show room type servers
+        todo; //show room type active servers
+        todo; //show room type avaliable servers
+        todo; //show clients in room / on server
+        todo; //show users in room / on server
         emit message(QString(tr("Unknown command")));
     }
 }
@@ -72,6 +96,7 @@ void FKCommandResolver::printHelp(){
                  QString(tr("%1\tremove room type for started realm. Use %2 option to remove registered room type from current server\n")).arg(FKCommands::removeRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                  QString(tr("%1\tshow registered room types for started realm. Use %2 option to show for current server instead\n")).arg(FKCommands::showRoomTypes.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                  QString(tr("%1\tshow registered servers for started realm\n")).arg(FKCommands::showServers.rightJustified(commandWidth))+
+                 QString(tr("%1\tshow registered clients for started realm\n")).arg(FKCommands::showClients.rightJustified(commandWidth))+
                  QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                  QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
                  QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
@@ -113,7 +138,7 @@ void FKCommandResolver::showUsers(QString& arg){
     }else if(hasKey(arg,FKCommandOptions::realm)){
         emit realmUsersRequested();
     }else{
-        emit message(QString(tr("Invalid argument specified: %1")).arg(arg));
+        emit message(QString(tr("Invalid argument provided: %1")).arg(arg));
     }
 }
 
@@ -149,7 +174,7 @@ void FKCommandResolver::deleteClient(const QString& arg){
     if(!clientName.isEmpty()){
         emit deleteClientRequested(clientName);
     }else{
-        emit message(QString(tr("Unable request client deletion: invalid client name")));
+        emit message(QString(tr("You need provide 1 argument: client login")));
     }
 }
 
@@ -239,25 +264,37 @@ void FKCommandResolver::showRoomTypes(QString arg){
     arg=arg.trimmed();
     bool server=hasKey(arg,FKCommandOptions::server);
     QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
-    if(!splitArg.isEmpty()){
-        emit message(QString(tr("Invalid arguments provided")));
-    }else{
+    QList<qint32> argList;
+    if(splitArg.isEmpty()){
         if(server){
             emit showServerRoomTypesRequested();
+            return;
+        }
+        argList.append(-1); //full list
+    }else{
+        if(server){
+            emit message(QString(tr("Invalid arguments provided")));
+            return;
         }else{
-            qint32 serverId=-1; //raw list
-            emit showRoomTypesRequested(serverId);
+            for(auto i=splitArg.constBegin();i!=splitArg.constEnd();++i){
+                qint32 serverId=i->toInt();
+                if(serverId>0){
+                    argList.append(serverId);
+                }else{
+                    emit message(QString(tr("Invalid argument found. You need provide no arguments or provide server numbers")));
+                    return;
+                }
+            }
         }
     }
+    foreach(qint32 serverId,argList)emit showRoomTypesRequested(serverId);
 }
 
 void FKCommandResolver::showServers(QString arg){
     arg=arg.trimmed();
     QStringList splitArg=arg.split(' ',QString::SkipEmptyParts);
-    if(!splitArg.size()>1){
-        emit message(QString(tr("Invalid arguments provided")));
-    }else{
-        QString roomType=splitArg.isEmpty() ? "" : splitArg.first();
-        emit showServersRequested(roomType);
+    if(splitArg.isEmpty()){
+        splitArg.append("");
     }
+    foreach(QString roomType,splitArg)emit showServersRequested(roomType);
 }

@@ -133,6 +133,18 @@ QStringList FKRealmComponent::activeRoomList(const QVariant filter){
     return lst;
 }
 
+void FKRealmComponent::createClientRecord(const QString clientName, const QString password){
+    if(!callMethod("createClientRecord",clientName,"QString",password,"QString")){
+        emit messageRequested(QString(tr("Unable create client record for realm")));
+    }
+}
+
+void FKRealmComponent::deleteClientRecord(const QString clientName){
+    if(!FK_THREAD_CALL_ARG(deleteClientRecord,QString,clientName)){
+        emit messageRequested(QString(tr("Unable delete client record for realm")));
+    }
+}
+
 void FKRealmComponent::createServerRecord(const QString password){
     if(!FK_THREAD_CALL_ARG(createServerRecord,QString,password)){
         emit messageRequested(QString(tr("Unable create server record for realm")));

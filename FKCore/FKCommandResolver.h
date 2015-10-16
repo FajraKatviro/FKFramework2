@@ -9,6 +9,7 @@ class FKCORESHARED_EXPORT FKCommandResolver : public QObject{
     Q_OBJECT
 public:
     explicit FKCommandResolver(QObject *parent = 0);
+    ~FKCommandResolver();
 public slots:
     void processInput(QString input);
 signals:
@@ -36,6 +37,7 @@ signals:
     void showServerRoomTypesRequested();
     void showRoomTypesRequested(const qint32 serverId);
     void showServersRequested(const QString roomType);
+    void showClientsRequested();
 private:
     QString welcomeString()const;
     void printHelp();

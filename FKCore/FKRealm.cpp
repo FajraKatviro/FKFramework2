@@ -221,7 +221,7 @@ FKInfrastructureType FKRealm::infrastructureType() const{
  * \brief Try create new client record with given parametrs
  */
 
-void FKRealm::createClientRecord(const QString& clientName, const QString& password){
+void FKRealm::createClientRecord(const QString clientName, const QString password){
     if(password.isEmpty()){
         emit messageRequested(QString(tr("Unable create client: empty password provided")));
         return;
@@ -243,7 +243,7 @@ void FKRealm::createClientRecord(const QString& clientName, const QString& passw
     emit messageRequested(QString(tr("Client record creation success")));
 }
 
-void FKRealm::deleteClientRecord(const QString& clientName){
+void FKRealm::deleteClientRecord(const QString clientName){
     if(clientName.isEmpty()){
         emit messageRequested(QString(tr("Unable delete client: empty name provided")));
         return;

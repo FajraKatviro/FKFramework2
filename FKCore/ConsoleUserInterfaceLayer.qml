@@ -36,6 +36,18 @@ UserInterface{
             showMessage(qsTr("No servers found"));
         }
     }
+    onShowClientsRequested: {
+        var clientList = core.realm.clientList();
+        var total=clientList.length;
+        if(total>0){
+            showMessage(qsTr("Clients registered in realm (%1 total):").arg(total));
+            for(var i=0;i<total;++i){
+                showMessage(clientList[i]);
+            }
+        }else{
+            showMessage(qsTr("No client records found"));
+        }
+    }
 
     onStartServerInfrastructureRequested: core.startServerInfrastructure()
     onStartClientInfrastructureRequested: core.startClientInfrastructure()
@@ -45,8 +57,8 @@ UserInterface{
     //onRealmUsersRequested: showMessage(core.realmUserList())
     //onClientLoginRequested: core.ausviseClientInfrastructure(clientName,password)
     //onServerLoginRequested: core.ausviseServerInfrastructure(serverId,password)
-    //onCreateClientRequested: core.createClientRecord(clientName,password)
-    //onDeleteClientRequested: core.deleteClientRecord(clientName)
+    onCreateClientRequested: core.realm.createClientRecord(clientName,password)
+    onDeleteClientRequested: core.realm.deleteClientRecord(clientName)
     onCreateServerRequested: core.realm.createServerRecord(password)
     onDeleteServerRequested: core.realm.deleteServerRecord(serverId)
     //onRegisterServerRoomTypeRequested: core.registerServerRoomType(roomType)

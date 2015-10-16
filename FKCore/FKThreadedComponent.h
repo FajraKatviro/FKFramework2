@@ -36,6 +36,10 @@ protected:
     bool callMethod(const char* methodName,const ArgType& argValue, const char* argType)const{
         return QMetaObject::invokeMethod(_componentObject,methodName,Qt::QueuedConnection,QArgument<ArgType>(argType,argValue));
     }
+    template<typename ArgType,typename Arg2Type>
+    bool callMethod(const char* methodName,const ArgType& argValue, const char* argType,const Arg2Type& arg2Value, const char* arg2Type)const{
+        return QMetaObject::invokeMethod(_componentObject,methodName,Qt::QueuedConnection,QArgument<ArgType>(argType,argValue),QArgument<Arg2Type>(arg2Type,arg2Value));
+    }
 protected:
     inline FKAbstractFactoryObjectCreator* componentFactory(){return _componentFactory;}
 protected slots:
