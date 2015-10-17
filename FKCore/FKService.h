@@ -12,6 +12,11 @@ struct FKEventDeclarationForward{};
 struct FKEventDeclarationReverse{};
 struct FKActionDeclaration{};
 
+class FKObject;
+class FKEventObject;
+
+namespace FK{
+
 using commonProperty = FKCommonProperty;
 using customProperty = FKCustomProperty;
 using event = FKEventDeclaration;
@@ -20,6 +25,7 @@ using reverseComplexEvent = FKEventDeclarationReverse;
 using action = FKActionDeclaration;
 using read = QVariant;
 using write = void;
+
 #define SERVANT \
     forwardComplexEvent createServant; \
     forwardComplexEvent initServant; \
@@ -46,15 +52,11 @@ public:
     FKClassProperty(ClassName* owner):object(owner){}
 };
 
-class FKObject;
-
 template <class ClassName, qint32 id>
 class FKProperty:public FKClassProperty<ClassName>{
     FKProperty(FKObject* owner):FKClassProperty<ClassName>(static_cast<ClassName>(owner)){}
     ~FKProperty()=0;
 }; //codegenerator create this template specialization
-
-class FKEventObject;
 
 struct FKBaseEvent{
     virtual ~FKBaseEvent(){}
@@ -75,7 +77,6 @@ class FKEvent:public FKClassEvent<ClassName>{
 public:
     FKEvent(FKObject* obj):FKClassEvent<ClassName>(obj){}
 }; //codegenerator create this template specialization
-
 
 template <class ClassName, qint32 id>
 using FKAction = FKEvent<ClassName,id>;
@@ -239,5 +240,6 @@ private:
 //        for(auto i=_properties.begin();i!=_properties.end();++i)delete i.value();
 //    }
 //};
+}
 
 #endif

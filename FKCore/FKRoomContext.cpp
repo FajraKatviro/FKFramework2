@@ -42,6 +42,7 @@ void FKRoomContext::setRootEntity(QObject* entity){
 
 bool FKRoomContext::addClient(const FKRoomInviteData &invite){
     todo;
+    return false;
 }
 
 void FKRoomContext::completeSync(){

@@ -3,7 +3,7 @@
 
 #include <QString>
 
-class FKDBIndex;
+struct FKDBIndex;
 
 class FKDataBasePath{
 public:

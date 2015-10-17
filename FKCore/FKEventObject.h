@@ -42,7 +42,7 @@ private:
     qint32 _emitter;
     bool _isPropertyNotifier;
 
-    friend class FKFactoryObjectCreator<FKEventObject>;
+    friend struct FKFactoryObjectCreator<FKEventObject>;
 };
 
 #endif // FKEVENTOBJECT_H

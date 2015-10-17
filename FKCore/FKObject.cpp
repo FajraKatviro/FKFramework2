@@ -814,7 +814,7 @@ void FKObject::processFKAction(FKEventObject* action){
             }else if(action->client()==getId() || obj->servant->emitters.contains(action->client())){
                 //если эмитент и есть клиент
                 //или эмитент может действовать от лица клиента
-                if(!obj->getId()==getId()){
+                if(obj->getId()!=getId()){
                     //если эмитент - не сам объект
                     QMap<FKObject*,QVector<bool> >::ConstIterator i=servant->actors.constFind(obj);
                     if(i==servant->actors.constEnd() || !i.value().at(index)){
