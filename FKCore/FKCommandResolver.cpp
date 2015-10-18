@@ -61,7 +61,7 @@ void FKCommandResolver::processInput(QString input){
     }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
     }else if(isCommand(input,FKCommands::stopServer,true)){
-        emit stopServerRequested();
+        emit stopServerInfrastructureRequested();
     }else{
         todo; //show connected servers
         todo; //show connected clients

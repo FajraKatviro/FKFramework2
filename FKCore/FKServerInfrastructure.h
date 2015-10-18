@@ -54,7 +54,7 @@ public slots:
     QString realmIP()const;
     qint32 realmPort()const;
     qint32 clientPort()const;
-    virtual QString serveIP()const;
+    virtual QString serverIP()const;
 
     qint32 serverId()const;
 signals:

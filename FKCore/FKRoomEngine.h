@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QQmlListProperty>
 
+#include "fkcore_global.h"
+
 class FKRoomContext;
 class QQmlComponent;
 class FKRoomModule;
@@ -12,7 +14,7 @@ class FKInstructionObject;
 class FKMessage;
 class FKBasicEvent;
 
-class FKRoomEngine : public QObject{
+class FKCORESHARED_EXPORT FKRoomEngine : public QObject{
     Q_OBJECT
     Q_PROPERTY(FKRoomContext* serverContext READ serverContext NOTIFY serverContextChanged)
     Q_PROPERTY(FKRoomContext* userContext READ defaultContext NOTIFY defaultContextChanged)

@@ -23,5 +23,6 @@ protected slots:
 private:
     Status _status;
 };
+Q_DECLARE_METATYPE(FKConnector::Status)
 
 #endif // FKCONNECTOR_H

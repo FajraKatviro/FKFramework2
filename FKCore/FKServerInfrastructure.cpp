@@ -256,7 +256,7 @@ void FKServerInfrastructure::clientConnection(FKConnector* connector){
 }
 
 bool FKServerInfrastructure::waitingForAnswer(){
-    return waitingForAnswer(FKInfrastructureType::Realm);
+    return FKInfrastructure::waitingForAnswer(FKInfrastructureType::Realm);
 }
 
 void FKServerInfrastructure::setPort(const qint32 clientsPort){

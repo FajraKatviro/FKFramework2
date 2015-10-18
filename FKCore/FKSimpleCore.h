@@ -64,6 +64,8 @@ public slots:
     void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);
     void realmConnection(FKConnector* connector);
     void guestConnection(FKConnector* connector);
+protected slots:
+    virtual void componentThreadQuit()override;
 signals:
     void messageRequested(const QString msg);
     void started();
@@ -139,6 +141,10 @@ protected:
     FKRealmComponent* _realmComponent=nullptr;
     FKServerComponent* _serverComponent=nullptr;
     FKClientComponent* _clientComponent=nullptr;
+private slots:
+    void realmMessage(QString msg);
+    void serverMessage(QString msg);
+    void clientMessage(QString msg);
 };
 
 #endif

@@ -35,7 +35,7 @@ void FKRealmComponent::startComponent(){
         db->setPath(dbPath);
         realm->setDataBase(db);
         FKThreadedComponent::startComponent(realm);
-        emit messageRequested(QString(tr("Realm started")));
+        emit messageRequested(QString(tr("Started")));
         emit started();
     }
 }
@@ -186,7 +186,7 @@ void FKRealmComponent::guestConnection(FKConnector* connector){
 
 void FKRealmComponent::componentThreadQuit(){
     FKThreadedComponent::componentThreadQuit();
-    emit messageRequested(QString("Realm stopped"));
+    emit messageRequested(QString("Stopped"));
 }
 
 FKServerComponent::FKServerComponent(QObject* parent):FKThreadedComponent(parent){
@@ -202,7 +202,7 @@ FKServerComponent::~FKServerComponent(){
 void FKServerComponent::startComponent(){
     if(!component()){
         FKServerInfrastructure* server=static_cast<FKServerInfrastructure*>(componentFactory()->newInstance());
-        connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SIGNAL(waitingForAnswerChanged()));
+        connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SIGNAL(waitingForRealmAnswerChanged()));
         connect(server,SIGNAL(connectedToRealm()),SIGNAL(connectedToRealm()));
         connect(server,SIGNAL(disconnectedFromRealm()),SIGNAL(disconnectedFromRealm()));
         connect(server,SIGNAL(loggedIn()),SIGNAL(loggedIn()));
@@ -213,7 +213,7 @@ void FKServerComponent::startComponent(){
         db->setPath(dbPath);
         server->setDataBase(db);
         FKThreadedComponent::startComponent(server);
-        emit messageRequested(QString(tr("Server started")));
+        emit messageRequested(QString(tr("Started")));
         emit started();
     }
 }
@@ -244,6 +244,11 @@ void FKServerComponent::guestConnection(FKConnector* connector){
     }
 }
 
+void FKServerComponent::componentThreadQuit(){
+    FKThreadedComponent::componentThreadQuit();
+    emit messageRequested(QString("Stopped"));
+}
+
 bool FKServerComponent::waitingForRealmAnswer(){
     bool result;
     if(!FK_THREAD_GETTER(bool,result,waitingForAnswer)){
@@ -265,6 +270,9 @@ FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
     qRegisterMetaType<FKRoomInviteData>();
+    qRegisterMetaType<FKInfrastructureType>();
+    qRegisterMetaType<FKConnector*>();
+    qRegisterMetaType<FKConnector::Status>();
     //qmlRegisterType<FKRealmComponent*>();
     //qRegisterMetaType<FKServerComponent*>();
     //qRegisterMetaType<FKClientComponent*>();
@@ -285,8 +293,10 @@ bool FKSimpleCore::startRealmInfrastructure(const qint32 port){
         _realmComponent->startComponent();
         _realmComponent->setPort(port);
         return true;
+    }else{
+        emit messageRequested(QString(tr("Unable start realm: already started")));
+        return false;
     }
-    return false;
 }
 
 bool FKSimpleCore::startServerInfrastructure(const qint32 port, const qint32 realmPort, const QString& realmIP){
@@ -302,7 +312,11 @@ bool FKSimpleCore::startServerInfrastructure(const qint32 port, const qint32 rea
             _serverComponent->realmConnection(serverSideConnector); //this must be first
             _realmComponent->guestConnection(realmSideConnector); //this must be seconds
             return true;
+        }else{
+            emit messageRequested(QString(tr("Unable start server: already started")));
         }
+    }else{
+        emit messageRequested(QString(tr("Unable start local server: no realm started")));
     }
     return false;
 }
@@ -311,6 +325,8 @@ bool FKSimpleCore::stopRealmInfrastructure(){
     if(_realmComponent->isRunning()){
         _realmComponent->stopComponent();
         return true;
+    }else{
+        emit messageRequested(QString(tr("Unable stop realm: not started")));
     }
     return false;
 }
@@ -319,6 +335,8 @@ bool FKSimpleCore::stopServerInfrastructure(){
     if(_serverComponent->isRunning()){
         _serverComponent->stopComponent();
         return true;
+    }else{
+        emit messageRequested(QString(tr("Unable stop server: not started")));
     }
     return false;
 }
@@ -340,15 +358,30 @@ void FKSimpleCore::createComponents(){
 }
 
 void FKSimpleCore::installComponents(){
-    connect(_realmComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-    connect(_serverComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-    connect(_clientComponent,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+    connect(_realmComponent,SIGNAL(messageRequested(QString)),SLOT(realmMessage(QString)));
+    connect(_serverComponent,SIGNAL(messageRequested(QString)),SLOT(serverMessage(QString)));
+    connect(_clientComponent,SIGNAL(messageRequested(QString)),SLOT(clientMessage(QString)));
 }
 
 void FKSimpleCore::installComponentFactories(){
     _realmComponent->setComponentFactory(new FKFactoryObjectCreator<FKRealm>());
     _serverComponent->setComponentFactory(new FKFactoryObjectCreator<FKServerInfrastructure>());
     _clientComponent->setComponentFactory(new FKFactoryObjectCreator<FKClientInfrastructure>());
+}
+
+void FKSimpleCore::realmMessage(QString msg){
+    msg.prepend(QLatin1String("Realm->"));
+    emit messageRequested(msg);
+}
+
+void FKSimpleCore::serverMessage(QString msg){
+    msg.prepend(QLatin1String("Server->"));
+    emit messageRequested(msg);
+}
+
+void FKSimpleCore::clientMessage(QString msg){
+    msg.prepend(QLatin1String("Client->"));
+    emit messageRequested(msg);
 }
 
 

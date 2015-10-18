@@ -12,6 +12,7 @@ enum class FKInfrastructureType:qint8{
     Client,
     User
 };
+Q_DECLARE_METATYPE(FKInfrastructureType)
 
 class FKInfrastructure : public QObject{
     Q_OBJECT
