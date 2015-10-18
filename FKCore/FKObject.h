@@ -14,7 +14,9 @@
 
 class FKObjectManager;
 class FKDataBase;
-class FKDBIndex;
+struct FKDBIndex;
+
+using namespace FK;
 
 class FKCORESHARED_EXPORT FKObject:public FKSystemObject{
     Q_OBJECT

@@ -2,7 +2,7 @@ QT += core qml
 QT -= gui
 CONFIG += console
 
-TARGET = FKLudo
+TARGET = ludo
 TEMPLATE = app
 
 SOURCES += \

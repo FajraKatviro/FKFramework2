@@ -54,7 +54,7 @@ private:
         const QString owner;
     } identifiers;
 
-    friend struct FKRoomData;
+    friend class FKRoomData;
 };
 
 #endif // FKROOMDATAFILTER_H

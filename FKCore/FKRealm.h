@@ -26,7 +26,7 @@ public:
     //void refreshRoomList(const QString& clientId,const QVariant& filters);
     void refreshRoomData(const qint32 serverId, const QVariant& data);
     void dropRealm();
-    FKInfrastructureType infrastructureType()const;
+    FKInfrastructureType infrastructureType()const override;
 
     void createRoomRealmRequest(const QString& roomName,const QString& roomType);
 

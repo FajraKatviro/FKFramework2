@@ -1,4 +1,9 @@
-CONFIG += c++14
+mac {
+    CONFIG += c++11
+    QMAKE_CXXFLAGS_CXX11 = -std=c++14 -stdlib=libc++
+} else {
+    CONFIG += c++14
+}
 
 CONFIG(debug, debug|release):{
     DEFINES+= FK_DEBUG
@@ -20,8 +25,11 @@ win32{
 } else {
     mac {
         CONFIG(release, debug|release){
+            target.path = $$PWD/release/bin_mac
         } else {
+            target.path = $$PWD/debug/bin_mac
         }
+        INSTALLS += target
     } else {
         CONFIG(release, debug|release){
         } else {

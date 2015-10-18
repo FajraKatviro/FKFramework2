@@ -68,7 +68,7 @@ FKClientInfrastructureReferent::FKClientInfrastructureReferent(const QString& cl
         _id(clientId),_password(password){
     FK_CBEGIN
     const int inviteTime=1000*16; //16 seconds to create indentified client-server connection
-    QTimer::singleShot(inviteTime,this,&inviteTimeout);
+    QTimer::singleShot(inviteTime,this,&FKClientInfrastructureReferent::inviteTimeout);
     FK_CEND
 }
 

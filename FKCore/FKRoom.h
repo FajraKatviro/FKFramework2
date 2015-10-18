@@ -13,6 +13,7 @@ class FKCORESHARED_EXPORT FKRoom:public FKObject{
     Q_OBJECT
     Q_PROPERTY(qint32 o_usersSize READ ro_usersSize WRITE wo_usersSize)
 public:
+    SERVANT;
     static FKVersionList version();
     virtual void setup(const FKRoomData& data);
     virtual bool addUsers(const FKRoomInviteData& data);
