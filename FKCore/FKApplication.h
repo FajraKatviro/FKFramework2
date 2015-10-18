@@ -17,6 +17,7 @@ public:
     bool start();
     template <class FKCore> bool setCore();
     template <class FKUI> bool setUserInterface();
+    template <class FKRE> bool setRoomEngine();
     bool setInterfaceBridge(const QString& bridgeType);
 
     //next 2 functions provided for tests
@@ -27,6 +28,7 @@ private:
     virtual void initLayer();
     bool _interface;
     bool _core;
+    bool _room=false;
     QString _interfaceBridge;
     QQmlApplicationEngine* _qmlEngine;
 };
@@ -46,6 +48,16 @@ bool FKApplication::setUserInterface(){
     if(!_interface){
         _interface=true;
         qmlRegisterType<FKUI>("FKApp",1,0,"UserInterface");
+        return true;
+    }
+    return false;
+}
+
+template <class FKRE>
+bool FKApplication::setRoomEngine(){
+    if(!_room){
+        _room=true;
+        qmlRegisterType<FKRE>("FKApp",1,0,"RoomEngine");
         return true;
     }
     return false;

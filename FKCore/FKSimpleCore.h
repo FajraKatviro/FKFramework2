@@ -50,19 +50,29 @@ signals:
 
 class FKCORESHARED_EXPORT FKServerComponent:public FKThreadedComponent{
     Q_OBJECT
+    Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
 public:
     FKServerComponent(QObject* parent = nullptr);
     ~FKServerComponent();
-    //virtual void startComponent()override;
+    virtual void startComponent()override;
 public slots:
 //    void ausvise(const qint32 id, const QString password);
 //    void registerRoomType(const QString roomType);
 //    void removeRoomType(const QString roomType);
+
+    void setPort(const qint32 port);
+    void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);
+    void realmConnection(FKConnector* connector);
+    void guestConnection(FKConnector* connector);
 signals:
     void messageRequested(const QString msg);
+    void started();
     void connectedToRealm();
     void disconnectedFromRealm();
+    void waitingForRealmAnswerChanged();
     void loggedIn();
+private:
+    bool waitingForRealmAnswer();
 };
 
 class FKCORESHARED_EXPORT FKClientComponent:public FKThreadedComponent{
@@ -109,10 +119,10 @@ public:
     inline FKClientComponent* clientComponent()const{return _clientComponent;}
 public slots:
     virtual bool startRealmInfrastructure(const qint32 port=0);
-    //virtual bool startServerInfrastructure(const int port=0, const int realmPort=0,const QString& realmIP=QString())=0;
+    virtual bool startServerInfrastructure(const qint32 port=0, const qint32 realmPort=0,const QString& realmIP=QString());
     //virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString())=0;
     virtual bool stopRealmInfrastructure();
-    //virtual bool stopServerInfrastructure()=0;
+    virtual bool stopServerInfrastructure();
     //virtual bool stopClientInfrastructure()=0;
     void quitApplication();
     void initComponents();

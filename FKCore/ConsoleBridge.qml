@@ -14,6 +14,10 @@ QtObject{
        // onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
     }
 
+    property var roomEngine: RoomEngine{
+        id: roomComponent
+    }
+
     Component.onCompleted:{
          //   app.startRealm()
     }

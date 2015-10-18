@@ -14,6 +14,7 @@ public:
     enum Status{Connected,Disconnected};
     FKConnector::Status status()const{return _status;}
     virtual QString address()const{return QString();}
+    void activate();
 signals:
     void gotMessage(const QString msgType, FKSystemObject* msg);
     void statusChanged(FKConnector::Status status);

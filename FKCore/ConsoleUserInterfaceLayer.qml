@@ -50,6 +50,7 @@ UserInterface{
     }
 
     onStartServerInfrastructureRequested: core.startServerInfrastructure()
+    onStopServerInfrastructureRequested: core.stopServerInfrastructure()
     onStartClientInfrastructureRequested: core.startClientInfrastructure()
     //onCreateUserRequested: core.createUserRecord(userName)
     //onDeleteUserRequested: core.deleteUserRecord(userName)

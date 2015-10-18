@@ -11,6 +11,7 @@
 #include "FKRoomInviteData.h"
 #include "FKPathResolver.h"
 #include "FKFactory.h"
+#include "FKLocalConnector.h"
 
 #include "FKLogger.h"
 
@@ -176,7 +177,9 @@ void FKRealmComponent::setPort(const qint32 port){
 }
 
 void FKRealmComponent::guestConnection(FKConnector* connector){
-    if(!FK_THREAD_CALL_ARG(incomeConnection,FKConnector*,connector)){
+    connector->moveToThread(component()->thread());
+    const bool activation=true;
+    if(!callMethod("incomeConnection",connector,"FKConnector*",activation,"bool")){
         emit messageRequested(QString(tr("Unable add realm guest connection")));
     }
 }
@@ -194,6 +197,59 @@ FKServerComponent::FKServerComponent(QObject* parent):FKThreadedComponent(parent
 FKServerComponent::~FKServerComponent(){
     FK_DBEGIN
     FK_DEND
+}
+
+void FKServerComponent::startComponent(){
+    if(!component()){
+        FKServerInfrastructure* server=static_cast<FKServerInfrastructure*>(componentFactory()->newInstance());
+        connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SIGNAL(waitingForAnswerChanged()));
+        connect(server,SIGNAL(connectedToRealm()),SIGNAL(connectedToRealm()));
+        connect(server,SIGNAL(disconnectedFromRealm()),SIGNAL(disconnectedFromRealm()));
+        connect(server,SIGNAL(loggedIn()),SIGNAL(loggedIn()));
+        connect(server,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+        QString dbPath(FKPathResolver::serverDatabasePath());
+        QDir(dbPath).mkpath(".");
+        FKDataBase* db=new FKFSDB(server);
+        db->setPath(dbPath);
+        server->setDataBase(db);
+        FKThreadedComponent::startComponent(server);
+        emit messageRequested(QString(tr("Server started")));
+        emit started();
+    }
+}
+
+void FKServerComponent::setPort(const qint32 port){
+    if(!FK_THREAD_CALL_ARG(setPort,qint32,port)){
+        emit messageRequested(QString(tr("Unable set server port")));
+    }
+}
+
+void FKServerComponent::setRealmConnectionSettings(const QString realmIP, const qint32 realmPort){
+    if(!callMethod("setRealmConnectionSettings",realmIP,"QString",realmPort,"qint32")){
+        emit messageRequested(QString(tr("Unable set server realm connection settings")));
+    }
+}
+
+void FKServerComponent::realmConnection(FKConnector* connector){
+    connector->moveToThread(component()->thread());
+    if(!FK_THREAD_CALL_ARG(realmConnection,FKConnector*,connector)){
+        emit messageRequested(QString(tr("Unable set realm connection for server")));
+    }
+}
+
+void FKServerComponent::guestConnection(FKConnector* connector){
+    connector->moveToThread(component()->thread());
+    if(!FK_THREAD_CALL_ARG(clientConnection,FKConnector*,connector)){
+        emit messageRequested(QString(tr("Unable add server guest connection")));
+    }
+}
+
+bool FKServerComponent::waitingForRealmAnswer(){
+    bool result;
+    if(!FK_THREAD_GETTER(bool,result,waitingForAnswer)){
+        result=false;
+    }
+    return result;
 }
 
 FKClientComponent::FKClientComponent(QObject* parent):FKThreadedComponent(parent){
@@ -233,9 +289,35 @@ bool FKSimpleCore::startRealmInfrastructure(const qint32 port){
     return false;
 }
 
+bool FKSimpleCore::startServerInfrastructure(const qint32 port, const qint32 realmPort, const QString& realmIP){
+    if(_realmComponent->isRunning()){
+        if(!_serverComponent->isRunning()){
+            _serverComponent->startComponent();
+            _serverComponent->setPort(port);
+            _serverComponent->setRealmConnectionSettings(realmIP,realmPort);
+
+            FKLocalConnector* serverSideConnector=new FKLocalConnector;
+            FKLocalConnector* realmSideConnector=new FKLocalConnector;
+            realmSideConnector->join(serverSideConnector);
+            _serverComponent->realmConnection(serverSideConnector); //this must be first
+            _realmComponent->guestConnection(realmSideConnector); //this must be seconds
+            return true;
+        }
+    }
+    return false;
+}
+
 bool FKSimpleCore::stopRealmInfrastructure(){
     if(_realmComponent->isRunning()){
         _realmComponent->stopComponent();
+        return true;
+    }
+    return false;
+}
+
+bool FKSimpleCore::stopServerInfrastructure(){
+    if(_serverComponent->isRunning()){
+        _serverComponent->stopComponent();
         return true;
     }
     return false;
@@ -269,17 +351,7 @@ void FKSimpleCore::installComponentFactories(){
     _clientComponent->setComponentFactory(new FKFactoryObjectCreator<FKClientInfrastructure>());
 }
 
-//void FKAbstractCore::setServer(FKServerInfrastructure* server){
-//    _server=server;
-//    connect(server,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SLOT(waitingForAnswerChanged(FKInfrastructureType)));
-//    connect(server,SIGNAL(connectedToRealm()),SLOT(serverConnectedToRealmSlot()));
-//    connect(server,SIGNAL(disconnectedFromRealm()),SLOT(serverDisconnectedFromRealmSlot()));
-//    connect(server,SIGNAL(loggedIn()),SLOT(serverLoggedInSlot()));
-//    connect(server,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-//    FKDataBase* db=new FKFSDB(_server);
-//    db->setPath(serverDatabasePath());
-//    _server->setDataBase(db);
-//}
+
 
 //void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
 //    _infr=infr;

@@ -19,6 +19,7 @@ signals:
     void stopRealmRequested();
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
+    void stopServerInfrastructureRequested();
     void clientUsersRequested();
     void realmUsersRequested();
     void clientLoginRequested(const QString client,const QString password);

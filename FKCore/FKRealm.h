@@ -46,7 +46,7 @@ public:
     void roomStopped(const qint32 serverId);
 public slots:
     virtual void setPort(const qint32 /*port*/){}
-    void incomeConnection(FKConnector* connector);
+    void incomeConnection(FKConnector* connector,const bool needActivation);
 
     void registerRoomType(QString roomType);
     void removeRoomType(QString roomType);

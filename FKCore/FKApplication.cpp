@@ -40,7 +40,7 @@ FKApplication::~FKApplication(){
  */
 
 bool FKApplication::start(){
-    if(_core && _interface && _interfaceBridge!=QString()){
+    if(_core && _interface && _room && _interfaceBridge!=QString()){
         prepare();
         initLayer();
         return true;

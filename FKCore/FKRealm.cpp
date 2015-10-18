@@ -4,6 +4,7 @@
 #include "FKDataBase.h"
 #include "FKBasicEvent.h"
 #include "FKRoomDataFilter.h"
+#include "FKConnector.h"
 
 #include <QStringList>
 
@@ -1118,10 +1119,12 @@ void FKRealm::sanityDatabase(){
  * \brief Handle new income guest connection
  */
 
-void FKRealm::incomeConnection(FKConnector* connector){
+void FKRealm::incomeConnection(FKConnector* connector,const bool needActivation){
+    connector->setParent(this);
     FKRealmConnectionManager* mgr=new FKRealmConnectionManager(this,connector,this);
     _guestConnections.insert(mgr);
     emit messageRequested(QString(tr("Got new income connection")));
+    if(needActivation)connector->activate();
 }
 
 bool FKRealm::isServerConnected(const qint32 id)const{

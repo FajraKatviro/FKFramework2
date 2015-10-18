@@ -26,6 +26,10 @@ FKConnector::~FKConnector(){
     FK_DEND
 }
 
+void FKConnector::activate(){
+    setStatus(Connected);
+}
+
 /*!
  * \fn FKConnector::Status FKConnector::status()const
  * \brief Get connector status. Default status is disconnected.

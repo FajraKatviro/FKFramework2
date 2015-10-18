@@ -62,7 +62,7 @@
   </Style>
  </Styles>
  <Worksheet ss:Name="testCases">
-  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="11" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="14" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:AutoFitWidth="0" ss:Width="100.8"/>
    <Column ss:AutoFitWidth="0" ss:Width="123.6"/>
@@ -109,6 +109,16 @@
     <Cell><Data ss:Type="String">realmClientRegistered</Data></Cell>
     <Cell><Data ss:Type="String">count1</Data></Cell>
    </Row>
+   <Row ss:Index="13" ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">checkServer</Data></Cell>
+    <Cell><Data ss:Type="String">serverStarted</Data></Cell>
+    <Cell><Data ss:Type="String">start</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">checkServer</Data></Cell>
+    <Cell><Data ss:Type="String">serverStarted</Data></Cell>
+    <Cell><Data ss:Type="String">stop</Data></Cell>
+   </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -121,7 +131,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>9</ActiveRow>
+     <ActiveRow>19</ActiveRow>
      <ActiveCol>3</ActiveCol>
     </Pane>
    </Panes>
@@ -479,8 +489,59 @@
    <Panes>
     <Pane>
      <Number>3</Number>
+     <ActiveRow>19</ActiveRow>
+     <ActiveCol>4</ActiveCol>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="serverStarted">
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="5" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="15">
+   <Column ss:AutoFitWidth="0" ss:Width="78" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="87"/>
+   <Column ss:AutoFitWidth="0" ss:Width="69"/>
+   <Row ss:AutoFitHeight="0">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Description</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Command</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Expected</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">start</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">start server</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">stop</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">stop server</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">invalid stop</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">stop server arg</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">invalid start</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">start server arg</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">false</Data></Cell>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <Unsynced/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
      <ActiveRow>3</ActiveRow>
-     <ActiveCol>3</ActiveCol>
+     <ActiveCol>8</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

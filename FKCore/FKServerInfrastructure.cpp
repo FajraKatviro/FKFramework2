@@ -11,6 +11,7 @@
 #include "FKFSDB.h"
 #include "FKRoomModule.h"
 #include "FKRoom.h"
+#include "FKConnector.h"
 
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
@@ -239,6 +240,7 @@ qint32 FKServerInfrastructure::serverId() const{
 }
 
 void FKServerInfrastructure::realmConnection(FKConnector* connector){
+    connector->setParent(this);
     _realmConnection=new FKServerConnectionManagerR(this,connector,this);
     connect(_realmConnection,SIGNAL(connectionStatusChanged()),SLOT(realmConnectorStatusChanged()));
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::connect)){
@@ -247,9 +249,39 @@ void FKServerInfrastructure::realmConnection(FKConnector* connector){
 }
 
 void FKServerInfrastructure::clientConnection(FKConnector* connector){
+    connector->setParent(this);
     auto* mgr=new FKServerConnectionManager(this,connector,this);
     _guests.insert(mgr);
     emit messageRequested(QString(tr("Server got new income connection")));
+}
+
+bool FKServerInfrastructure::waitingForAnswer(){
+    return waitingForAnswer(FKInfrastructureType::Realm);
+}
+
+void FKServerInfrastructure::setPort(const qint32 clientsPort){
+    _clientsPort=clientsPort;
+}
+
+void FKServerInfrastructure::setRealmConnectionSettings(const QString ip, const qint32 port){
+    _realmIP=ip;
+    _realmPort=port;
+}
+
+QString FKServerInfrastructure::realmIP() const{
+    return _realmIP;
+}
+
+qint32 FKServerInfrastructure::realmPort() const{
+    return _realmPort;
+}
+
+qint32 FKServerInfrastructure::clientPort() const{
+    return _clientsPort;
+}
+
+QString FKServerInfrastructure::serverIP() const{
+    return QString();
 }
 
 void FKServerInfrastructure::realmConnectorStatusChanged(){

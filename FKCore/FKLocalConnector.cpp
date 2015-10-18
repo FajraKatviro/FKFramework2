@@ -54,7 +54,6 @@ void FKLocalConnector::join(FKLocalConnector* other){
     connect(other,SIGNAL(transmitMessage(QString,FKSystemObject*)),this,SLOT(readMessage(QString,FKSystemObject*)),Qt::DirectConnection);
     connect(other,SIGNAL(transmitMessage(QByteArray)),this,SLOT(readMessage(QByteArray)),Qt::DirectConnection);
     connect(other,SIGNAL(statusChanged(FKConnector::Status)),this,SLOT(setStatus(FKConnector::Status)));
-    setStatus(Connected);
 }
 
 /*!

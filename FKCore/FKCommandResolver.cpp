@@ -60,6 +60,8 @@ void FKCommandResolver::processInput(QString input){
         showRoomTypes(input);
     }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
+    }else if(isCommand(input,FKCommands::stopServer,true)){
+        emit stopServerRequested();
     }else{
         todo; //show connected servers
         todo; //show connected clients
@@ -99,6 +101,7 @@ void FKCommandResolver::printHelp(){
                  QString(tr("%1\tshow registered clients for started realm\n")).arg(FKCommands::showClients.rightJustified(commandWidth))+
                  QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                  QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tstop server infrastructure\n")).arg(FKCommands::stopServer.rightJustified(commandWidth))+
                  QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
                  QString(tr("%1\tsubmit current server on connected realm\n")).arg(FKCommands::loginServer.rightJustified(commandWidth))+
                  QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+

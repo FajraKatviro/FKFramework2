@@ -44,13 +44,19 @@ public:
     void stopGuestConnection(FKServerConnectionManager* guest);
 
     void messageFromRealm(const QString& msg);
-
-    qint32 serverId()const;
-
-    virtual qint32 userPort()const{return 0;}
 public slots:
     void realmConnection(FKConnector* connector);
     void clientConnection(FKConnector* connector);
+    bool waitingForAnswer();
+
+    void setPort(const qint32 clientsPort);
+    void setRealmConnectionSettings(const QString ip,const qint32 port);
+    QString realmIP()const;
+    qint32 realmPort()const;
+    qint32 clientPort()const;
+    virtual QString serveIP()const;
+
+    qint32 serverId()const;
 signals:
     void connectedToRealm();
     void disconnectedFromRealm();
@@ -82,6 +88,9 @@ private:
     QMap<qint32,FKClientInfrastructureReferent*> _referents; //this for event dispatch
     FKIDGenerator _idgenerator;
     qint32 _id;
+    qint32 _realmPort=-1;
+    qint32 _clientsPort=-1;
+    QString _realmIP;
 };
 
 #endif

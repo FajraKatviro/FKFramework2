@@ -8,6 +8,7 @@
 #include "FKApplication.h"
 #include "FKSimpleCore.h"
 #include "FKConsoleInterface.h"
+#include "FKRoomEngine.h"
 #include "FKCommandResolver.h"
 #include "FKPathResolver.h"
 
@@ -68,6 +69,7 @@ public:
     FKConsoleTester(QObject* parent=0):QObject(parent){
         app.setCore<FKSimpleCore>();
         app.setUserInterface<FKConsoleInterface>();
+        app.setRoomEngine<FKRoomEngine>();
         app.setInterfaceBridge(QStringLiteral("ConsoleBridge"));
         app.start();
         static_cast<FKConsoleInterface*>(app.getUi())->disableConsoleReader();

@@ -9,15 +9,15 @@ private slots:
 
     void realmStarted();
     void realmStarted_data();
-
     void realmRoomTypeRegistered();
     void realmRoomTypeRegistered_data();
-
     void realmServerRegistered();
     void realmServerRegistered_data();
-
     void realmClientRegistered();
     void realmClientRegistered_data();
+
+    void serverStarted();
+    void serverStarted_data();
 private:
 };
 
@@ -116,6 +116,20 @@ void Tester::realmClientRegistered(){
     if(!count.isEmpty()){
         QTRY_COMPARE(app.getCore()->realmComponent()->clientList().size(),count.toInt());
     }
+}
+
+void Tester::serverStarted_data(){
+    QTest::addColumn<QString>("command");
+    QTest::addColumn<QString>("result");
+
+    loadTestData(2);
+}
+void Tester::serverStarted(){
+    QFETCH(QString,command);
+    QFETCH(QString,result);
+
+    sendCommand(command);
+    QTRY_COMPARE(app.getCore()->serverComponent()->isRunning(),result=="true");
 }
 
 QTEST_MAIN(Tester)

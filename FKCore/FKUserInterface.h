@@ -25,6 +25,7 @@ signals:
     void stopRealmRequested();
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
+    void stopServerInfrastructureRequested();
     void createClientRequested(const QString clientName,const QString password);
     void deleteClientRequested(const QString clientName);
     void createRoomRequested(const QString roomName,const QString roomType, const QStringList users);
