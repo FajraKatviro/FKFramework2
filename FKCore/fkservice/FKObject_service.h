@@ -6,6 +6,8 @@
 class FKObject;
 class FKEventObject;
 
+namespace FK{
+
 template<class T>
 class FKClassEvent;
 
@@ -23,5 +25,6 @@ public:
     FKEvent(FKObject* obj):FKClassEvent<FKObject>(obj){}
 };
 
+}
 
 #endif

@@ -29,12 +29,14 @@ win32{
         } else {
             target.path = $$PWD/debug/bin_mac
         }
-        INSTALLS += target
     } else {
         CONFIG(release, debug|release){
+            target.path = $$PWD/release/bin_nix
         } else {
+            target.path = $$PWD/debug/bin_nix
         }
     }
+    INSTALLS += target
 }
 
 INCLUDEPATH += $$PWD/FKUtility

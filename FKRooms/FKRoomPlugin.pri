@@ -27,12 +27,14 @@ win32{
         } else {
             target.path = $$PWD/../debug/rooms/bin_win
         }
-        INSTALLS += target
     } else {
         CONFIG(release, debug|release){
+            target.path = $$PWD/../release/rooms/bin_nix
         } else {
+            target.path = $$PWD/../debug/rooms/bin_nix
         }
     }
+    INSTALLS += target
 }
 
 LIBS += -lFKCore
