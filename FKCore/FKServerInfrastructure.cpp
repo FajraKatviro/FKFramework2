@@ -55,7 +55,7 @@ void FKServerInfrastructure::dropInfrastructure(){
     cancelAnswer(FKInfrastructureType::Realm);
 }
 
-void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString& password){
+void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString password){
     if(id<=0 || password.isEmpty()){
         emit messageRequested(QString(tr("Unable login: invalid id or password")));
         return;
@@ -255,8 +255,12 @@ void FKServerInfrastructure::clientConnection(FKConnector* connector){
     emit messageRequested(QString(tr("Server got new income connection")));
 }
 
-bool FKServerInfrastructure::waitingForAnswer(){
+bool FKServerInfrastructure::waitingForAnswer()const{
     return FKInfrastructure::waitingForAnswer(FKInfrastructureType::Realm);
+}
+
+bool FKServerInfrastructure::isLogged() const{
+    return _logged;
 }
 
 void FKServerInfrastructure::setPort(const qint32 clientsPort){

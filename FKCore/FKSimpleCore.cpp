@@ -108,7 +108,7 @@ QList<qint32> FKRealmComponent::connectedServerList(){
 QStringList FKRealmComponent::roomTypeList(){
     QStringList lst;
     if(!FK_THREAD_GETTER(QStringList,lst,getRegisteredRoomTypes)){
-        emit messageRequested(QString(tr("Unable asquire room type list from realm")));
+        emit messageRequested(QString(tr("Unable asquire room type list")));
     }
     return lst;
 }
@@ -117,7 +117,7 @@ QStringList FKRealmComponent::roomTypeList(const qint32 serverId){
     if(serverId<0)return roomTypeList();
     QStringList lst;
     if(!FK_THREAD_GETTER_ARG(QStringList,lst,serverAvaliableRoomTypes,qint32,serverId)){
-        emit messageRequested(QString(tr("Unable asquire room type list from realm for %1 server")).arg(QString::number(serverId)));
+        emit messageRequested(QString(tr("Unable asquire room type list for %1 server")).arg(QString::number(serverId)));
     }
     return lst;
 }
@@ -136,43 +136,49 @@ QStringList FKRealmComponent::activeRoomList(const QVariant filter){
 
 void FKRealmComponent::createClientRecord(const QString clientName, const QString password){
     if(!callMethod("createClientRecord",clientName,"QString",password,"QString")){
-        emit messageRequested(QString(tr("Unable create client record for realm")));
+        emit messageRequested(QString(tr("Unable create client record")));
     }
 }
 
 void FKRealmComponent::deleteClientRecord(const QString clientName){
     if(!FK_THREAD_CALL_ARG(deleteClientRecord,QString,clientName)){
-        emit messageRequested(QString(tr("Unable delete client record for realm")));
+        emit messageRequested(QString(tr("Unable delete client record")));
     }
 }
 
 void FKRealmComponent::createServerRecord(const QString password){
     if(!FK_THREAD_CALL_ARG(createServerRecord,QString,password)){
-        emit messageRequested(QString(tr("Unable create server record for realm")));
+        emit messageRequested(QString(tr("Unable create server record")));
     }
 }
 
 void FKRealmComponent::deleteServerRecord(const qint32 serverId){
     if(!FK_THREAD_CALL_ARG(deleteServerRecord,qint32,serverId)){
-        emit messageRequested(QString(tr("Unable remove server record from realm")));
+        emit messageRequested(QString(tr("Unable remove server record")));
+    }
+}
+
+void FKRealmComponent::dropServer(const qint32 serverId){
+    if(!FK_THREAD_CALL_ARG(dropServer,qint32,serverId)){
+        emit messageRequested(QString(tr("Unable drop server")));
     }
 }
 
 void FKRealmComponent::registerRoomType(const QString roomType){
     if(!FK_THREAD_CALL_ARG(registerRoomType,QString,roomType)){
-        emit messageRequested(QString(tr("Unable register room type for realm")));
+        emit messageRequested(QString(tr("Unable register room type")));
     }
 }
 
 void FKRealmComponent::removeRoomType(const QString roomType){
     if(!FK_THREAD_CALL_ARG(removeRoomType,QString,roomType)){
-        emit messageRequested(QString(tr("Unable remove room type from realm")));
+        emit messageRequested(QString(tr("Unable remove room type")));
     }
 }
 
 void FKRealmComponent::setPort(const qint32 port){
     if(!FK_THREAD_CALL_ARG(setPort,qint32,port)){
-        emit messageRequested(QString(tr("Unable set realm port")));
+        emit messageRequested(QString(tr("Unable set port")));
     }
 }
 
@@ -180,7 +186,7 @@ void FKRealmComponent::guestConnection(FKConnector* connector){
     connector->moveToThread(component()->thread());
     const bool activation=true;
     if(!callMethod("incomeConnection",connector,"FKConnector*",activation,"bool")){
-        emit messageRequested(QString(tr("Unable add realm guest connection")));
+        emit messageRequested(QString(tr("Unable add guest connection")));
     }
 }
 
@@ -215,6 +221,30 @@ void FKServerComponent::startComponent(){
         FKThreadedComponent::startComponent(server);
         emit messageRequested(QString(tr("Started")));
         emit started();
+    }
+}
+
+bool FKServerComponent::isLogged(){
+    bool result;
+    if(!FK_THREAD_GETTER(bool,result,isLogged)){
+        result = false;
+        emit messageRequested(QString(tr("Unable asquire logged status from server")));
+    }
+    return result;
+}
+
+bool FKServerComponent::isConnectedToRealm(){
+    bool result;
+    if(!FK_THREAD_GETTER(bool,result,isConnectedToRealm)){
+        result = false;
+        emit messageRequested(QString(tr("Unable asquire connected to realm status from server")));
+    }
+    return result;
+}
+
+void FKServerComponent::ausvise(const qint32 id, const QString password){
+    if(!callMethod("requestLoginRealm",id,"qint32",password,"QString")){
+        emit messageRequested(QString(tr("Unable request server to log in")));
     }
 }
 

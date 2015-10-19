@@ -20,6 +20,7 @@ signals:
     void startClientInfrastructureRequested();
     void startServerInfrastructureRequested();
     void stopServerInfrastructureRequested();
+    void dropServerRequested(const qint32 serverId);
     void clientUsersRequested();
     void realmUsersRequested();
     void clientLoginRequested(const QString client,const QString password);
@@ -57,6 +58,7 @@ private:
     void removeRoomType(QString arg);
     void showRoomTypes(QString arg);
     void showServers(QString arg);
+    void stopServerInfrastructure(QString arg);
 };
 
 #endif // FKCOMMANDRESOLVER_H

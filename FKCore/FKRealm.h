@@ -51,6 +51,7 @@ public slots:
     void registerRoomType(QString roomType);
     void removeRoomType(QString roomType);
     qint32 createServerRecord(const QString password);
+    void dropServer(const qint32 serverId);
     void deleteServerRecord(const qint32 serverId);
     void createClientRecord(const QString clientName, const QString password);
     void deleteClientRecord(const QString clientName);

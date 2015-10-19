@@ -288,6 +288,18 @@ qint32 FKRealm::createServerRecord(const QString password){
     return id;
 }
 
+void FKRealm::dropServer(const qint32 serverId){
+    if(serverId<=0){
+        emit messageRequested(QString(tr("Unable drop server: invalid id provided")));
+        return;
+    }
+    if(!isServerConnected(serverId)){
+        emit messageRequested(QString(tr("No connected server found")));
+        return;
+    }
+    stopServerConnection(serverId);
+}
+
 void FKRealm::deleteServerRecord(const qint32 serverId){
     if(serverId<=0){
         emit messageRequested(QString(tr("Unable delete server record: invalid id provided")));

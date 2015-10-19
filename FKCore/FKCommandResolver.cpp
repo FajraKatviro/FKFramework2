@@ -60,8 +60,8 @@ void FKCommandResolver::processInput(QString input){
         showRoomTypes(input);
     }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
-    }else if(isCommand(input,FKCommands::stopServer,true)){
-        emit stopServerInfrastructureRequested();
+    }else if(isCommand(input,FKCommands::stopServer)){
+        stopServerInfrastructure(input);
     }else{
         todo; //show connected servers
         todo; //show connected clients
@@ -101,7 +101,7 @@ void FKCommandResolver::printHelp(){
                  QString(tr("%1\tshow registered clients for started realm\n")).arg(FKCommands::showClients.rightJustified(commandWidth))+
                  QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                  QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
-                 QString(tr("%1\tstop server infrastructure\n")).arg(FKCommands::stopServer.rightJustified(commandWidth))+
+                 QString(tr("%1\tstop server infrastructure. Use %2 option to drop connected server from realm side\n")).arg(FKCommands::stopServer.rightJustified(commandWidth)).arg(FKCommandOptions::realm)+
                  QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+
                  QString(tr("%1\tsubmit current server on connected realm\n")).arg(FKCommands::loginServer.rightJustified(commandWidth))+
                  QString(tr("%1\tcreate new user for current client\n")).arg(FKCommands::createUser.rightJustified(commandWidth))+
@@ -300,4 +300,23 @@ void FKCommandResolver::showServers(QString arg){
         splitArg.append("");
     }
     foreach(QString roomType,splitArg)emit showServersRequested(roomType);
+}
+
+void FKCommandResolver::stopServerInfrastructure(QString arg){
+    arg=arg.trimmed();
+    bool realm=hasKey(arg,FKCommandOptions::realm);
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
+    if(realm){
+        if(splitArg.isEmpty()){
+            emit message(QString(tr("You need provide server id(s)")));
+        }else{
+            foreach(QString id,splitArg)emit dropServerRequested(id.toInt());
+        }
+    }else{
+        if(splitArg.isEmpty()){
+            emit stopServerInfrastructureRequested();
+        }else{
+            emit message(QString(tr("Invalid arguments provided")));
+        }
+    }
 }

@@ -35,6 +35,7 @@ void FKUserInterface::installCommandsResolver(FKCommandResolver* resolver){
     connect(resolver,&FKCommandResolver::startClientInfrastructureRequested,this,&FKUserInterface::startClientInfrastructureRequested);
     connect(resolver,&FKCommandResolver::startServerInfrastructureRequested,this,&FKUserInterface::startServerInfrastructureRequested);
     connect(resolver,&FKCommandResolver::stopServerInfrastructureRequested,this,&FKUserInterface::stopServerInfrastructureRequested);
+    connect(resolver,&FKCommandResolver::dropServerRequested,this,&FKUserInterface::dropServerRequested);
     connect(resolver,&FKCommandResolver::clientUsersRequested,this,&FKUserInterface::clientUsersRequested);
     connect(resolver,&FKCommandResolver::realmUsersRequested,this,&FKUserInterface::realmUsersRequested);
     connect(resolver,&FKCommandResolver::clientLoginRequested,this,&FKUserInterface::clientLoginRequested);

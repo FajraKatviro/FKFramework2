@@ -18,6 +18,8 @@
   <WindowTopX>360</WindowTopX>
   <WindowTopY>48</WindowTopY>
   <TabRatio>788</TabRatio>
+  <ActiveSheet>5</ActiveSheet>
+  <FirstVisibleSheet>1</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -127,7 +129,6 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
-   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
@@ -498,35 +499,41 @@
   </WorksheetOptions>
  </Worksheet>
  <Worksheet ss:Name="serverStarted">
-  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="5" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="5" ss:ExpandedRowCount="5" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="15">
    <Column ss:AutoFitWidth="0" ss:Width="78" ss:Span="1"/>
    <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="87"/>
    <Column ss:AutoFitWidth="0" ss:Width="69"/>
+   <Column ss:AutoFitWidth="0" ss:Width="91.8"/>
    <Row ss:AutoFitHeight="0">
     <Cell ss:StyleID="s63"><Data ss:Type="String">Data</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Description</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Command</Data></Cell>
     <Cell ss:StyleID="s63"><Data ss:Type="String">Expected</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Connect expected</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">start</Data></Cell>
     <Cell ss:Index="3"><Data ss:Type="String">start server</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
     <Cell><Data ss:Type="String">true</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">stop</Data></Cell>
     <Cell ss:Index="3"><Data ss:Type="String">stop server</Data></Cell>
     <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">invalid stop</Data></Cell>
     <Cell ss:Index="3"><Data ss:Type="String">stop server arg</Data></Cell>
     <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0">
     <Cell><Data ss:Type="String">invalid start</Data></Cell>
     <Cell ss:Index="3"><Data ss:Type="String">start server arg</Data></Cell>
+    <Cell ss:StyleID="s64"><Data ss:Type="String">false</Data></Cell>
     <Cell ss:StyleID="s64"><Data ss:Type="String">false</Data></Cell>
    </Row>
   </Table>
@@ -537,11 +544,13 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
+   <Selected/>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>3</ActiveRow>
-     <ActiveCol>8</ActiveCol>
+     <ActiveRow>11</ActiveRow>
+     <ActiveCol>9</ActiveCol>
+     <RangeSelection>R12C10:R18C10</RangeSelection>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

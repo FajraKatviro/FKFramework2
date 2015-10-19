@@ -36,6 +36,7 @@ public slots:
     void deleteClientRecord(const QString clientName);
     void createServerRecord(const QString password);
     void deleteServerRecord(const qint32 serverId);
+    void dropServer(const qint32 serverId);
     void registerRoomType(const QString roomType);
     void removeRoomType(const QString roomType);
 //    void createRoomRequest(const QString roomName, const QString roomType);
@@ -56,7 +57,10 @@ public:
     ~FKServerComponent();
     virtual void startComponent()override;
 public slots:
-//    void ausvise(const qint32 id, const QString password);
+    bool isLogged();
+    bool isConnectedToRealm();
+
+    void ausvise(const qint32 id, const QString password);
 //    void registerRoomType(const QString roomType);
 //    void removeRoomType(const QString roomType);
 

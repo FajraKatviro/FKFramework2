@@ -121,15 +121,18 @@ void Tester::realmClientRegistered(){
 void Tester::serverStarted_data(){
     QTest::addColumn<QString>("command");
     QTest::addColumn<QString>("result");
+    QTest::addColumn<QString>("connected");
 
-    loadTestData(2);
+    loadTestData(3);
 }
 void Tester::serverStarted(){
     QFETCH(QString,command);
     QFETCH(QString,result);
+    QFETCH(QString,connected);
 
     sendCommand(command);
     QTRY_COMPARE(app.getCore()->serverComponent()->isRunning(),result=="true");
+    QTRY_COMPARE(app.getCore()->serverComponent()->isConnectedToRealm(),connected=="true");
 }
 
 QTEST_MAIN(Tester)
