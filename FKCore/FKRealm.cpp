@@ -26,7 +26,6 @@ Realm has own database for information storing.
 
 FKRealm::FKRealm(QObject *parent):FKInfrastructure(parent){
     FK_CBEGIN
-    qsrand(QTime::currentTime().msec());
     FK_CEND
 }
 
@@ -428,9 +427,10 @@ void FKRealm::registerServerRoomType(const qint32 serverId, const QVariant& data
     if(check){
         registerNewRoomType(serverId,roomType);
     }else{
+        roomType.clear();
         connector->sendMessage(error);
     }
-    FKBasicEvent answer(FKBasicEventSubject::registerRoomType,check);
+    FKBasicEvent answer(FKBasicEventSubject::registerRoomType,roomType);
     connector->sendBasicEvent(&answer);
 }
 
@@ -454,9 +454,10 @@ void FKRealm::removeServerRoomType(const qint32 serverId, const QVariant& data){
     if(check){
         removeRoomTypeFromDatabase(serverId,roomType);
     }else{
+        roomType.clear();
         connector->sendMessage(error);
     }
-    FKBasicEvent answer(FKBasicEventSubject::removeRoomType,check);
+    FKBasicEvent answer(FKBasicEventSubject::removeRoomType,roomType);
     connector->sendBasicEvent(&answer);
 }
 
@@ -1164,6 +1165,11 @@ void FKRealm::incomeServer(const qint32 id, FKConnector* connector){
     FKBasicEvent submit(FKBasicEventSubject::login,true);
     server->mgr->sendBasicEvent(&submit);
     emit messageRequested(QString(tr("New server added: "))+QString::number(id));
+    QStringList roomTypeList(serverAvaliableRoomTypes(id));
+    if(!roomTypeList.isEmpty()){
+        FKBasicEvent roomTypes(FKBasicEventSubject::roomTypeList,roomTypeList);
+        server->mgr->sendBasicEvent(&roomTypes);
+    }
 }
 
 void FKRealm::incomeClient(const QString& id, FKConnector* connector){

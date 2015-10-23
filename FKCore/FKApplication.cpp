@@ -23,6 +23,7 @@
 
 FKApplication::FKApplication():QObject(),_interface(false),_core(false),_qmlEngine(0){
     FK_CBEGIN
+    qsrand(QTime::currentTime().msec());
     FK_CEND
 }
 

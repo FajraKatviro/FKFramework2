@@ -95,6 +95,10 @@ void FKServerInfrastructure::registerRoomTypeRequest(const QString& roomType){
         emit messageRequested(QString(tr("Unable register room type: server is not not logged in")));
         return;
     }
+    if(_registeredRoomTypes.contains(roomType)){
+        emit messageRequested(QString(tr("Unable register room type: already registered")));
+        return;
+    }
     if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
         emit messageRequested(QString(tr("Unable register room type: another request in progress")));
         return;
@@ -107,11 +111,17 @@ void FKServerInfrastructure::registerRoomTypeRespond(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::registerRoomType)){
         FK_MLOG("Unexpected behavior in FKServerInfrastructure::registerRoomTypeRespond()")
     }
-    if(value.toBool()){
+    QString roomType(value.toString());
+    if(!roomType.isEmpty()){
+        _registeredRoomTypes.append(roomType);
         emit messageRequested(QString(tr("Room type registration success")));
     }else{
         emit messageRequested(QString(tr("Room type not registered")));
     }
+}
+
+void FKServerInfrastructure::roomTypesNotification(const QVariant& value){
+    _registeredRoomTypes=value.toStringList();
 }
 
 void FKServerInfrastructure::removeRoomTypeRequest(const QString& roomType){
@@ -135,7 +145,9 @@ void FKServerInfrastructure::removeRoomTypeRespond(const QVariant& value){
     if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::removeRoomType)){
         FK_MLOG("Unexpected behavior in FKServerInfrastructure::removeRoomTypeRespond()")
     }
-    if(value.toBool()){
+    QString roomType(value.toString());
+    if(!roomType.isEmpty()){
+        _registeredRoomTypes.removeOne(roomType);
         emit messageRequested(QString(tr("Room type removed")));
     }else{
         emit messageRequested(QString(tr("Room type not removed")));
@@ -232,7 +244,7 @@ void FKServerInfrastructure::stopGuestConnection(FKServerConnectionManager *gues
 }
 
 void FKServerInfrastructure::messageFromRealm(const QString& msg){
-    emit messageRequested(QString(tr("Realm -> server: %1")).arg(msg));
+    emit messageRequested(QString(tr("Realm->%1")).arg(msg));
 }
 
 qint32 FKServerInfrastructure::serverId() const{
@@ -286,6 +298,10 @@ qint32 FKServerInfrastructure::clientPort() const{
 
 QString FKServerInfrastructure::serverIP() const{
     return QString();
+}
+
+QStringList FKServerInfrastructure::registeredRoomTypes() const{
+    return _registeredRoomTypes;
 }
 
 void FKServerInfrastructure::realmConnectorStatusChanged(){

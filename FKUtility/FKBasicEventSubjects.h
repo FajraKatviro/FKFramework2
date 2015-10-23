@@ -12,6 +12,7 @@ namespace FKBasicEventSubject{
     const QString quitRoom=QStringLiteral("qr"); //quit room message
     const QString registerRoomType=QStringLiteral("rrt");
     const QString removeRoomType=QStringLiteral("drt");
+    const QString roomTypeList=QStringLiteral("rtl");
     const QString roomList=QStringLiteral("rl"); //refresh avaliable rooms
     const QString roomData=QStringLiteral("rd"); //refresh existing room actual data
     const QString connect=QStringLiteral("cn"); //connection request

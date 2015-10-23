@@ -31,6 +31,7 @@ public:
 
     void registerRoomTypeRequest(const QString& roomType);
     void registerRoomTypeRespond(const QVariant& value);
+    void roomTypesNotification(const QVariant& value);
 
     void removeRoomTypeRequest(const QString& roomType);
     void removeRoomTypeRespond(const QVariant& value);
@@ -54,6 +55,7 @@ public slots:
     qint32 clientPort()const;
     virtual QString serverIP()const;
 
+    QStringList registeredRoomTypes()const;
     bool waitingForAnswer()const;
     bool isLogged()const;
     bool isConnectedToRealm()const;
@@ -92,6 +94,7 @@ private:
     qint32 _realmPort=-1;
     qint32 _clientsPort=-1;
     QString _realmIP;
+    QStringList _registeredRoomTypes;
 };
 
 #endif

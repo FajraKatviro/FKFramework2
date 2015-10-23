@@ -18,8 +18,6 @@
   <WindowTopX>360</WindowTopX>
   <WindowTopY>48</WindowTopY>
   <TabRatio>788</TabRatio>
-  <ActiveSheet>5</ActiveSheet>
-  <FirstVisibleSheet>1</FirstVisibleSheet>
   <ProtectStructure>False</ProtectStructure>
   <ProtectWindows>False</ProtectWindows>
  </ExcelWorkbook>
@@ -64,7 +62,7 @@
   </Style>
  </Styles>
  <Worksheet ss:Name="testCases">
-  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="14" x:FullColumns="1"
+  <Table ss:ExpandedColumnCount="4" ss:ExpandedRowCount="19" x:FullColumns="1"
    x:FullRows="1" ss:DefaultRowHeight="14.55">
    <Column ss:AutoFitWidth="0" ss:Width="100.8"/>
    <Column ss:AutoFitWidth="0" ss:Width="123.6"/>
@@ -121,6 +119,15 @@
     <Cell><Data ss:Type="String">serverStarted</Data></Cell>
     <Cell><Data ss:Type="String">stop</Data></Cell>
    </Row>
+   <Row ss:Index="16" ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">checkServerLogin</Data></Cell>
+   </Row>
+   <Row ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">checkServerLogin</Data></Cell>
+   </Row>
+   <Row ss:Index="19" ss:AutoFitHeight="0">
+    <Cell><Data ss:Type="String">checkServerRoomTypes</Data></Cell>
+   </Row>
   </Table>
   <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
    <PageSetup>
@@ -129,10 +136,12 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
+   <Selected/>
+   <TopRowVisible>14</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>19</ActiveRow>
+     <ActiveRow>17</ActiveRow>
      <ActiveCol>3</ActiveCol>
     </Pane>
    </Panes>
@@ -271,8 +280,7 @@
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>3</ActiveRow>
-     <ActiveCol>2</ActiveCol>
+     <ActiveRow>19</ActiveRow>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -419,12 +427,12 @@
     <HorizontalResolution>-3</HorizontalResolution>
     <VerticalResolution>0</VerticalResolution>
    </Print>
+   <TopRowVisible>2</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
-     <ActiveRow>6</ActiveRow>
-     <ActiveCol>6</ActiveCol>
-     <RangeSelection>R1C1:R7C7</RangeSelection>
+     <ActiveRow>2</ActiveRow>
+     <ActiveCol>8</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>
@@ -544,13 +552,104 @@
     <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
    </PageSetup>
    <Unsynced/>
-   <Selected/>
+   <Panes>
+    <Pane>
+     <Number>3</Number>
+     <ActiveRow>10</ActiveRow>
+     <ActiveCol>4</ActiveCol>
+     <RangeSelection>R10C5:R11C7</RangeSelection>
+    </Pane>
+   </Panes>
+   <ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+ <Worksheet ss:Name="serverRoomTypeRegistered">
+  <Table ss:ExpandedColumnCount="7" ss:ExpandedRowCount="11" x:FullColumns="1"
+   x:FullRows="1" ss:DefaultRowHeight="14.4">
+   <Column ss:AutoFitWidth="0" ss:Width="62.400000000000006" ss:Span="1"/>
+   <Column ss:Index="3" ss:AutoFitWidth="0" ss:Width="96"/>
+   <Column ss:AutoFitWidth="0" ss:Width="63.599999999999994" ss:Span="1"/>
+   <Column ss:Index="6" ss:AutoFitWidth="0" ss:Width="64.8"/>
+   <Column ss:AutoFitWidth="0" ss:Width="75.600000000000009"/>
+   <Row ss:Height="15">
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Data</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Description</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Command</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Argument</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Contain test</Data></Cell>
+    <Cell ss:StyleID="s63"><Data ss:Type="String">Expected</Data></Cell>
+    <Cell ss:StyleID="s66"><Data ss:Type="String">Expected count</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count0</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">0</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count1</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">1</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count2</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">2</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count3</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">3</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count4</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">4</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">count5</Data></Cell>
+    <Cell ss:Index="7" ss:StyleID="s65"><Data ss:Type="Number">5</Data></Cell>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">add valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">add room type -s</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">true</Data></Cell>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">add invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">add room type -s</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">remove valid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove room type -s</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">testtype1</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+   <Row>
+    <Cell><Data ss:Type="String">remove invalid1</Data></Cell>
+    <Cell ss:Index="3"><Data ss:Type="String">remove room type -s</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">some%shit</Data></Cell>
+    <Cell><Data ss:Type="String">false</Data></Cell>
+    <Cell ss:StyleID="s65"/>
+   </Row>
+  </Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+   <PageSetup>
+    <Header x:Margin="0.3"/>
+    <Footer x:Margin="0.3"/>
+    <PageMargins x:Bottom="0.75" x:Left="0.7" x:Right="0.7" x:Top="0.75"/>
+   </PageSetup>
+   <TopRowVisible>7</TopRowVisible>
    <Panes>
     <Pane>
      <Number>3</Number>
      <ActiveRow>11</ActiveRow>
-     <ActiveCol>9</ActiveCol>
-     <RangeSelection>R12C10:R18C10</RangeSelection>
+     <ActiveCol>2</ActiveCol>
     </Pane>
    </Panes>
    <ProtectObjects>False</ProtectObjects>

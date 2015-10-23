@@ -48,6 +48,18 @@ UserInterface{
             showMessage(qsTr("No client records found"));
         }
     }
+    onShowServerRoomTypesRequested:{
+        var roomTypeList = core.server.roomTypeList();
+        var total=roomTypeList.length;
+        if(total>0){
+            showMessage(qsTr("Room types registered for server (%1 total):").arg(total));
+            for(var i=0;i<total;++i){
+                showMessage(roomTypeList[i]);
+            }
+        }else{
+            showMessage(qsTr("No room types found"));
+        }
+    }
 
     onStartServerInfrastructureRequested: core.startServerInfrastructure()
     onStopServerInfrastructureRequested: core.stopServerInfrastructure()
@@ -58,13 +70,13 @@ UserInterface{
     //onClientUsersRequested: showMessage(core.userList())
     //onRealmUsersRequested: showMessage(core.realmUserList())
     //onClientLoginRequested: core.ausviseClientInfrastructure(clientName,password)
-    //onServerLoginRequested: core.ausviseServerInfrastructure(serverId,password)
+    onServerLoginRequested: core.server.ausvise(serverId,password)
     onCreateClientRequested: core.realm.createClientRecord(clientName,password)
     onDeleteClientRequested: core.realm.deleteClientRecord(clientName)
     onCreateServerRequested: core.realm.createServerRecord(password)
     onDeleteServerRequested: core.realm.deleteServerRecord(serverId)
-    //onRegisterServerRoomTypeRequested: core.registerServerRoomType(roomType)
-    //onRemoveServerRoomTypeRequested: core.removeServerRoomType(roomType)
+    onRegisterServerRoomTypeRequested: core.server.registerRoomType(roomType)
+    onRemoveServerRoomTypeRequested: core.server.removeRoomType(roomType)
     //onCreateRoomRequested: core.createRoomRequest(roomName,roomType,users)
     //onCreateRoomRequestedRealm: core.createRoomRequestRealm(roomName,roomType)
     //onJoinRoomRequested: core.joinRoomRequest(roomName,users)

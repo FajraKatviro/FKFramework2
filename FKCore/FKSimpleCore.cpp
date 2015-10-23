@@ -224,6 +224,14 @@ void FKServerComponent::startComponent(){
     }
 }
 
+QStringList FKServerComponent::roomTypeList(){
+    QStringList lst;
+    if(!FK_THREAD_GETTER(QStringList,lst,registeredRoomTypes)){
+        emit messageRequested(QString(tr("Unable asquire room type list")));
+    }
+    return lst;
+}
+
 bool FKServerComponent::isLogged(){
     bool result;
     if(!FK_THREAD_GETTER(bool,result,isLogged)){

@@ -18,6 +18,8 @@ private slots:
 
     void serverStarted();
     void serverStarted_data();
+    void serverRoomType();
+    void serverRoomType_data();
 private:
 };
 
@@ -134,6 +136,32 @@ void Tester::serverStarted(){
     QTRY_COMPARE(app.getCore()->serverComponent()->isRunning(),result=="true");
     QTRY_COMPARE(app.getCore()->serverComponent()->isConnectedToRealm(),connected=="true");
 }
+
+void Tester::serverRoomType_data(){
+    QTest::addColumn<QString>("command");
+    QTest::addColumn<QString>("arg");
+    QTest::addColumn<QString>("containTest");
+    QTest::addColumn<QString>("result");
+    QTest::addColumn<QString>("count");
+
+    loadTestData(5);
+}
+void Tester::serverRoomType(){
+    QFETCH(QString,command);
+    QFETCH(QString,arg);
+    QFETCH(QString,containTest);
+    QFETCH(QString,result);
+    QFETCH(QString,count);
+
+    sendCommand(command,arg);
+    if(!containTest.isEmpty()){
+        QTRY_COMPARE(app.getCore()->serverComponent()->roomTypeList().contains(containTest), result=="true");
+    }
+    if(!count.isEmpty()){
+        QTRY_COMPARE(app.getCore()->realmComponent()->roomTypeList().size(),count.toInt());
+    }
+}
+
 
 QTEST_MAIN(Tester)
 #include "main.moc"

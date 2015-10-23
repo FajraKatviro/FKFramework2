@@ -382,7 +382,7 @@ QList<QSharedPointer<FKUpdateChannel> > FKClientInfrastructure::updates() const{
 }
 
 void FKClientInfrastructure::messageFromRealm(const QString& msg){
-    emit messageRequested(QString(tr("Realm -> client: %1")).arg(msg));
+    emit messageRequested(QString(tr("Realm->%1")).arg(msg));
 }
 
 void FKClientInfrastructure::setCustomServerId(const qint32 serverId){

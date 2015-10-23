@@ -57,6 +57,8 @@ public:
     ~FKServerComponent();
     virtual void startComponent()override;
 public slots:
+    QStringList roomTypeList();
+
     bool isLogged();
     bool isConnectedToRealm();
 
