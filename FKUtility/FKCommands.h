@@ -34,6 +34,8 @@ namespace FKCommandOptions {
     const QString realm=QStringLiteral("-r");
     const QString custom=QStringLiteral("-c");
     const QString server=QStringLiteral("-s");
+    const QString online=QStringLiteral("-on");
+    const QString avaliable=QStringLiteral("-a");
 }
 
 #endif // FKCOMMANDS_H

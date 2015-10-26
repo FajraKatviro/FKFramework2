@@ -38,7 +38,7 @@ signals:
     void removeRoomTypeRequested(const QString roomType);
     void showServerRoomTypesRequested();
     void showRoomTypesRequested(const qint32 serverId);
-    void showServersRequested(const QString roomType);
+    void showServersRequested(const QString roomType,bool onlineOnly,bool avaliableOnly);
     void showClientsRequested();
 private:
     QString welcomeString()const;

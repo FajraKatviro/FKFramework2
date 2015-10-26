@@ -100,7 +100,33 @@ QStringList FKRealmComponent::serverList(const QString roomType){
 QList<qint32> FKRealmComponent::connectedServerList(){
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,connectedServerList)){
-        emit messageRequested(QString(tr("Unable get server list")));
+        emit messageRequested(QString(tr("Unable get connected server list")));
+    }
+    return lst;
+}
+
+QList<qint32> FKRealmComponent::connectedServerList(const QString roomType){
+    if(roomType.isEmpty())return connectedServerList();
+    QList<qint32> lst;
+    if(!FK_THREAD_GETTER(QList<qint32>,lst,getConnectedServersForRoomType)){
+        emit messageRequested(QString(tr("Unable get connected server list for %1 room type")).arg(roomType));
+    }
+    return lst;
+}
+
+QList<qint32> FKRealmComponent::avaliableServerList(){
+    QList<qint32> lst;
+    if(!FK_THREAD_GETTER(QList<qint32>,lst,getAvaliableServers)){
+        emit messageRequested(QString(tr("Unable get avaliable server list")));
+    }
+    return lst;
+}
+
+QList<qint32> FKRealmComponent::avaliableServerList(const QString roomType){
+    if(roomType.isEmpty())return avaliableServerList();
+    QList<qint32> lst;
+    if(!FK_THREAD_GETTER(QList<qint32>,lst,getAvaliableServersForRoomType)){
+        emit messageRequested(QString(tr("Unable get avaliable server list for %1 room type")).arg(roomType));
     }
     return lst;
 }
@@ -253,6 +279,18 @@ bool FKServerComponent::isConnectedToRealm(){
 void FKServerComponent::ausvise(const qint32 id, const QString password){
     if(!callMethod("requestLoginRealm",id,"qint32",password,"QString")){
         emit messageRequested(QString(tr("Unable request server to log in")));
+    }
+}
+
+void FKServerComponent::registerRoomType(const QString roomType){
+    if(!FK_THREAD_CALL_ARG(registerRoomTypeRequest,QString,roomType)){
+        emit messageRequested(QString(tr("Unable register room type")));
+    }
+}
+
+void FKServerComponent::removeRoomType(const QString roomType){
+    if(!FK_THREAD_CALL_ARG(removeRoomTypeRequest,QString,roomType)){
+        emit messageRequested(QString(tr("Unable remove room type")));
     }
 }
 

@@ -27,6 +27,9 @@ public slots:
     QStringList serverList();
     QStringList serverList(const QString roomType);
     QList<qint32> connectedServerList();
+    QList<qint32> connectedServerList(const QString roomType);
+    QList<qint32> avaliableServerList();
+    QList<qint32> avaliableServerList(const QString roomType);
     QStringList roomTypeList();
     QStringList roomTypeList(const qint32 serverId);
     QStringList activeRoomList();
@@ -63,8 +66,8 @@ public slots:
     bool isConnectedToRealm();
 
     void ausvise(const qint32 id, const QString password);
-//    void registerRoomType(const QString roomType);
-//    void removeRoomType(const QString roomType);
+    void registerRoomType(const QString roomType);
+    void removeRoomType(const QString roomType);
 
     void setPort(const qint32 port);
     void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);

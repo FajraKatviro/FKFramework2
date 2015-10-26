@@ -22,7 +22,9 @@ UserInterface{
         }
     }
     onShowServersRequested: {
-        var serverList = core.realm.serverList(roomType);
+        var serverList = onlineOnly    ? core.realm.connectedServerList(roomType):
+                         avaliableOnly ? core.realm.avaliableServerList(roomType):
+                                         core.realm.serverList(roomType);
         var total=serverList.length;
         if(total>0){
             var msg = (roomType == "") ?

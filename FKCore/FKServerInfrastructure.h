@@ -29,11 +29,8 @@ public:
     void dropInfrastructure();
     void submitLoginRealm(const QVariant& value);
 
-    void registerRoomTypeRequest(const QString& roomType);
     void registerRoomTypeRespond(const QVariant& value);
     void roomTypesNotification(const QVariant& value);
-
-    void removeRoomTypeRequest(const QString& roomType);
     void removeRoomTypeRespond(const QVariant& value);
 
     void createRoomRequested(const QVariant& data);
@@ -47,6 +44,9 @@ public slots:
     void realmConnection(FKConnector* connector);
     void clientConnection(FKConnector* connector);
     void requestLoginRealm(const qint32 id, const QString password);
+
+    void registerRoomTypeRequest(const QString roomType);
+    void removeRoomTypeRequest(const QString roomType);
 
     void setPort(const qint32 clientsPort);
     void setRealmConnectionSettings(const QString ip,const qint32 port);

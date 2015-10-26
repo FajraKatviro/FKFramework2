@@ -141,7 +141,7 @@ void FKRealm::stopServerConnection(const qint32 serverId){
         server->mgr->dropConnection();
         server->mgr->deleteLater();
         delete server;
-        emit messageRequested(QString(tr("Server %1 connection stopped")).arg(QString(serverId)));
+        emit messageRequested(QString(tr("Server %1 connection stopped")).arg(QString::number(serverId)));
     }else{
         FK_MLOGV("Failed stop server connection (not found)",serverId)
     }
@@ -417,7 +417,7 @@ void FKRealm::registerServerRoomType(const qint32 serverId, const QVariant& data
         error=QString(tr("Unable register room type: invalid type"));
         check=false;
     }else if(!isRoomTypeRegistered(roomType)){
-        error=QString(tr("Unable register room type: room type not registered at realm")).arg(roomType);
+        error=QString(tr("Unable register %1 room type: room type not registered at realm")).arg(roomType);
         check=false;
     }else if(isRoomTypeRegistered(roomType,serverId)){
         error=QString(tr("Unable register room type: %1 already registered")).arg(roomType);
@@ -878,7 +878,7 @@ void FKRealm::deleteServerRecordFromDatabase(const qint32 serverId){
 qint32 FKRealm::getFreeServer(const QString& roomType) const{
     for(auto s=_serverConnections.constBegin();s!=_serverConnections.constEnd();++s){
         FKServerReferent* ref=s.value();
-        if(ref->room.isEmpty() && ref->roomTypes.contains(roomType) && ref->owner.isEmpty())
+        if(ref->room.isEmpty() && ref->owner.isEmpty() && ref->roomTypes.contains(roomType))
             return s.key();
     }
     return -1;
@@ -1228,6 +1228,34 @@ QStringList FKRealm::serverList() const{
 
 QList<qint32> FKRealm::connectedServerList() const{
     return _serverConnections.keys();
+}
+
+QList<qint32> FKRealm::getConnectedServersForRoomType(const QString roomType) const{
+    QList<qint32> lst;
+    for(auto i=_serverConnections.constBegin();i!=_serverConnections.constEnd();++i){
+        if(i.value()->roomTypes.contains(roomType))lst.append(i.key());
+    }
+    return lst;
+}
+
+QList<qint32> FKRealm::getAvaliableServers() const{
+    QList<qint32> lst;
+    for(auto s=_serverConnections.constBegin();s!=_serverConnections.constEnd();++s){
+        FKServerReferent* ref=s.value();
+        if(ref->room.isEmpty() && ref->owner.isEmpty())
+            lst.append(s.key());
+    }
+    return lst;
+}
+
+QList<qint32> FKRealm::getAvaliableServersForRoomType(const QString roomType) const{
+    QList<qint32> lst;
+    for(auto s=_serverConnections.constBegin();s!=_serverConnections.constEnd();++s){
+        FKServerReferent* ref=s.value();
+        if(ref->room.isEmpty() && ref->owner.isEmpty() && ref->roomTypes.contains(roomType))
+            lst.append(s.key());
+    }
+    return lst;
 }
 
 QStringList FKRealm::serverAvaliableRoomTypes(const qint32 serverId) const{

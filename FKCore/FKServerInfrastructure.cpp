@@ -86,7 +86,7 @@ void FKServerInfrastructure::submitLoginRealm(const QVariant& value){
     }
 }
 
-void FKServerInfrastructure::registerRoomTypeRequest(const QString& roomType){
+void FKServerInfrastructure::registerRoomTypeRequest(const QString roomType){
     if(roomType.isEmpty()){
         emit messageRequested(QString(tr("Unable register empty room type")));
         return;
@@ -124,7 +124,7 @@ void FKServerInfrastructure::roomTypesNotification(const QVariant& value){
     _registeredRoomTypes=value.toStringList();
 }
 
-void FKServerInfrastructure::removeRoomTypeRequest(const QString& roomType){
+void FKServerInfrastructure::removeRoomTypeRequest(const QString roomType){
     if(roomType.isEmpty()){
         emit messageRequested(QString(tr("Unable remove empty room type")));
         return;

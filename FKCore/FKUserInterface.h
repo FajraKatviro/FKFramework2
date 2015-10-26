@@ -45,7 +45,7 @@ signals:
     void removeServerRoomTypeRequested(const QString roomType);
     void showRoomTypesRequested(const qint32 serverId);
     void showServerRoomTypesRequested();
-    void showServersRequested(const QString roomType);
+    void showServersRequested(const QString roomType,bool onlineOnly,bool avaliableOnly);
     void showClientsRequested();
     void clientUsersRequested();
     void realmUsersRequested();

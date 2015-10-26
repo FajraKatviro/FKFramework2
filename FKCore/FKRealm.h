@@ -65,6 +65,9 @@ public slots:
 
     QStringList serverList()const;
     QList<qint32> connectedServerList()const;
+    QList<qint32> getConnectedServersForRoomType(const QString roomType)const;
+    QList<qint32> getAvaliableServers()const;
+    QList<qint32> getAvaliableServersForRoomType(const QString roomType)const;
     QStringList serverAvaliableRoomTypes(const qint32 serverId)const;
 
     QStringList getRegisteredRoomTypes()const;

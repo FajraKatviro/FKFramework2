@@ -63,15 +63,12 @@ void FKCommandResolver::processInput(QString input){
     }else if(isCommand(input,FKCommands::stopServer)){
         stopServerInfrastructure(input);
     }else{
-        todo; //show connected servers
         todo; //show connected clients
         todo; //show active clients
         todo; //show client users
         todo; //show active users
         todo; //show client active users
         todo; //show started rooms
-        todo; //show room type servers
-        todo; //show room type active servers
         todo; //show room type avaliable servers
         todo; //show clients in room / on server
         todo; //show users in room / on server
@@ -97,7 +94,7 @@ void FKCommandResolver::printHelp(){
                  QString(tr("%1\tregister room type for started realm. Use %2 option to register avaliable room type for current server\n")).arg(FKCommands::registerRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                  QString(tr("%1\tremove room type for started realm. Use %2 option to remove registered room type from current server\n")).arg(FKCommands::removeRoomType.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
                  QString(tr("%1\tshow registered room types for started realm. Use %2 option to show for current server instead\n")).arg(FKCommands::showRoomTypes.rightJustified(commandWidth)).arg(FKCommandOptions::server)+
-                 QString(tr("%1\tshow registered servers for started realm\n")).arg(FKCommands::showServers.rightJustified(commandWidth))+
+                 QString(tr("%1\tshow registered servers for started realm. Use %2 option to show on-line or %3 to show avaliable servers only\n")).arg(FKCommands::showServers.rightJustified(commandWidth)).arg(FKCommandOptions::online).arg(FKCommandOptions::avaliable)+
                  QString(tr("%1\tshow registered clients for started realm\n")).arg(FKCommands::showClients.rightJustified(commandWidth))+
                  QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
                  QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
@@ -295,11 +292,17 @@ void FKCommandResolver::showRoomTypes(QString arg){
 
 void FKCommandResolver::showServers(QString arg){
     arg=arg.trimmed();
-    QStringList splitArg=arg.split(' ',QString::SkipEmptyParts);
+    bool online=hasKey(arg,FKCommandOptions::online);
+    bool avaliable=hasKey(arg,FKCommandOptions::avaliable);
+    if(online && avaliable){
+        emit message(QString(tr("Invalid options provided")));
+        return;
+    }
+    QStringList splitArg=arg.trimmed().split(' ',QString::SkipEmptyParts);
     if(splitArg.isEmpty()){
         splitArg.append("");
     }
-    foreach(QString roomType,splitArg)emit showServersRequested(roomType);
+    foreach(QString roomType,splitArg)emit showServersRequested(roomType,online,avaliable);
 }
 
 void FKCommandResolver::stopServerInfrastructure(QString arg){
