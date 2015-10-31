@@ -39,6 +39,10 @@ QString FKRoomModule::roomClass() const{
     return _room->className();
 }
 
+QString FKRoomModule::contextManager() const{
+    return "qrc:/RoomContextManager.qml";
+}
+
 FKPackage FKRoomModule::getPackage(const QString& package){
     return _packageManager->getPackage(package);
 }

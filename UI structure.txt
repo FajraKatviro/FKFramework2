@@ -1,0 +1,22 @@
+UI{									//ConsoleUserInterfaceLayer (FKCore, FKGraphics, custom apps)
+	//main ui goes here
+	//...
+	roomInterface:QtObject{						//ConsoleRoomAccessor	    (FKCore, FKGraphics, custom apps)
+		//room ui region provided here
+		//...
+		property var contextManager:QtObject{ 			//ConsoleRoomContextManager (FKCore, FKGraphics, rooms)
+			//hot-sit ui switcher provided here
+			//...
+			property RoomEngine roomEngine			
+			property var contextInterface:QtObject{		//ConsoleRoomContextInterface (FKCore, FKGraphics, rooms)
+				//... room UI declared here
+				//...
+				property var roomContext
+				property var rootEntity:QtObject{	//ConsoleRoomContextRoot    (FKCore, FKGraphics, FK3D, rooms)
+					//all objects instantiates here
+					//...
+				}
+			}
+		}
+	}
+}

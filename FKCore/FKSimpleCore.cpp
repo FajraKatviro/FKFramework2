@@ -105,7 +105,7 @@ QList<qint32> FKRealmComponent::connectedServerList(){
     return lst;
 }
 
-QList<qint32> FKRealmComponent::connectedServerList(const QString roomType){
+QList<int> FKRealmComponent::connectedServerList(const QString roomType){
     if(roomType.isEmpty())return connectedServerList();
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,getConnectedServersForRoomType)){

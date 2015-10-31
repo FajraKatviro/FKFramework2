@@ -13,34 +13,39 @@ class FKEventObject;
 class FKInstructionObject;
 class FKMessage;
 class FKBasicEvent;
+class FKVersionList;
 
 class FKCORESHARED_EXPORT FKRoomEngine : public QObject{
     Q_OBJECT
+    Q_PROPERTY(QObject* contextManager READ contextManager NOTIFY contextManagerChanged)
     Q_PROPERTY(FKRoomContext* serverContext READ serverContext NOTIFY serverContextChanged)
-    Q_PROPERTY(FKRoomContext* userContext READ defaultContext NOTIFY defaultContextChanged)
-    Q_PROPERTY(QQmlListProperty<FKRoomContext> userContexts READ userContexts NOTIFY userContextsChanged)
+    Q_PROPERTY(FKRoomContext* userContext READ userContext NOTIFY userContextChanged)
+    Q_PROPERTY(QQmlListProperty<QObject> roomContextItems READ roomContextItems NOTIFY roomContextItemsChanged)
 public:
     explicit FKRoomEngine(QObject *parent = 0);
     ~FKRoomEngine();
+    QObject* contextManager()const;
     FKRoomContext* serverContext()const;
-    //FKRoomContext* userContext(const qint32 rootId)const;
-    FKRoomContext* defaultContext()const;
-    QQmlListProperty<FKRoomContext> userContexts()const;
+    FKRoomContext* userContext()const;
+    QQmlListProperty<QObject> roomContextItems()const;
 public slots:
-//    void loadModule(const QString& moduleName);
-//    void releaseModule();
-//    void createServerContext();
-//    void releaseServerContext();
-//    void createUserContext(const qint32 rootId, bool defaultContext);
+    void loadModule(const QString moduleName);
+    void releaseModule();
+
+    void createContext(const qint32 rootId, qint8 flags);
+    void releaseContext(const qint32 rootId);
 
 //    void processAction(FKEventObject* ev);
 //    void processEvent(FKEventObject* ev);
-//    void processMessage(FKMessage* msg);
 //    void processInstruction(FKInstructionObject* instruction);
 signals:
-    void defaultContextChanged();
-    void userContextsChanged();
+    void contextManagerChanged();
     void serverContextChanged();
+    void userContextChanged();
+    void roomContextItemsChanged();
+
+    void moduleLoaded(const FKVersionList version);
+    void contextCreated(const qint32 rootId);
 
     void actionDispatched(FKEventObject* ev);
     void eventDispatched(FKEventObject* ev);
@@ -48,13 +53,13 @@ signals:
     void instructionDispatched(FKInstructionObject* instruction);
     void notificationDispatched(FKBasicEvent* ev);
 private:
-    static FKRoomContext* userContext(QQmlListProperty<FKRoomContext>* prop,int index);
-    static int countUserContexts(QQmlListProperty<FKRoomContext>* prop);
-    FKRoomContext* _serverContext=nullptr;
-    QMap<qint32,FKRoomContext*> _userContexts;
-    qint32 _defaultContext=-1;
-    QQmlComponent* _userContextComponent;
-    QQmlComponent* _serverContextComponent;
+    static FKRoomContext* getContextItem(QQmlListProperty<QObject>* prop,int index);
+    static int countContexts(QQmlListProperty<QObject>* prop);
+    QMap<qint32,FKRoomContext*> _contexts;
+    qint32 _userContextId=-1;
+    qint32 _serverContextId=-1;
+    QObject* _contextManager=nullptr;
+    QQmlComponent* _contextComponent;
     FKRoomModule* _roomModule;
 };
 

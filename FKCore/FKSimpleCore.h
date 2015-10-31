@@ -27,7 +27,7 @@ public slots:
     QStringList serverList();
     QStringList serverList(const QString roomType);
     QList<qint32> connectedServerList();
-    QList<qint32> connectedServerList(const QString roomType);
+    QList<int> connectedServerList(const QString roomType);
     QList<qint32> avaliableServerList();
     QList<qint32> avaliableServerList(const QString roomType);
     QStringList roomTypeList();

@@ -55,7 +55,7 @@ namespace FKOSDir{
         map.insert(FKOSType::win,FKOSDir::win);
         return map;
     }
-    static QMap<qint8,QString> platformFolders=getPlatformFolders();
+    static const QMap<qint8,QString> platformFolders=getPlatformFolders();
 }
 
 #endif // FKOSTYPE_H

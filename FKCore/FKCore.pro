@@ -113,7 +113,10 @@ HEADERS += \
     FKRoomInfrastructure.h \
     FKRoomEngine.h \
     FKRoomContext.h \
-    FKThreadedComponent.h
+    FKThreadedComponent.h \
+    FKRoomContextFlags.h \
+    FKBasicEventSubjects.h \
+    FKAusviceIdentifiers.h
 
 include(../FKFramework.pri)
 include(fkservice/FKCore_service.pri)

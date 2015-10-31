@@ -5,6 +5,7 @@ QtObject{
     property var ui: ConsoleUserInterfaceLayer{
         id: uiComponent
         core: coreComponent
+        roomEngine: roomComponent
     }
 
     property var core: CoreLayer{

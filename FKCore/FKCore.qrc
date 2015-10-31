@@ -3,6 +3,10 @@
         <file>ConsoleBridge.qml</file>
         <file>ConsoleUserInterfaceLayer.qml</file>
         <file>CoreLayer.qml</file>
+        <file>ConsoleRoomAccessor.qml</file>
+        <file>ConsoleRoomContextManager.qml</file>
+        <file>ConsoleRoomContextInterface.qml</file>
+        <file>ConsoleRoomContextRoot.qml</file>
     </qresource>
     <qresource prefix="/qt/etc">
         <file>qt.conf</file>

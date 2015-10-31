@@ -53,6 +53,7 @@ struct FKObject::Servant{
     QVector<bool> updateCommon; //used by updateCommon()
     QVector<bool> updateCustom; //used by updateCustom()
     bool active; //used by setActive() and processAction()
+    qint32 parentObjectId=-1;
 };
 
 void FKEvent<FKObject,FKIdentifiers::resetServant>::doEvent(FKEventObject *){
@@ -719,6 +720,12 @@ void FKObject::doAction(const qint32 target, const qint32 subject, const QVarian
     _om->internalAction(action);
 }
 
+void FKObject::assignParentObjectId(const qint32 id){
+    if(servant){
+        servant->parentObjectId=id;
+    }
+}
+
 /*!
  * \brief Server-side function. Marks given common ptoperty as changed, for future for update by applyUpdates()
  */
@@ -742,7 +749,11 @@ void FKObject::updateCustom(const qint32 propertyId){
         if(index!=-1){
             servant->updateCustom[index]=true;
         }
-    }    
+    }
+}
+
+qint32 FKObject::asquireParentObjectId() const{
+    return servant ? servant->parentObjectId : -1;
 }
 
 QVariant FKObject::getProperty(const qint32 id)const{

@@ -106,6 +106,7 @@ protected:
     void doEvent(const qint32 target,const qint32 subject,const QVariant& value=QVariant(),FKObject* reciever=0);
     void doEvent(const qint32 target, const qint32 subject, FKObject* reciever);
     void doAction(const qint32 target,const qint32 subject,const QVariant& value=QVariant());
+    void assignParentObjectId(const qint32 id);
 
     void logConstructor();
     void logDestructor();
@@ -128,6 +129,7 @@ private:
 //This section used by object manager
     void setId(const qint32 id){_id=id;}
     void setObjectManager(FKObjectManager* om){_om=om;}
+    qint32 asquireParentObjectId()const;
     void processFKAction(FKEventObject* action);
     void processFKEvent(FKEventObject* event);
     friend class FKObjectManager;

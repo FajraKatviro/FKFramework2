@@ -13,10 +13,7 @@ SUBDIRS += \
 HEADERS+= \
     FKUtility/FKLogger.h \
     FKUtility/FKOSType.h \
-    FKUtility/FKPostOperations.h \
-    FKUtility/FKCommands.h \
-    FKUtility/FKBasicEventSubjects.h \
-    FKUtility/FKAusviceIdentifiers.h
+    FKUtility/FKCommands.h
 
 CONFIG(fkrooms){
     SUBDIRS += FKRooms

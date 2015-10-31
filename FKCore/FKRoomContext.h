@@ -14,7 +14,7 @@ class FKRoomContext : public QObject{
     Q_OBJECT
     Q_PROPERTY(FKObject* roomObject READ roomObject NOTIFY roomObjectChnaged)
     Q_PROPERTY(FKObject* userObject READ userObject NOTIFY userObjectChnaged)
-    Q_PROPERTY(QObject*  rootEntity READ rootEntity WRITE setRootEntity NOTIFY rootEntityChanged)
+    Q_PROPERTY(QObject*  rootEntity READ rootEntity NOTIFY rootEntityChanged)
     Q_PROPERTY(bool syncComplete READ isSyncComplete NOTIFY syncCompleteChanged)
 public:
     explicit FKRoomContext(QObject *parent = 0);

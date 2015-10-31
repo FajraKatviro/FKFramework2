@@ -20,6 +20,7 @@ public:
 
     FKVersionList version()const;
     QString roomClass()const;
+    QString contextManager()const;
 
     FKPackage getPackage(const QString& package);
     QVariant resourceData(const QString& package, const QString& resource);
