@@ -2,8 +2,6 @@
 
 #include <QDataStream>
 
-#include "FKMessage.h"
-
 #include "FKLogger.h"
 
 /*!
@@ -63,7 +61,7 @@ void FKEventObject::setRecievers(const QList<qint32>& recievers){
  * \brief Constructs message for error event description
  */
 
-FKMessage* FKEventObject::eventError(FKEventObject* errorSource,const QString& reason){
+QString FKEventObject::eventError(FKEventObject* errorSource,const QString& reason){
     QString msg(tr("Unable handle %1 event for target %2 emitted by %3 from client %4: %5")
                 .arg(errorSource->subject())
                 .arg(errorSource->object())
@@ -71,7 +69,7 @@ FKMessage* FKEventObject::eventError(FKEventObject* errorSource,const QString& r
                 .arg(errorSource->client())
                 .arg(reason));
     FK_MLOG(msg)
-    return new FKMessage(msg);
+    return msg;
 }
 
 /*!

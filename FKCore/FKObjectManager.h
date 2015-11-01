@@ -12,7 +12,6 @@
 
 class FKObject;
 class FKEventObject;
-class FKMessage;
 class FKDataBase;
 class FKRoomModule;
 
@@ -36,7 +35,6 @@ public slots:
 
     virtual void externalEvent(FKEventObject* event);
     virtual void externalAction(FKEventObject* action);
-    virtual void externalMessageRequest(FKMessage* message, const qint32 sender);
     virtual void createObject(const QVariant& data);
     virtual void deleteObject(const QVariant& data);
 private:

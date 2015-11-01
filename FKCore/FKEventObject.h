@@ -5,8 +5,6 @@
 
 #include <QVariant>
 
-class FKMessage;
-
 class /*FKCORESHARED_EXPORT*/ FKEventObject:public FKSystemObject{
     Q_OBJECT
 public:
@@ -23,7 +21,7 @@ public:
 
     FKSystemObject* clone() const;
 
-    static FKMessage* eventError(FKEventObject* errorSource, const QString& reason);
+    static QString eventError(FKEventObject* errorSource, const QString& reason);
     static FKEventObject* makeAction(const qint32 object,const qint32 subject,const QVariant& value,const qint32 client,const qint32 emitter);
     static FKEventObject* makeEvent(const qint32 object,const qint32 subject,const QVariant& value,const QList<qint32>& recievers,const bool propertyChangeNotifier);
     static FKEventObject* makeEvent(const qint32 object,const qint32 subject,const QVariant& value,const qint32 reciever,const bool propertyChangeNotifier);

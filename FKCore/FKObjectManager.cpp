@@ -2,7 +2,6 @@
 
 #include "FKLogger.h"
 #include "FKEventObject.h"
-#include "FKMessage.h"
 #include "FKObject.h"
 #include "FKIdentifiers.h"
 
@@ -114,15 +113,6 @@ void FKObjectManager::externalAction(FKEventObject* action){
 
 void FKObjectManager::internalMessageRequest(const QString& msg, const QList<qint32>& recievers){
     Q_UNUSED(msg) Q_UNUSED(recievers)
-}
-
-/*!
- * \brief Process text message created at the opposite (client or server) side
- */
-
-void FKObjectManager::externalMessageRequest(FKMessage* message, const qint32 sender){
-    Q_UNUSED(sender)
-    message->deleteLater();
 }
 
 /*!

@@ -9,11 +9,13 @@ class FKUser;
 class FKObject;
 class FKRoomInviteData;
 class FKEventObject;
+class FKInstructionObject;
+class FKBasicEvent;
 
 class FKRoomContext : public QObject{
     Q_OBJECT
-    Q_PROPERTY(FKObject* roomObject READ roomObject NOTIFY roomObjectChnaged)
-    Q_PROPERTY(FKObject* userObject READ userObject NOTIFY userObjectChnaged)
+    Q_PROPERTY(FKObject* roomObject READ roomObject NOTIFY roomObjectChanged)
+    Q_PROPERTY(FKObject* userObject READ userObject NOTIFY userObjectChanged)
     Q_PROPERTY(QObject*  rootEntity READ rootEntity NOTIFY rootEntityChanged)
     Q_PROPERTY(bool syncComplete READ isSyncComplete NOTIFY syncCompleteChanged)
 public:
@@ -24,30 +26,30 @@ public:
     QObject*  rootEntity()const;
     bool  isSyncComplete()const;
 
-    bool createRoomObject(const QString& roomClass);
     void setRootEntity(QObject* entity);
 
-    virtual bool addClient(const FKRoomInviteData& invite);
-    virtual void completeSync();
-
-    void postAction(FKEventObject* ev);
-    void postEvent(FKEventObject* ev);
+    void processAction(FKEventObject* ev);
+    void processEvent(FKEventObject* ev);
+    void processInstruction(FKInstructionObject* instruction);
 signals:
-    void roomObjectChnaged();
-    void userObjectChnaged();
+    void roomObjectChanged();
+    void userObjectChanged();
     void rootEntityChanged();
     void syncCompleteChanged();
 
     void eventDispatched(FKEventObject* ev);
     void actionDispatched(FKEventObject* ev);
-    void messageDispatched(FKEventObject* ev);
+    void instructionDispatched(FKInstructionObject instruction);
+    void notificationDispatched(FKBasicEvent* ev);
 protected slots:
     virtual void onObjectCreated(FKObject* newObject);
 protected:
     virtual void installObjectManager(FKObjectManager* om);
-private slots:
-    void eventRecycler(FKEventObject* ev);
 private:
+    virtual void completeSync();
+    virtual bool addClient(const FKRoomInviteData& invite);
+    bool createRoomObject(const QString& roomClass);
+
     void installObjectManager();
     void setUser(const qint32 id);
     QObject* _rootEntity=nullptr;

@@ -8,6 +8,7 @@
 #include "FKClientInfrastructure.h"
 #include "FKFSDB.h"
 #include "FKVersionList.h"
+#include "FKInstructionObject.h"
 #include "FKRoomInviteData.h"
 #include "FKPathResolver.h"
 #include "FKFactory.h"
@@ -345,10 +346,12 @@ FKClientComponent::~FKClientComponent(){
 FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
+    qRegisterMetaTypeStreamOperators<FKInstructionObject>("FKInstructionObject");
     qRegisterMetaType<FKRoomInviteData>();
     qRegisterMetaType<FKInfrastructureType>();
     qRegisterMetaType<FKConnector*>();
     qRegisterMetaType<FKConnector::Status>();
+    qRegisterMetaType<FKInstructionObject>();
     //qmlRegisterType<FKRealmComponent*>();
     //qRegisterMetaType<FKServerComponent*>();
     //qRegisterMetaType<FKClientComponent*>();

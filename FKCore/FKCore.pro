@@ -15,6 +15,7 @@ SOURCES += \
     FKSystemObject.cpp \
     FKMessage.cpp \
     FKBasicEvent.cpp \
+    FKInstructionObject.cpp \
     FKEventObject.cpp \
     FKObject.cpp \
     FKFSDB.cpp \
@@ -69,6 +70,7 @@ HEADERS += \
     FKFactory.h \
     FKMessage.h \
     FKBasicEvent.h \
+    FKInstructionObject.h \
     FKEventObject.h \
     FKObject.h \
     FKFSDB.h \
@@ -117,6 +119,7 @@ HEADERS += \
     FKRoomSettings.h \
     FKRoomContextFlags.h \
     FKBasicEventSubjects.h \
+    FKInstructionSubjects.h \
     FKAusviceIdentifiers.h
 
 include(../FKFramework.pri)
