@@ -4,6 +4,7 @@
 
 #include "FKRoomModule.h"
 #include "FKVersionList.h"
+#include "FKEventObject.h"
 #include "FKMessage.h"
 #include "FKRoomContext.h"
 #include "FKRoomContextFlags.h"
@@ -79,28 +80,89 @@ void FKRoomEngine::releaseModule(){
 void FKRoomEngine::createContext(const qint32 rootId, qint8 flags){
     if(_roomModule){
         if(!_contexts.contains(rootId)){
-            FKRoomContext* newContext;
-            QObject* contextRootItem=_contextComponent->create(qmlContext(this));
-            contextRootItem->setParent(newContext);
-            newContext->setRootEntity(contextRootItem);
-            contextRootItem->setProperty("roomContext",QVariant::fromValue(newContext));
+            FKRoomContext* newContext=nullptr; todo; //create here
+            QObject* contextInterface=_contextComponent->create(qmlContext(this));
+            contextInterface->setParent(newContext);
+            contextInterface->setProperty("roomContext",QVariant::fromValue(newContext));
+            newContext->setRootEntity(contextInterface->property("rootEntity").value<QObject*>());
             _contexts.insert(rootId,newContext);
             emit roomContextItemsChanged();
             if(flags & FKRoomContextFlag::server){
                 _serverContextId=rootId;
+//                connect(newContext, &FKRoomContext::actionDispatched,       &FKRoomEngine::cancelEvent,            Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::eventDispatched,        &FKRoomEngine::eventDispatched,        Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::messageDispatched,      &FKRoomEngine::messageDispatched,      Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::instructionDispatched,  &FKRoomEngine::cancelEvent,            Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::notificationDispatched, &FKRoomEngine::notificationDispatched, Qt::UniqueConnection);
                 emit serverContextChanged();
             }
             if(flags & FKRoomContextFlag::user){
                 _userContextId=rootId;
+//                connect(newContext, &FKRoomContext::actionDispatched,       &FKRoomEngine::actionDispatched,       Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::eventDispatched,        &FKRoomEngine::cancelEvent,            Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::messageDispatched,      &FKRoomEngine::messageDispatched,      Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::instructionDispatched,  &FKRoomEngine::instructionDispatched,  Qt::UniqueConnection);
+//                connect(newContext, &FKRoomContext::notificationDispatched, &FKRoomEngine::cancelEvent,            Qt::UniqueConnection);
                 emit userContextChanged();
             }
             emit contextCreated(rootId);
         }
     }
+
 }
 
 void FKRoomEngine::releaseContext(const qint32 rootId){
+    if(_roomModule){
+        if(_contexts.contains(rootId)){
+            FKRoomContext* oldContext=_contexts.take(rootId);
+            emit roomContextItemsChanged();
+            if( _serverContextId==rootId){
+                _serverContextId=-1;
+                emit serverContextChanged();
+            }
+            if(_userContextId==rootId){
+                _userContextId=-1;
+                emit userContextChanged();
+            }
+            oldContext->deleteLater();
+        }
+    }
+}
 
+void FKRoomEngine::processAction(FKEventObject *ev){
+    QList<qint32> recievers(ev->recievers());
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* roomContext=_contexts.value(*i,nullptr);
+        if(roomContext){
+            roomContext->processAction(ev);
+        }
+    }
+    ev->deleteLater();
+}
+
+void FKRoomEngine::processEvent(FKEventObject *ev){
+    QList<qint32> recievers(ev->recievers());
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* roomContext=_contexts.value(*i,nullptr);
+        if(roomContext){
+            roomContext->processEvent(ev);
+        }
+    }
+    ev->deleteLater();
+}
+
+void FKRoomEngine::processInstruction(FKInstructionObject *instruction){
+    FKRoomContext* roomContext=_contexts.value(instruction->reciever(),nullptr);
+    if(roomContext){
+        roomContext->processInstruction(instruction);
+    }
+    instruction->deleteLater();
+}
+
+void FKRoomEngine::cancelEvent(QObject* ev){
+    FKMessage* msg=new FKMessage(QString(tr("Warning! Event object of type %1 was canceled").arg(ev->metaObject()->className())));
+    messageDispatched(msg);
+    ev->deleteLater();
 }
 
 QObject* FKRoomEngine::getContextItem(QQmlListProperty<QObject>* prop, int index){

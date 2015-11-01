@@ -36,9 +36,9 @@ public slots:
     void createContext(const qint32 rootId, qint8 flags);
     void releaseContext(const qint32 rootId);
 
-//    void processAction(FKEventObject* ev);
-//    void processEvent(FKEventObject* ev);
-//    void processInstruction(FKInstructionObject* instruction);
+    void processAction(FKEventObject* ev);
+    void processEvent(FKEventObject* ev);
+    void processInstruction(FKInstructionObject* instruction);
 signals:
     void contextManagerChanged();
     void serverContextChanged();
@@ -53,6 +53,8 @@ signals:
     void messageDispatched(FKMessage* msg);
     void instructionDispatched(FKInstructionObject* instruction);
     void notificationDispatched(FKBasicEvent* ev);
+private slots:
+    void cancelEvent(QObject* ev);
 private:
     static QObject *getContextItem(QQmlListProperty<QObject>* prop,int index);
     static int countContexts(QQmlListProperty<QObject>* prop);
