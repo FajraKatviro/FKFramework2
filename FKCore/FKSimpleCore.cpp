@@ -97,7 +97,7 @@ QStringList FKRealmComponent::serverList(const QString roomType){
     return lst;
 }
 
-QList<qint32> FKRealmComponent::connectedServerList(){
+QList<int> FKRealmComponent::connectedServerList(){
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,connectedServerList)){
         emit messageRequested(QString(tr("Unable get connected server list")));
@@ -114,7 +114,7 @@ QList<int> FKRealmComponent::connectedServerList(const QString roomType){
     return lst;
 }
 
-QList<qint32> FKRealmComponent::avaliableServerList(){
+QList<int> FKRealmComponent::avaliableServerList(){
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,getAvaliableServers)){
         emit messageRequested(QString(tr("Unable get avaliable server list")));
@@ -122,7 +122,7 @@ QList<qint32> FKRealmComponent::avaliableServerList(){
     return lst;
 }
 
-QList<qint32> FKRealmComponent::avaliableServerList(const QString roomType){
+QList<int> FKRealmComponent::avaliableServerList(const QString roomType){
     if(roomType.isEmpty())return avaliableServerList();
     QList<qint32> lst;
     if(!FK_THREAD_GETTER(QList<qint32>,lst,getAvaliableServersForRoomType)){

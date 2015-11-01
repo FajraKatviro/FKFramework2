@@ -4,7 +4,7 @@ import FKApp 1.0
 UserInterface{
     property Core core
     property RoomEngine roomEngine
-    property alias roomManager: roomInterface.roomManager
+    property alias roomManager: roomInterface.roomContextManager
 
     property var roomIntefaceItem: ConsoleRoomAccessor{
         id: roomInterface

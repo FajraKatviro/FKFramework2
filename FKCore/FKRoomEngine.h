@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QQmlListProperty>
 
+#include "FKVersionList.h"
+
 #include "fkcore_global.h"
 
 class FKRoomContext;
@@ -13,7 +15,6 @@ class FKEventObject;
 class FKInstructionObject;
 class FKMessage;
 class FKBasicEvent;
-class FKVersionList;
 
 class FKCORESHARED_EXPORT FKRoomEngine : public QObject{
     Q_OBJECT
@@ -27,7 +28,7 @@ public:
     QObject* contextManager()const;
     FKRoomContext* serverContext()const;
     FKRoomContext* userContext()const;
-    QQmlListProperty<QObject> roomContextItems()const;
+    QQmlListProperty<QObject> roomContextItems();
 public slots:
     void loadModule(const QString moduleName);
     void releaseModule();
@@ -53,7 +54,7 @@ signals:
     void instructionDispatched(FKInstructionObject* instruction);
     void notificationDispatched(FKBasicEvent* ev);
 private:
-    static FKRoomContext* getContextItem(QQmlListProperty<QObject>* prop,int index);
+    static QObject *getContextItem(QQmlListProperty<QObject>* prop,int index);
     static int countContexts(QQmlListProperty<QObject>* prop);
     QMap<qint32,FKRoomContext*> _contexts;
     qint32 _userContextId=-1;

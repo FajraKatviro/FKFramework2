@@ -114,6 +114,7 @@ HEADERS += \
     FKRoomEngine.h \
     FKRoomContext.h \
     FKThreadedComponent.h \
+    FKRoomSettings.h \
     FKRoomContextFlags.h \
     FKBasicEventSubjects.h \
     FKAusviceIdentifiers.h
