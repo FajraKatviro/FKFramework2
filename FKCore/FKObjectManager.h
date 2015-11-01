@@ -23,20 +23,19 @@ public:
     FKObject* genObject(const QString& className);
     FKObject* getObject(const qint32 id);
     void deleteObject(FKObject* obj);
-    virtual qint32 clientId()const{return -1;}
+    virtual qint32 roomContextId()const{return -1;}
     void setDataBase(FKDataBase* db){_db=db;}
     FKDataBase* dataBase()const{return _db;}
 public slots:
-    virtual void internalEvent(FKEventObject* event);
-    virtual void internalAction(FKEventObject* action);
-    virtual void internalMessageRequest(const QString& msg, const QList<qint32>& recievers);
-    virtual void shareObject(FKObject* obj,const QList<qint32>& recievers);
-    virtual void unshareObject(FKObject* obj,const QList<qint32>& recievers);
+    void internalEvent(FKEventObject* event);
+    void internalAction(FKEventObject* action);
+    void shareObject(FKObject* obj,const QList<qint32>& recievers);
+    void unshareObject(FKObject* obj,const QList<qint32>& recievers);
 
-    virtual void externalEvent(FKEventObject* event);
-    virtual void externalAction(FKEventObject* action);
-    virtual void createObject(const QVariant& data);
-    virtual void deleteObject(const QVariant& data);
+    void externalEvent(FKEventObject* event);
+    void externalAction(FKEventObject* action);
+    void createObject(const QVariant& data);
+    void deleteObject(const QVariant& data);
 private:
     FKObject* genObject(const QString& className,const qint32 id,const bool createServant=false);
     FKIDGenerator _idGenerator;

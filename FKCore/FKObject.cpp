@@ -716,7 +716,7 @@ void FKObject::doEvent(const qint32 target, const qint32 subject, FKObject* reci
  */
 
 void FKObject::doAction(const qint32 target, const qint32 subject, const QVariant& value){
-    FKEventObject* action=FKEventObject::makeAction(target,subject,value,_om->clientId(),getId());
+    FKEventObject* action=FKEventObject::makeAction(target,subject,value,_om->roomContextId(),getId());
     _om->internalAction(action);
 }
 

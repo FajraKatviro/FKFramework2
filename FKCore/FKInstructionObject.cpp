@@ -8,6 +8,11 @@ FKInstructionObject::FKInstructionObject(){
 
 }
 
+FKInstructionObject::FKInstructionObject(const qint32 subject, const QVariant value):
+    FKInstructionObject(QList<qint32>(),subject,value){
+
+}
+
 FKInstructionObject::FKInstructionObject(const qint32 reciever, const qint32 subject, const QVariant value):
     FKInstructionObject(QList<qint32>(reciever),subject,value){
 

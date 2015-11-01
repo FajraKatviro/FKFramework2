@@ -7,6 +7,7 @@
 class /*FKCORESHARED_EXPORT*/ FKInstructionObject{
 public:
     FKInstructionObject();
+    FKInstructionObject(const qint32 subject, const QVariant value=QVariant());
     FKInstructionObject(const qint32 reciever, const qint32 subject, const QVariant value);
     FKInstructionObject(const QList<qint32> recievers, const qint32 subject, const QVariant value);
     FKInstructionObject(const FKInstructionObject& other);

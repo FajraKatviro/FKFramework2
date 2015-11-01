@@ -89,7 +89,6 @@ FKRoomContext* FKRoomEngine::createContext(const qint32 rootId, qint8 flags){
             newContext->setRootEntity(contextInterface->property("rootEntity").value<QObject*>());
             _contexts.insert(rootId,newContext);
             connect(newContext,&FKRoomContext::messageRequested,&FKRoomEngine::messageRequested);
-            connect(newContext,&FKRoomContext::instructionDispatched,&FKRoomEngine::instructionDispatched);
             emit roomContextItemsChanged();
             if(flags & FKRoomContextFlag::server){
                 _serverContextId=rootId;
@@ -151,35 +150,185 @@ void FKRoomEngine::processEvent(FKEventObject *ev){
 
 void FKRoomEngine::processInstruction(FKInstructionObject instruction){
     qint32 subject=instruction->subject();
-    if(subject==FKInstructionSubject::loadModule    ){
-        todo;
+
+    if(      subject==FKInstructionSubject::loadModule    ){
+        loadModuleInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::releaseModule ){
-        todo;
+        releaseModuleInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::createContext ){
-        todo;
+        createContextInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::releaseContext){
-        todo;
-    }else if(subject==FKInstructionSubject::createObjects ){
-        todo;
-    }else if(subject==FKInstructionSubject::deleteObjects ){
-        todo;
+        releaseContextInstruction(instruction);
+
+    }else if(subject==FKInstructionSubject::createObject ){
+        createObjectInstruction(instruction);
+
+    }else if(subject==FKInstructionSubject::deleteObject ){
+        deleteObjectInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::addClient     ){
-        todo;
+        addClientInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::removeClient  ){
-        todo;
+        removeClientInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::setRoomObject ){
-        todo;
+        setRoomInstruction(instruction);
+
     }else if(subject==FKInstructionSubject::setUserObject ){
-        todo;
+        setUserInstruction(instruction);
+
     }else{
-        todo;
+        QString msg=QString(tr("Warning! Invalid instruction provided of type %1")).arg(QString::number(instruction.subject()));
+        emit messageRequested(msg);
     }
 }
 
 void FKRoomEngine::cancelEvent(QObject* ev){
-    QString msg=QString(tr("Warning! Event object of type %1 was canceled").arg(ev->metaObject()->className()));
-    messageRequested(msg);
+    QString msg=QString(tr("Warning! Event object of type %1 was canceled")).arg(ev->metaObject()->className());
+    emit messageRequested(msg);
     ev->deleteLater();
+}
+
+void FKRoomEngine::loadModuleInstruction(const FKInstructionObject &instruction){
+    FKVersionList moduleVersion=loadModule(instruction.value().toString());
+    if(!moduleVersion.isValid())moduleVersion=loadDefaultModule();
+    FKInstructionObject result=FKInstructionObject(FKInstructionSubject::loadModule,QVariant::fromValue(moduleVersion));
+    emit instructionDispatched(result);
+}
+
+void FKRoomEngine::releaseModuleInstruction(const FKInstructionObject &instruction){
+    releaseModule();
+    emit instructionDispatched(instruction);
+}
+
+void FKRoomEngine::createContextInstruction(const FKInstructionObject &instruction){
+    QPair<qint32,qint8> data=instruction.value().value<QPair<qint32,qint8>>();
+    FKRoomContext* newContext=createContext(data.first,data.second);
+    FKInstructionObject result=FKInstructionObject(FKInstructionSubject::createContext,QVariant::fromValue(newContext));
+    emit instructionDispatched(result);
+}
+
+void FKRoomEngine::releaseContextInstruction(const FKInstructionObject &instruction){
+    releaseContext(instruction.value().toInt());
+    emit instructionDispatched(instruction);
+}
+
+void FKRoomEngine::createObjectInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject)contextObject->createObject(instruction.value());
+    }
+}
+
+void FKRoomEngine::deleteObjectInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject)contextObject->deleteObject(instruction.value());
+    }
+}
+
+void FKRoomEngine::addClientInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    QList<qint32> succeed, failed;
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject){
+            bool clientAdded=contextObject->addClient(instruction.value());
+            if(clientAdded){
+                succeed.append(*i);
+            }else{
+                failed.append(*i);
+            }
+        }else{
+            failed.append(*i);
+        }
+    }
+    if(!failed.isEmpty()){
+        FKInstructionObject failResult(failed,FKInstructionSubject::addClient,false);
+        emit instructionDispatched(failResult);
+    }
+    if(!succeed.isEmpty()){
+        FKInstructionObject successResult(succeed,FKInstructionSubject::addClient,true);
+        emit instructionDispatched(successResult);
+    }
+}
+
+void FKRoomEngine::removeClientInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    QList<qint32> succeed, failed;
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject){
+            contextObject->removeClient(instruction.value());
+            succeed.append(*i);
+        }else{
+            failed.append(*i);
+        }
+    }
+    if(!failed.isEmpty()){
+        FKInstructionObject failResult(failed,FKInstructionSubject::removeClient,false);
+        emit instructionDispatched(failResult);
+    }
+    if(!succeed.isEmpty()){
+        FKInstructionObject successResult(succeed,FKInstructionSubject::removeClient,true);
+        emit instructionDispatched(successResult);
+    }
+}
+
+void FKRoomEngine::setRoomInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    QList<qint32> succeed, failed;
+    qint32 objectId=instruction.value().toInt();
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject){
+            contextObject->setRoomObject(objectId);
+            succeed.append(*i);
+        }else{
+            failed.append(*i);
+        }
+    }
+    if(!failed.isEmpty()){
+        FKInstructionObject failResult(failed,FKInstructionSubject::setRoomObject,false);
+        emit instructionDispatched(failResult);
+    }
+    if(!succeed.isEmpty()){
+        FKInstructionObject successResult(succeed,FKInstructionSubject::setRoomObject,true);
+        emit instructionDispatched(successResult);
+    }
+}
+
+void FKRoomEngine::setUserInstruction(const FKInstructionObject &instruction){
+    QList<qint32> recievers(instruction.recievers());
+    QList<qint32> succeed, failed;
+    qint32 objectId=instruction.value().toInt();
+    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
+        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
+        if(contextObject){
+            contextObject->setUserObject(objectId);
+            succeed.append(*i);
+        }else{
+            failed.append(*i);
+        }
+    }
+    if(!failed.isEmpty()){
+        FKInstructionObject failResult(failed,FKInstructionSubject::setUserObject,false);
+        emit instructionDispatched(failResult);
+    }
+    if(!succeed.isEmpty()){
+        FKInstructionObject successResult(succeed,FKInstructionSubject::setUserObject,true);
+        emit instructionDispatched(successResult);
+    }
+}
+
+FKVersionList FKRoomEngine::loadDefaultModule(){
+    return loadModule("FKChatRoom");
 }
 
 QObject* FKRoomEngine::getContextItem(QQmlListProperty<QObject>* prop, int index){

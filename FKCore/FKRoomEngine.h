@@ -43,6 +43,18 @@ signals:
 private slots:
     void cancelEvent(QObject* ev);
 private:
+    void loadModuleInstruction(const FKInstructionObject& instruction);
+    void releaseModuleInstruction(const FKInstructionObject& instruction);
+    void createContextInstruction(const FKInstructionObject& instruction);
+    void releaseContextInstruction(const FKInstructionObject& instruction);
+    void createObjectInstruction(const FKInstructionObject& instruction);
+    void deleteObjectInstruction(const FKInstructionObject& instruction);
+    void addClientInstruction(const FKInstructionObject& instruction);
+    void removeClientInstruction(const FKInstructionObject& instruction);
+    void setRoomInstruction(const FKInstructionObject& instruction);
+    void setUserInstruction(const FKInstructionObject& instruction);
+
+    FKVersionList loadDefaultModule();
     FKVersionList loadModule(const QString moduleName);
     void releaseModule();
     FKRoomContext* createContext(const qint32 rootId, qint8 flags);
