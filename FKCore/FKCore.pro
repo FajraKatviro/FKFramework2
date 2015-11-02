@@ -10,7 +10,6 @@ SOURCES += \
     FKApplication.cpp \
     FKUserInterface.cpp \
     FKSimpleCore.cpp \
-    FKObjectManager.cpp \
     FKDataBase.cpp \
     FKSystemObject.cpp \
     FKMessage.cpp \
@@ -60,7 +59,6 @@ HEADERS += \
     FKApplication.h \
     FKUserInterface.h \
     FKSimpleCore.h \
-    FKObjectManager.h \
     FKDataBase.h \
     FKIDGenerator.h \
     FKSystemObject.h \

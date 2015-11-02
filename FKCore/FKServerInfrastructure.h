@@ -15,7 +15,6 @@ class FKServerConnectionManager;
 class FKEventObject;
 class FKRoom;
 class FKRoomModule;
-class FKObjectManager;
 class FKRoomData;
 class FKRoomInviteData;
 
@@ -82,7 +81,6 @@ private:
     virtual FKDataBase* createRoomDatabase();
     bool _logged;
     FKConnectionManager* _realmConnection;
-    FKObjectManager* _om;
     FKRoomModule* _roomModule;
     FKRoom* _room;
     QSet<FKServerConnectionManager*> _guests;

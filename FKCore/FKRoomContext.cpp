@@ -1,6 +1,5 @@
 #include "FKRoomContext.h"
 
-#include "FKObjectManager.h"
 #include "FKRoom.h"
 #include "FKUser.h"
 
@@ -13,7 +12,6 @@
 
 FKRoomContext::FKRoomContext(QObject *parent) : QObject(parent){
     FK_CBEGIN
-    _om=new FKObjectManager(this);
     FK_CEND
 }
 
@@ -34,8 +32,9 @@ QObject*FKRoomContext::rootEntity() const{
     return _rootEntity;
 }
 
-bool FKRoomContext::isSyncComplete() const{
-    return _syncComplete;
+void FKRoomContext::setRoomObject(const qint32 objectId){
+    _room=qobject_cast<FKRoom*>(getObject(objectId));
+    emit roomObjectChanged();
 }
 
 void FKRoomContext::setRootEntity(QObject* entity){
@@ -50,43 +49,95 @@ bool FKRoomContext::addClient(const FKRoomInviteData &invite){
     return false;
 }
 
-void FKRoomContext::completeSync(){
-    _syncComplete=true;
-    emit syncCompleteChanged();
+bool FKRoomContext::removeClient(const FKRoomInviteData& invite){
+    todo;
+    return false;
 }
 
-void FKRoomContext::onObjectCreated(FKObject* newObject){
-    if(!_syncComplete){
-        if(!_room){
-            auto room=qobject_cast<FKRoom*>(newObject);
-            if(room){
-                _room=room;
-                emit roomObjectChnaged();
-                return;
-            }
-        }
-        if(!_user && newObject->getId()==_userId){
-            _user=qobject_cast<FKUser*>(newObject);
-            emit userObjectChnaged();
-            return;
-        }
-    }
+void FKRoomContext::createObject(const QVariant& data){
+    todo;
 }
 
-void FKRoomContext::installObjectManager(FKObjectManager* om){
-
+void FKRoomContext::deleteObject(const QVariant& data){
+    todo;
 }
 
-void FKRoomContext::eventRecycler(FKEventObject* ev){
-    FK_MLOGV("Got undesired event",ev->subject())
-    ev->deleteLater();
+void FKRoomContext::processAction(FKEventObject* ev){
+    todo;
 }
 
-void FKRoomContext::installObjectManager(){
-    installObjectManager(_om);
+void FKRoomContext::processEvent(FKEventObject* ev){
+    todo;
 }
 
 void FKRoomContext::setUser(const qint32 id){
-    _userId=id;
+    _user=qobject_cast<FKUser*>(getObject(id));
+    emit userObjectChanged();
 }
 
+FKObject* FKRoomContext::genObject(const QString& className){
+    qint32 id=_idGenerator.take();
+    FKObject* obj=genObject(className,id,true);
+    return obj;
+}
+
+/*!
+ * \brief Get object by id. If target object is not managed by this manager, null would be reterned
+ */
+
+FKObject* FKRoomContext::getObject(const qint32 id){
+    return _objects.value(id,nullptr);
+}
+
+void FKRoomContext::deleteObject(FKObject* obj){
+    obj->executeEvent(FKIdentifiers::deinitObject);
+    obj->executeEvent(FKIdentifiers::resetServant);
+    _objects.remove(obj->getId());
+    _idGenerator.back(obj->getId());
+    //_objectPool.add(obj);
+    obj->deleteLater();
+}
+
+void FKRoomContext::internalEvent(FKEventObject* event){
+    todo;
+    emit eventDispatched(event);
+}
+
+void FKRoomContext::internalAction(FKEventObject* action){
+    todo;
+    emit actionDispatched(action);
+}
+
+void FKRoomContext::shareObject(FKObject* obj, const QList<qint32>& recievers){
+    todo;
+}
+
+void FKRoomContext::unshareObject(FKObject* obj, const QList<qint32>& recievers){
+    todo;
+}
+
+/*!
+ * \brief Create uninitialized object of given class, add to managed hash with given id and run initialization
+ */
+
+FKObject* FKRoomContext::genObject(const QString &className, const qint32 id,const bool createServant){
+    //FKObject* obj=_objectPool.take(className);
+    //if(!obj){
+        FKObject* obj=FKObject::_factory.create(className);
+        if(obj){
+            obj->installObjectInfo();
+            obj->setParent(this);
+            obj->setRoomContext(this);
+            if(createServant){
+                obj->executeEvent(FKIdentifiers::createServant);
+                obj->executeEvent(FKIdentifiers::resetServant);
+            }
+        }
+    //}
+    if(obj){
+        obj->setId(id);
+        _objects.insert(id,obj);
+        obj->executeEvent(FKIdentifiers::initObject);
+    }
+    return obj;
+}

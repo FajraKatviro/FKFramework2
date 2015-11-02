@@ -3,7 +3,6 @@
 #include "FKClientInfrastructureReferent.h"
 #include "FKServerConnectionManager.h"
 #include "FKBasicEvent.h"
-#include "FKObjectManager.h"
 #include "FKAusviceData.h"
 #include "FKRoomData.h"
 #include "FKRoomInviteData.h"
@@ -24,7 +23,6 @@
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
         FKInfrastructure(parent),_logged(false),_realmConnection(0),_roomModule(0),_room(0),_idgenerator(1),_id(-1){
     FK_CBEGIN
-    _om=new FKObjectManager(this);
     FK_CEND
 }
 

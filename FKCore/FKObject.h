@@ -12,7 +12,7 @@
 #include <QVector>
 #include <QReadWriteLock>
 
-class FKObjectManager;
+class FKRoomContext;
 class FKDataBase;
 struct FKDBIndex;
 
@@ -128,11 +128,11 @@ private:
 
 //This section used by object manager
     void setId(const qint32 id){_id=id;}
-    void setObjectManager(FKObjectManager* om){_om=om;}
+    void setRoomContext(FKRoomContext* rc){_rc=rc;}
     qint32 asquireParentObjectId()const;
     void processFKAction(FKEventObject* action);
     void processFKEvent(FKEventObject* event);
-    friend class FKObjectManager;
+    friend class FKRoomContext;
     friend class FKObjectPool;
 
 //This section used by watching system
@@ -158,7 +158,7 @@ private:
     FKDBIndex selfIndex()const;
 
     qint32 _id;
-    FKObjectManager* _om;
+    FKRoomContext* _rc;
     static FKFactory<FKObject> _factory;
     static FKObjectMetadata objectMetadata;
     static QReadWriteLock objectMetadataLocker;
