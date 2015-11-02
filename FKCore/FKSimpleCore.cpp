@@ -223,6 +223,12 @@ void FKRealmComponent::removeRoomType(const QString roomType){
     }
 }
 
+void FKRealmComponent::createRoomRequest(const QString roomName, const QString roomType){
+    if(!callMethod("createRoomRequest",roomName,"QString",roomType,"QString")){
+        emit messageRequested(QString(tr("Unable request create room")));
+    }
+}
+
 void FKRealmComponent::setPort(const qint32 port){
     if(!FK_THREAD_CALL_ARG(setPort,qint32,port)){
         emit messageRequested(QString(tr("Unable set port")));

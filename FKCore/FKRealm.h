@@ -28,8 +28,6 @@ public:
     void dropRealm();
     FKInfrastructureType infrastructureType()const override;
 
-    void createRoomRealmRequest(const QString& roomName,const QString& roomType);
-
     void registerServerRoomType(const qint32 serverId, const QVariant& data);
     void removeServerRoomType(const qint32 serverId, const QVariant& data);
 
@@ -55,6 +53,7 @@ public slots:
     void deleteServerRecord(const qint32 serverId);
     void createClientRecord(const QString clientName, const QString password);
     void deleteClientRecord(const QString clientName);
+    void createRoomRequest(const QString roomName,const QString roomType);
 
     QStringList userList()const;
     QStringList getUserList(const QString clientId)const;

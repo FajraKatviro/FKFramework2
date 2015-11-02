@@ -42,7 +42,7 @@ public slots:
     void dropServer(const qint32 serverId);
     void registerRoomType(const QString roomType);
     void removeRoomType(const QString roomType);
-//    void createRoomRequest(const QString roomName, const QString roomType);
+    void createRoomRequest(const QString roomName, const QString roomType);
     void setPort(const qint32 port);
     void guestConnection(FKConnector* connector);
 protected slots:
