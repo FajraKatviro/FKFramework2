@@ -415,33 +415,34 @@ bool FKServerInfrastructure::hasRoom() const{
 }
 
 bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
+    todo;
     bool answer=false;
-    if(!_roomModule){
-        _roomModule=new FKRoomModule(this,roomData.roomType());
-        if(_roomModule->load()){
-            FKObject* room=_om->genObject(_roomModule->roomClass());
-            _room=qobject_cast<FKRoom*>(room);
-            if(!_room){
-                FK_MLOGV("Invalid room module",roomData.roomType())
-                if(room)_om->deleteObject(room);
-                _roomModule->deleteLater();
-                _roomModule=nullptr;
-            }else{
-                //_om->setRoomModule(_roomModule);
-                connect(_room,SIGNAL(roomDataChanged(qint32,QVariant)),SLOT(roomDataChanged(qint32,QVariant)));
-                connect(_room,SIGNAL(clientInviteResolved(FKRoomInviteData,QList<qint32>)),SLOT(clientInviteResolved(FKRoomInviteData,QList<qint32>)));
-                _room->setup(roomData);
-                FK_MLOG("room created on server")
-                answer=true;
-            }
-        }else{
-            FK_MLOGV("Unable load room module",roomData.roomType())
-            _roomModule->deleteLater();
-            _roomModule=nullptr;
-        }
-    }else{
-        FK_MLOG("room module is not empty")
-    }
+//    if(!_roomModule){
+//        _roomModule=new FKRoomModule(this,roomData.roomType());
+//        if(_roomModule->load()){
+//            FKObject* room=_om->genObject(_roomModule->roomClass());
+//            _room=qobject_cast<FKRoom*>(room);
+//            if(!_room){
+//                FK_MLOGV("Invalid room module",roomData.roomType())
+//                if(room)_om->deleteObject(room);
+//                _roomModule->deleteLater();
+//                _roomModule=nullptr;
+//            }else{
+//                //_om->setRoomModule(_roomModule);
+//                connect(_room,SIGNAL(roomDataChanged(qint32,QVariant)),SLOT(roomDataChanged(qint32,QVariant)));
+//                connect(_room,SIGNAL(clientInviteResolved(FKRoomInviteData,QList<qint32>)),SLOT(clientInviteResolved(FKRoomInviteData,QList<qint32>)));
+//                _room->setup(roomData);
+//                FK_MLOG("room created on server")
+//                answer=true;
+//            }
+//        }else{
+//            FK_MLOGV("Unable load room module",roomData.roomType())
+//            _roomModule->deleteLater();
+//            _roomModule=nullptr;
+//        }
+//    }else{
+//        FK_MLOG("room module is not empty")
+//    }
     return answer;
 }
 

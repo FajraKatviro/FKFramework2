@@ -4,9 +4,11 @@
 
 #include "FKRoomModule.h"
 #include "FKVersionList.h"
+#include "FKBasicEvent.h"
 #include "FKEventObject.h"
 #include "FKRoomContext.h"
 #include "FKRoomContextFlags.h"
+#include "FKRoomInviteData.h"
 
 #include "FKInstructionSubjects.h"
 #include "FKLogger.h"
@@ -87,26 +89,27 @@ FKRoomContext* FKRoomEngine::createContext(const qint32 rootId, qint8 flags){
     FKRoomContext* newContext=nullptr;
     if(_roomModule){
         if(!_contexts.contains(rootId)){
-            newContext=_roomModule->createContextObject(this);
+            newContext=_roomModule->createContextObject();
+            newContext->setParent(this);
             QObject* contextInterface=_contextComponent->create(qmlContext(this));
             contextInterface->setParent(newContext);
             contextInterface->setProperty("roomContext",QVariant::fromValue(newContext));
             newContext->setRootEntity(contextInterface->property("rootEntity").value<QObject*>());
             _contexts.insert(rootId,newContext);
-            connect(newContext,&FKRoomContext::messageRequested,&FKRoomEngine::messageRequested);
+            connect(newContext,&FKRoomContext::messageRequested,this,&FKRoomEngine::messageRequested);
             emit roomContextItemsChanged();
             if(flags & FKRoomContextFlag::server){
                 _serverContextId=rootId;
                 emit serverContextChanged();
             }else{
-                connect(newContext,&FKRoomContext::eventDispatched,&FKRoomEngine::cancelEvent);
-                connect(newContext,&FKRoomContext::notificationDispatched,&FKRoomEngine::cancelEvent);
+                connect(newContext,&FKRoomContext::eventDispatched,this,&FKRoomEngine::cancelEvent);
+                connect(newContext,&FKRoomContext::notificationDispatched,this,&FKRoomEngine::cancelEvent);
             }
             if(flags & FKRoomContextFlag::user){
                 _userContextId=rootId;
                 emit userContextChanged();
             }else{
-                connect(newContext,&FKRoomContext::actionDispatched,&FKRoomEngine::cancelEvent);
+                connect(newContext,&FKRoomContext::actionDispatched,this,&FKRoomEngine::cancelEvent);
             }
         }
     }
@@ -154,7 +157,7 @@ void FKRoomEngine::processEvent(FKEventObject *ev){
 }
 
 void FKRoomEngine::processInstruction(FKInstructionObject instruction){
-    qint32 subject=instruction->subject();
+    qint32 subject=instruction.subject();
 
     if(      subject==FKInstructionSubject::loadModule    ){
         loadModuleInstruction(instruction);
@@ -244,7 +247,8 @@ void FKRoomEngine::addClientInstruction(const FKInstructionObject &instruction){
     for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
         FKRoomContext* contextObject=_contexts.value(*i,nullptr);
         if(contextObject){
-            bool clientAdded=contextObject->addClient(instruction.value());
+            FKRoomInviteData inviteData(instruction.value());
+            bool clientAdded=contextObject->addClient(inviteData);
             if(clientAdded){
                 succeed.append(*i);
             }else{
@@ -270,7 +274,8 @@ void FKRoomEngine::removeClientInstruction(const FKInstructionObject &instructio
     for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
         FKRoomContext* contextObject=_contexts.value(*i,nullptr);
         if(contextObject){
-            contextObject->removeClient(instruction.value());
+            FKRoomInviteData inviteData(instruction.value());
+            contextObject->removeClient(inviteData);
             succeed.append(*i);
         }else{
             failed.append(*i);

@@ -20,22 +20,22 @@ FKInstructionObject::FKInstructionObject(const qint32 subject, const QVariant va
 }
 
 FKInstructionObject::FKInstructionObject(const qint32 reciever, const qint32 subject, const QVariant value):
-    FKInstructionObject(QList<qint32>(reciever),subject,value){
+    FKInstructionObject(QList<qint32>()<<reciever,subject,value){
 
 }
 
-FKInstructionObject::FKInstructionObject(const QList<qint32> recievers, const QString &subject, const QVariant value):
+FKInstructionObject::FKInstructionObject(const QList<qint32> recievers, const qint32 subject, const QVariant value):
     _recievers(recievers),_subject(subject),_value(value){
 
 }
 
 FKInstructionObject::FKInstructionObject(const FKInstructionObject& other):
-    _reciever(other._reciever),_subject(other._subject),_value(other._value){
+    _recievers(other._recievers),_subject(other._subject),_value(other._value){
 
 }
 
 FKInstructionObject& FKInstructionObject::operator=(const FKInstructionObject& other){
-    _reciever=other._reciever;
+    _recievers=other._recievers;
     _subject=other._subject;
     _value=other._value;
     return *this;
@@ -53,8 +53,8 @@ QVariant FKInstructionObject::value() const{
     return _value;
 }
 
-qint32 FKInstructionObject::reciever() const{
-    return _reciever;
+QList<qint32> FKInstructionObject::recievers() const{
+    return _recievers;
 }
 
 QDataStream& operator<<(QDataStream& stream, const FKInstructionObject& lst){

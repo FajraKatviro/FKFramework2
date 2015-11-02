@@ -45,7 +45,18 @@ QString FKRoomModule::roomClass() const{
 }
 
 QString FKRoomModule::contextManager() const{
+    todo;
     return "qrc:/RoomContextManager.qml";
+}
+
+QString FKRoomModule::contextComponent() const{
+    todo;
+    return QString();
+}
+
+FKRoomContext*FKRoomModule::createContextObject() const{
+    todo;
+    return nullptr;
 }
 
 FKPackage FKRoomModule::getPackage(const QString& package){

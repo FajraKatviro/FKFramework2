@@ -2,6 +2,8 @@
 
 #include "FKRoom.h"
 #include "FKUser.h"
+#include "FKRoomInviteData.h"
+#include "FKInstructionSubjects.h"
 
 #include "FKLogger.h"
 
@@ -45,8 +47,10 @@ void FKRoomContext::setRootEntity(QObject* entity){
 }
 
 bool FKRoomContext::addClient(const FKRoomInviteData &invite){
-    todo;
-    return false;
+    QStringList users(invite.users());
+    if(users.size()!=1)return false;
+    genObject("FKUser");
+    return true;
 }
 
 bool FKRoomContext::removeClient(const FKRoomInviteData& invite){
@@ -55,23 +59,34 @@ bool FKRoomContext::removeClient(const FKRoomInviteData& invite){
 }
 
 void FKRoomContext::createObject(const QVariant& data){
-    todo;
+    QPair<qint32,QString> value(data.value<QPair<qint32,QString>>());
+    genObject(value.second,value.first);
 }
 
 void FKRoomContext::deleteObject(const QVariant& data){
-    todo;
+    deleteObject(getObject(data.toInt()));
 }
 
 void FKRoomContext::processAction(FKEventObject* ev){
-    todo;
+    FKObject* obj=getObject(ev->object());
+    if(obj){
+        obj->processFKAction(ev);
+    }else{
+        ev->deleteLater();
+    }
 }
 
 void FKRoomContext::processEvent(FKEventObject* ev){
-    todo;
+    FKObject* obj=getObject(ev->object());
+    if(obj){
+        obj->processFKEvent(ev);
+    }else{
+        ev->deleteLater();
+    }
 }
 
-void FKRoomContext::setUser(const qint32 id){
-    _user=qobject_cast<FKUser*>(getObject(id));
+void FKRoomContext::setUserObject(const qint32 objectId){
+    _user=qobject_cast<FKUser*>(getObject(objectId));
     emit userObjectChanged();
 }
 
@@ -99,20 +114,25 @@ void FKRoomContext::deleteObject(FKObject* obj){
 }
 
 void FKRoomContext::internalEvent(FKEventObject* event){
-    todo;
     emit eventDispatched(event);
 }
 
 void FKRoomContext::internalAction(FKEventObject* action){
-    todo;
     emit actionDispatched(action);
 }
 
 void FKRoomContext::shareObject(FKObject* obj, const QList<qint32>& recievers){
-    todo;
+    QPair<qint32,QString> value(obj->getId(),obj->getClassName());
+    FKInstructionObject shareInstruction(recievers,FKInstructionSubject::createObject,QVariant::fromValue(value));
+    emit instructionDispatched(shareInstruction);
 }
 
 void FKRoomContext::unshareObject(FKObject* obj, const QList<qint32>& recievers){
+    FKInstructionObject unshareInstruction(recievers,FKInstructionSubject::deleteObject,obj->getId());
+    emit instructionDispatched(unshareInstruction);
+}
+
+void FKRoomContext::internalMessageRequest(const QString& msg, const QList<qint32>& recievers){
     todo;
 }
 

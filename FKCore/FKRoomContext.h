@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHash>
 
+#include "FKInstructionObject.h"
 #include "FKIDGenerator.h"
 
 class FKRoom;
@@ -53,6 +54,7 @@ public:
     void internalAction(FKEventObject* action);
     void shareObject(FKObject* obj,const QList<qint32>& recievers);
     void unshareObject(FKObject* obj,const QList<qint32>& recievers);
+    void internalMessageRequest(const QString& msg,const QList<qint32>& recievers);
 signals:
     //QML notification
     void roomObjectChanged();
@@ -63,6 +65,8 @@ signals:
     void eventDispatched(FKEventObject* ev);
     void actionDispatched(FKEventObject* ev);
     void notificationDispatched(FKBasicEvent* ev);
+    void instructionDispatched(FKInstructionObject instruction);
+    void messageRequested(QString msg);
 
 private:
     FKObject* genObject(const QString& className,const qint32 id,const bool createServant=false);

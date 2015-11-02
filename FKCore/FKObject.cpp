@@ -104,7 +104,7 @@ void FKObject::deleteObject(){
     }
     emit deletedFKObject(this);
     //todo move to event
-    _om->deleteObject(this);
+    _rc->deleteObject(this);
 }
 
 /*!
@@ -117,7 +117,7 @@ void FKObject::deleteObject(){
  */
 
 FKObject* FKObject::getObject(const qint32 id)const{
-    return _om->getObject(id);
+    return _rc->getObject(id);
 }
 
 /*!
@@ -141,7 +141,7 @@ void FKObject::applyUpdates(){
     for(;u!=servant->updateCommon.end();++p, ++u){
         if(*u){
             event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
-            _om->internalEvent(event);
+            _rc->internalEvent(event);
             *u=false;
         }
     }
@@ -489,7 +489,7 @@ void FKObject::logDestructor(){
  */
 
 FKDataBase* FKObject::database() const{
-    return _om->dataBase();
+    return _rc->dataBase();
 }
 
 FKDBIndex FKObject::selfIndex()const{
@@ -610,7 +610,7 @@ bool FKObject::loadObject(QDataStream &stream){
  */
 
 void FKObject::writeSlowPropertyNum(const QString& propertyName, const qreal value) const{
-    _om->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
+    _rc->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
 }
 
 /*!
@@ -618,7 +618,7 @@ void FKObject::writeSlowPropertyNum(const QString& propertyName, const qreal val
  */
 
 void FKObject::writeSlowPropertyStr(const QString& propertyName, const QString& value) const{
-    _om->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
+    _rc->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
 }
 
 /*!
@@ -626,7 +626,7 @@ void FKObject::writeSlowPropertyStr(const QString& propertyName, const QString& 
  */
 
 void FKObject::writeSlowPropertyRef(const QString& propertyName, const FKDBIndex& value) const{
-    _om->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
+    _rc->dataBase()->writeValue(FKDBValue(value),selfIndex()>>propertyName,false);
 }
 
 /*!
@@ -634,7 +634,7 @@ void FKObject::writeSlowPropertyRef(const QString& propertyName, const FKDBIndex
  */
 
 qreal FKObject::readSlowPropertyNum(const QString& propertyName) const{
-    return _om->dataBase()->getValue(selfIndex()>>propertyName,false).number();
+    return _rc->dataBase()->getValue(selfIndex()>>propertyName,false).number();
 }
 
 /*!
@@ -642,7 +642,7 @@ qreal FKObject::readSlowPropertyNum(const QString& propertyName) const{
  */
 
 QString FKObject::readSlowPropertyStr(const QString& propertyName) const{
-    return _om->dataBase()->getValue(selfIndex()>>propertyName,false).string();
+    return _rc->dataBase()->getValue(selfIndex()>>propertyName,false).string();
 }
 
 /*!
@@ -650,11 +650,11 @@ QString FKObject::readSlowPropertyStr(const QString& propertyName) const{
  */
 
 FKDBIndex FKObject::readSlowPropertyRef(const QString& propertyName) const{
-    return _om->dataBase()->getValue(selfIndex()>>propertyName,false).index();
+    return _rc->dataBase()->getValue(selfIndex()>>propertyName,false).index();
 }
 
 FKObject* FKObject::createObject(const QString& className) const{
-    return _om->genObject(className);
+    return _rc->genObject(className);
 }
 
 /*!
@@ -665,7 +665,7 @@ void FKObject::showMessage(const QString& msg, FKObject* reciever){
     if(!reciever)reciever=this;
     QList<qint32> recievers;
     foreach(FKObject* obj,reciever->totalVisors())recievers.append(obj->getId());
-    _om->internalMessageRequest(msg,recievers);
+    _rc->internalMessageRequest(msg,recievers);
 }
 
 /*!
@@ -699,7 +699,7 @@ void FKObject::doEvent(const qint32 target, const qint32 subject, const QVariant
     foreach(FKObject* obj,reciever->sharedVisors())recievers.append(obj->getId());
     if(!recievers.isEmpty()){
         FKEventObject* event=FKEventObject::makeEvent(target,subject,value,recievers,false);
-        _om->internalEvent(event);
+        _rc->internalEvent(event);
     }
 }
 
@@ -716,8 +716,8 @@ void FKObject::doEvent(const qint32 target, const qint32 subject, FKObject* reci
  */
 
 void FKObject::doAction(const qint32 target, const qint32 subject, const QVariant& value){
-    FKEventObject* action=FKEventObject::makeAction(target,subject,value,_om->roomContextId(),getId());
-    _om->internalAction(action);
+    FKEventObject* action=FKEventObject::makeAction(target,subject,value,_rc->roomContextId(),getId());
+    _rc->internalAction(action);
 }
 
 void FKObject::assignParentObjectId(const qint32 id){
@@ -937,7 +937,7 @@ void FKObject::refreshProperty(const qint32 propertyId, const QSet<FKObject*>& r
         recieversList.append(r->getId());
     }
     FKEventObject* event=FKEventObject::makeEvent(getId(),propertyId,getProperty(propertyId),recieversList,true);
-    _om->internalEvent(event);
+    _rc->internalEvent(event);
 }
 
 void FKObject::initVisibleProperties(FKObject* watcher, const QList<qint32>& recievers){
@@ -949,18 +949,18 @@ void FKObject::initVisibleProperties(FKObject* watcher, const QList<qint32>& rec
     for(;p!=props.constEnd();++p, ++u){
         if(*u){
             event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
-            _om->internalEvent(event);
+            _rc->internalEvent(event);
         }
     }
 }
 
 void FKObject::initCommonProperties(const QList<qint32>& recievers){
-    _om->shareObject(this,recievers);
+    _rc->shareObject(this,recievers);
     FKEventObject* event;
     QList<qint32> props(commonPropertyList());
     for(auto p=props.constBegin();p!=props.constEnd();++p){
         event=FKEventObject::makeEvent(getId(),*p,getProperty(*p),recievers,true);
-        _om->internalEvent(event);
+        _rc->internalEvent(event);
     }
 }
 
@@ -975,7 +975,7 @@ void FKObject::removeVisors(QSet<FKObject*> oldRecievers){
         foreach(FKObject* r,oldRecievers){
             eventRecievers.append(r->getId());
         }
-        _om->unshareObject(this,eventRecievers);
+        _rc->unshareObject(this,eventRecievers);
     }
 }
 
