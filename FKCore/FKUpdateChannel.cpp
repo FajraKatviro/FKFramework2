@@ -6,6 +6,11 @@
 #include <QMap>
 #include <QDir>
 
+/*!
+\class FKUpdateChannel
+\brief Incapsulates update management for single file
+*/
+
 const qint64 FKUpdateChannel::blockSize=1024;
 
 FKUpdateChannel::FKUpdateChannel(const QString& path, const QString& version, const qint8 platform, const QString& newVersion, const qint64 newSize)

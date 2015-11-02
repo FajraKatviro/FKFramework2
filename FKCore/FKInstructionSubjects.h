@@ -1,6 +1,8 @@
 #ifndef FKINSTRUCTIONSUBJECTS_H
 #define FKINSTRUCTIONSUBJECTS_H
 
+//Identifiers used for FKInstructionObject to determine type of order
+
 namespace FKInstructionSubject{
     const qint32 loadModule         = 1;
     const qint32 releaseModule      = 2;

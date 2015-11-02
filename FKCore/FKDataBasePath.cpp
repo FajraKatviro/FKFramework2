@@ -2,6 +2,13 @@
 
 #include "FKDataBase.h"
 
+
+/*!
+\class FKDataBasePath
+\brief Used to simplify database paths management, watch FKReamlDBMap for examples
+*/
+
+
 FKDataBasePath::FKDataBasePath(FKDataBasePath* parent):_parent(parent){}
 
 FKDBIndex FKDataBasePath::path() const{

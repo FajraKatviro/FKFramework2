@@ -5,6 +5,11 @@
 #include <QDataStream>
 #include <QVariant>
 
+/*!
+\class FKUpdateData
+\brief Cross-connector update data container, should be applied to FKUpdateChannel
+*/
+
 FKUpdateData::FKUpdateData():FKSystemObject(){
     FK_CBEGIN
     FK_CEND

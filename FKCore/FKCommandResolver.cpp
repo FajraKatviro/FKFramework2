@@ -4,6 +4,11 @@
 
 #include "FKCommands.h"
 
+/*!
+\class FKCommandResolver
+\brief This class converts user input strings to app-defined signals
+*/
+
 FKCommandResolver::FKCommandResolver(QObject *parent):QObject(parent){
     FK_CBEGIN
     FK_CEND
@@ -13,7 +18,6 @@ FKCommandResolver::~FKCommandResolver(){
     FK_DBEGIN
     FK_DEND
 }
-
 
 void FKCommandResolver::processInput(QString input){
     if(isCommand(input,FKCommands::quit,true)){

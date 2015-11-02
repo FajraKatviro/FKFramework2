@@ -4,6 +4,11 @@
 
 #include "FKLogger.h"
 
+/*!
+\class FKThreadedComponent
+\brief Provides threaded component access api
+*/
+
 FKThreadedComponent::FKThreadedComponent(QObject *parent):QObject(parent){
     FK_CBEGIN
     FK_CEND

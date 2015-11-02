@@ -6,6 +6,11 @@
 
 #include "FKLogger.h"
 
+/*!
+\class FKRoomContext
+\brief Context manages single room session with it's objects and UI
+*/
+
 FKRoomContext::FKRoomContext(QObject *parent) : QObject(parent){
     FK_CBEGIN
     _om=new FKObjectManager(this);

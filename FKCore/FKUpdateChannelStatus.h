@@ -1,6 +1,8 @@
 #ifndef FKUPDATECHANNELSTATUS
 #define FKUPDATECHANNELSTATUS
 
+//Flags used to determine update channel status
+
 namespace FKUpdateChannelStatus{
     //done progress
     const qint8 startLoading  = 0b00000001;

@@ -3,6 +3,8 @@
 
 #include <QString>
 
+//Identifiers used for FKBasicEvent to specify requested command
+
 namespace FKBasicEventSubject{
     const QString login=QStringLiteral("lgn"); //guest autentification request
     const QString createRoom=QStringLiteral("cro"); //create room

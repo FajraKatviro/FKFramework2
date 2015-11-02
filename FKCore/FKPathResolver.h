@@ -5,6 +5,8 @@
 
 #include "fkcore_global.h"
 
+//Used to determine different application used paths
+
 namespace FKPathResolver{
     const QString downloadFolder("download");
     const QString backupFolder("backup");

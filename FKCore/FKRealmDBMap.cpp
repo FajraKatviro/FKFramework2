@@ -2,6 +2,11 @@
 
 #include "FKDataBase.h"
 
+/*!
+\class FKRealmDBMap
+\brief Provides path-map for easy realm database access
+*/
+
 FKDBIndex FKRealmDBMap::serversIndex()const{
     return _servers.path();
 }

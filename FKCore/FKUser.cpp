@@ -1,5 +1,10 @@
 #include "FKUser.h"
 
+/*!
+\class FKUser
+\brief Basic object class for user object definer for each user
+*/
+
 //FK_NO_SERVANT(FKUser)
 
 //FK_EVENTS(FKUser){

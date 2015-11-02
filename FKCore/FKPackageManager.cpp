@@ -4,6 +4,11 @@
 
 #include <QSharedPointer>
 
+/*!
+\class FKPackageManager
+\brief Incapsulates set of FKPackages
+*/
+
 FKPackageManager::FKPackageManager(QObject* parent):QObject(parent),_packagesInitialized(false){
     FK_CBEGIN
     FK_CEND

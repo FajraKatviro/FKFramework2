@@ -3,6 +3,8 @@
 
 #include <QString>
 
+//Identifiers used by FKAusviceData to access values
+
 namespace FKAusviceIdentifiers{
     const QString infrastructureType=QStringLiteral("it");
     const QString client=QStringLiteral("cl");

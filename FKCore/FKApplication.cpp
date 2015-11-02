@@ -14,7 +14,7 @@
 
 /*!
 \class FKApplication
-\brief This is the root component of application that connect core and interface
+\brief This is the root component of application that connect core, room and interface
 */
 
 /*!

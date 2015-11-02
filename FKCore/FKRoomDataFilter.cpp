@@ -2,6 +2,11 @@
 
 #include <QVariant>
 
+/*!
+\class FKRoomDataFilter
+\brief Used to separate requested rooms by room data
+*/
+
 const FKRoomDataFilter::Identifiers FKRoomDataFilter::identifiers;
 
 FKRoomDataFilter::FKRoomDataFilter(const QVariant& filterData){

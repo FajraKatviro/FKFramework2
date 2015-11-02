@@ -1,6 +1,8 @@
 #ifndef FKROOMSETTINGS_H
 #define FKROOMSETTINGS_H
 
+//Identifiers used to access realm-sync room data
+
 namespace FKRoomSettings{
     const qint32 isStarted=1;
     const qint32 isCustom=2;

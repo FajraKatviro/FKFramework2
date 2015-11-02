@@ -4,6 +4,12 @@
 
 //#include "FKLogger.h"
 
+/*!
+\class FKInstructionObject
+\brief FKRoomEngine use this data type as command request and result report
+*/
+
+
 FKInstructionObject::FKInstructionObject(){
 
 }

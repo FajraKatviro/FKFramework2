@@ -4,6 +4,11 @@
 #include <QVariant>
 #include <QMap>
 
+/*!
+\class FKAusviceData
+\brief This class incapsulates login data for any guest connectiond
+*/
+
 FKAusviceData::FKAusviceData():_valid(false){
     _error=QString(QObject::tr("Empty ausvice data"));
 }

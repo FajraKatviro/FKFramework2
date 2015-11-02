@@ -16,6 +16,26 @@
 
 #include "FKLogger.h"
 
+/*!
+\class FKSimpleCore
+\brief Component provides basic infrastructures common management
+*/
+
+/*!
+\class FKRealmComponent
+\brief Provides threaded FKRealm access
+*/
+
+/*!
+\class FKServerComponent
+\brief Provides threaded FKServerInfrastructure accesss
+*/
+
+/*!
+\class FKClientComponent
+\brief Provides threaded FKClientInfrastructure accesss
+*/
+
 FKRealmComponent::FKRealmComponent(QObject* parent):FKThreadedComponent(parent){
     FK_CBEGIN
     FK_CEND

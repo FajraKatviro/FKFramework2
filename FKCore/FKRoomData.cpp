@@ -7,6 +7,16 @@
 
 #include "FKRoomSettings.h"
 
+/*!
+\class FKRoomData
+\brief Used to store realm-sync room data
+*/
+
+/*!
+\class FKRoomRequestData
+\brief Used to send room creation requests from client to realm
+*/
+
 FKRoomData::FKRoomData(const qint32 server,const QString& newRoomType,const QString& ownerId,const QDateTime& roomCreationTime,const bool isCustom){
     _values.insert(FKRoomSettings::server,server);
     _values.insert(FKRoomSettings::roomType,newRoomType);

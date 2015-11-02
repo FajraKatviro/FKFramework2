@@ -6,6 +6,11 @@
 #include "FKLogger.h"
 
 /*!
+\class FKLocalConnector
+\brief This implementation of connector provides internal application data transfer
+*/
+
+/*!
  * \brief Creates connector instance
  */
 

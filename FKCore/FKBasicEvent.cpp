@@ -4,7 +4,7 @@
 
 /*!
 \class FKBasicEvent
-\brief Class extends FKMessage by \i value data. This objects consumed by object managers themselves
+\brief Class extends FKMessage by \i value data. This objects contains commands for infrastructires and consumed by connection managers
 */
 
 /*!

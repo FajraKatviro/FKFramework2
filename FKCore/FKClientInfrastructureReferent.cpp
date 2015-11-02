@@ -7,62 +7,10 @@
 
 #include "FKLogger.h"
 
-//FKUserInfrastructureSlot::FKUserInfrastructureSlot(FKClientInfrastructureReferent* alias,const qint32 userObjectId,const QString& invitePassword):
-//        QObject(),_id(userObjectId),_password(invitePassword),_connection(0),_client(alias),_active(false){
-//    FK_CBEGIN
-//    FK_CEND
-//}
-
-//FKUserInfrastructureSlot::~FKUserInfrastructureSlot(){
-//    FK_DBEGIN
-//    FK_DEND
-//}
-
-//QString FKUserInfrastructureSlot::password() const{
-//    return _password;
-//}
-
-//bool FKUserInfrastructureSlot::isActive() const{
-//    return _active;
-//}
-
-//void FKUserInfrastructureSlot::setActive(const bool t){
-//    _active=t;
-//}
-
-//void FKUserInfrastructureSlot::dropUser(){
-//    if(_connection){
-//        _connection->dropConnection();
-//        _connection->deleteLater();
-//        _connection=0;
-//        _active=false;
-//    }
-//}
-
-//void FKUserInfrastructureSlot::setUserConnector(FKConnector* connector){
-//    _connection=new FKServerConnectionManagerU(this,connector,this);
-//}
-
-//void FKUserInfrastructureSlot::sendMessage(const QString msg){
-//    _connection->sendMessage(msg);
-//}
-
-//void FKUserInfrastructureSlot::sendEvent(FKEventObject* event){
-//    _connection->sendEvent(event);
-//}
-
-//void FKUserInfrastructureSlot::sendData(const QByteArray& data){
-//    _connection->sendData(data);
-//}
-
-//void FKUserInfrastructureSlot::incomeAction(FKEventObject* action){
-//    if(_client->isActive()){
-//        emit gotAction(action);
-//    }else{
-//        action->deleteLater();
-//    }
-//}
-
+/*!
+\class FKClientInfrastructureReferent
+\brief Class incapsulates server-side client connection manager and set of users from that client to manage event delivery
+*/
 
 FKClientInfrastructureReferent::FKClientInfrastructureReferent(const QString& clientId, const QString& password):
         _id(clientId),_password(password){

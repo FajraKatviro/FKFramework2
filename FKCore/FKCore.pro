@@ -44,16 +44,13 @@ SOURCES += \
     FKServerInfrastructure.cpp \
     FKClientInfrastructureReferent.cpp \
     FKServerConnectionManager.cpp \
-    FKUsersStructure.cpp \
     FKUser.cpp \
     FKObjectPool.cpp \
     FKCommandResolver.cpp \
-    FKUserInfrastructure.cpp \
     FKUpdateData.cpp \
     FKUpdateChannel.cpp \
     FKVersionList.cpp \
     FKPathResolver.cpp \
-    FKRoomInfrastructure.cpp \
     FKRoomEngine.cpp \
     FKRoomContext.cpp \
     FKThreadedComponent.cpp
@@ -101,18 +98,15 @@ HEADERS += \
     FKServerInfrastructure.h \
     FKClientInfrastructureReferent.h \
     FKServerConnectionManager.h \
-    FKUsersStructure.h \
     FKUser.h \
     FKObjectPool.h \
     FKService.h \
     FKCommandResolver.h \
-    FKUserInfrastructure.h \
     FKUpdateData.h \
     FKUpdateChannel.h \
     FKUpdateChannelStatus.h \
     FKVersionList.h \
     FKPathResolver.h \
-    FKRoomInfrastructure.h \
     FKRoomEngine.h \
     FKRoomContext.h \
     FKThreadedComponent.h \

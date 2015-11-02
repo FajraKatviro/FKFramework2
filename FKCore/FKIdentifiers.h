@@ -1,6 +1,8 @@
 #ifndef FKIDENTIFIERS_H
 #define FKIDENTIFIERS_H
 
+//Identifiers used for default object events
+
 namespace FKIdentifiers{
     const qint32 initObject=-1;
     const qint32 deinitObject=-2;

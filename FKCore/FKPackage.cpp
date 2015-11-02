@@ -6,6 +6,11 @@
 #include <QSharedPointer>
 #include <QFile>
 
+/*!
+\class FKPackageObject
+\brief Provides resource data access
+*/
+
 //these are bit-flags
 const qint8 FKPackageObject::Resource::cacheEnabled=1;
 const qint8 FKPackageObject::Resource::cached=2;

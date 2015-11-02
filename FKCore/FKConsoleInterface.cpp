@@ -9,7 +9,7 @@
 
 /*!
 \class FKConsoleInterface
-\brief Default userinterface for console applications. Class provides accesss to common features of FK-applications, such as realm or server driving, creating profiles or content updating and all other stuff, exept of FKMultimedia module based features.
+\brief Default userinterface for console applications. Class provides accesss to common features of FK-applications, such as realm or server driving, creating profiles or content updating and all other stuff.
 */
 
 /*!

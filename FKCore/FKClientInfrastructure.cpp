@@ -14,6 +14,12 @@
 #include "FKVersionList.h"
 
 
+/*!
+\class FKClientInfrastructure
+\brief This is the client-side infrastructure that manage client-side data
+*/
+
+
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
         FKInfrastructure(parent),_logged(false),_realmConnection(0),_serverConnection(0),_customServerId(-1){
     FK_CBEGIN

@@ -5,6 +5,11 @@
 #include <QVariant>
 #include <QMap>
 
+/*!
+\class FKRoomInviteData
+\brief Used to send invite data from realm to server and client
+*/
+
 const FKRoomInviteData::Identifiers FKRoomInviteData::identifiers;
 
 FKRoomInviteData::FKRoomInviteData():_port(-1),_isValid(false){}

@@ -7,6 +7,11 @@
 
 #include "FKLogger.h"
 
+/*!
+\class FKRoomModule
+\brief Class incapsulates loading room binary and it's resources
+*/
+
 QMutex FKRoomModule::listMutex;
 QMap<QString,qint32> FKRoomModule::loadedModules;
 

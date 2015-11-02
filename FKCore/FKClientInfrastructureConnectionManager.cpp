@@ -8,6 +8,16 @@
 #include "FKLogger.h"
 #include "FKBasicEventSubjects.h"
 
+/*!
+\class FKClientInfrastructureConnectionManager
+\brief Connection manager for client-side guest connections
+*/
+
+/*!
+\class FKClientInfrastructureConnectionManagerS
+\brief Connection manager for client-side server connections
+*/
+
 FKClientInfrastructureConnectionManager::FKClientInfrastructureConnectionManager(FKClientInfrastructure* infr, FKConnector* connector, QObject* parent)
         :FKConnectionManager(connector,parent),_infr(infr){
     FK_CBEGIN

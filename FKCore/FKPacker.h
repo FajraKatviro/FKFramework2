@@ -3,6 +3,8 @@
 
 #include <QString>
 
+//Used to pack system objects to byte array for transferring via connectors
+
 class QByteArray;
 class FKSystemObject;
 

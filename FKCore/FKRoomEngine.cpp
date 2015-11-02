@@ -11,6 +11,11 @@
 #include "FKInstructionSubjects.h"
 #include "FKLogger.h"
 
+/*!
+\class FKRoomEngine
+\brief Component incapsulates room contexts management
+*/
+
 FKRoomEngine::FKRoomEngine(QObject *parent) : QObject(parent){
     FK_CBEGIN
     _contextComponent=new QQmlComponent(qmlEngine(this),this);

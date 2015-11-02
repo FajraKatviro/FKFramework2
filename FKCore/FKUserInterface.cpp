@@ -6,7 +6,7 @@
 
 /*!
 \class FKUserInterface
-\brief Object represents abstract user interface that pass user commands to specified core and show core's response
+\brief Object represents basic user interface that pass user commands to specified core and show core's response
 */
 
 /*!

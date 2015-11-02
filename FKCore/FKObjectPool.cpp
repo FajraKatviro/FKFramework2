@@ -2,6 +2,11 @@
 
 #include "FKObject.h"
 
+/*!
+\class FKObjectPool
+\brief Class allow re-use deleted FKObjects. Probably, deprecated?
+*/
+
 FKObjectPool::FKObjectPool(const qint32 size):_poolSize(size){
 
 }

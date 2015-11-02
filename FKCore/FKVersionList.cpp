@@ -7,6 +7,11 @@
 #include <QPair>
 #include <QDataStream>
 
+/*!
+\class FKVersionList
+\brief Data type incapsulate multiple files versions, provided by room module
+*/
+
 bool FKVersionString::operator>(const FKVersionString& other) const{
     QList<qint32> mLst(numbers()), oLst(other.numbers());
     for(qint32 i=0;i<4;++i){

@@ -11,7 +11,7 @@
 
 /*!
 \class FKConnectionManager
-\brief Class encapsulates income message handle for single connections
+\brief Class encapsulates income/outcome message handle for single connection
 */
 
 /*!

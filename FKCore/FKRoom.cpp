@@ -6,6 +6,12 @@
 #include "FKUser.h"
 #include "FKRoomInviteData.h"
 
+/*!
+\class FKRoom
+\brief Basic class for any room implementation
+Provides realm-sync room data and interface for client adding
+*/
+
 struct FKRoom::Servant{
     QList<QObject*> users;
 };

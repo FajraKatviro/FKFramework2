@@ -5,6 +5,12 @@
 #include <QFile>
 #include <QDataStream>
 
+/*!
+\class FKFSDB
+\brief Primitive FKDataBase implementation. Use file system for tree structure and data storage.
+*/
+
+
 FKFSDB::FKFSDB(QObject *parent):FKDataBase(parent){
     FK_CBEGIN
     FK_CEND

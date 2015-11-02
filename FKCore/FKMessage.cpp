@@ -4,7 +4,7 @@
 
 /*!
 \class FKMessage
-\brief Class provides simple message container
+\brief Class provides simple message container to deliver into another infrastructure
 */
 
 /*!
