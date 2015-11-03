@@ -2,19 +2,16 @@
 #define FKSERVERINFRASTRUCTURE_H
 
 #include "FKInfrastructure.h"
+#include "FKInstructionObject.h"
 
 #include <QSet>
 #include <QVariant>
-
-#include "FKIDGenerator.h"
 
 class FKConnector;
 class FKConnectionManager;
 class FKClientInfrastructureReferent;
 class FKServerConnectionManager;
 class FKEventObject;
-class FKRoom;
-class FKRoomModule;
 class FKRoomData;
 class FKRoomInviteData;
 
@@ -59,36 +56,33 @@ public slots:
     bool isLogged()const;
     bool isConnectedToRealm()const;
     qint32 serverId()const;
+
+    void dispatchEvent(FKEventObject* ev);
+    void handleRoomInstruction(FKInstructionObject instruction);
 signals:
     void connectedToRealm();
     void disconnectedFromRealm();
     void loggedIn();
+
+    void roomInstruction(FKInstructionObject instruction);
 private slots:
     void realmConnectorStatusChanged();
-    void roomDataChanged(const qint32 propName, const QVariant value);
-    //void clientInviteResolved(const FKRoomInviteData data,const QList<qint32> userObjects);
-    //void roomStarted();
-    void roomStopped();
-    void dispatchEvent(FKEventObject* ev);
 private:
+    void roomDataChanged(const qint32 propName, const QVariant value);
     bool checkRealm();
     bool hasRoom()const;
-    bool createRoom(const FKRoomData& roomData);
+    qint32 roomContextId()const;
     bool checkInviteData(const FKRoomInviteData& data);
     void syncClient(FKClientInfrastructureReferent* client);
     void dropClient(const QString& clientName);
     void notifyRealmClientDropped(const QString& clientName);
-    virtual FKDataBase* createRoomDatabase();
-    bool _logged;
-    FKConnectionManager* _realmConnection;
-    FKRoomModule* _roomModule;
-    FKRoom* _room;
+    bool _logged=nullptr;
+    bool _roomStarted=false;
+    FKConnectionManager* _realmConnection=nullptr;
     QSet<FKServerConnectionManager*> _guests;
     QMap<QString,FKClientInfrastructureReferent*> _clients; //this for chat message to client
     QMap<QString,qint32> _users; //this for chat message to user
     QMap<qint32,FKClientInfrastructureReferent*> _referents; //this for event dispatch
-    FKIDGenerator _idgenerator;
-    qint32 _id;
     qint32 _realmPort=-1;
     qint32 _clientsPort=-1;
     QString _realmIP;

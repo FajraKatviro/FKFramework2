@@ -51,8 +51,6 @@ private:
     void deleteObjectInstruction(const FKInstructionObject& instruction);
     void addClientInstruction(const FKInstructionObject& instruction);
     void removeClientInstruction(const FKInstructionObject& instruction);
-    void setRoomInstruction(const FKInstructionObject& instruction);
-    void setUserInstruction(const FKInstructionObject& instruction);
 
     FKVersionList loadDefaultModule();
     FKVersionList loadModule(const QString moduleName);

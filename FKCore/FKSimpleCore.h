@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QVariant>
 
+#include "FKInstructionObject.h"
 #include "FKThreadedComponent.h"
 
 #include "fkcore_global.h"
@@ -82,6 +83,8 @@ signals:
     void disconnectedFromRealm();
     void waitingForRealmAnswerChanged();
     void loggedIn();
+
+    void roomInstruction(FKInstructionObject instruction);
 private:
     bool waitingForRealmAnswer();
 };

@@ -12,8 +12,6 @@ namespace FKInstructionSubject{
     const qint32 deleteObject       = 6;
     const qint32 addClient          = 7;
     const qint32 removeClient       = 8;
-    const qint32 setRoomObject      = 9;
-    const qint32 setUserObject      = 10;
 }
 
 #endif // FKINSTRUCTIONSUBJECTS_H

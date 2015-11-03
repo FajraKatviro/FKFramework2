@@ -19,7 +19,6 @@ SOURCES += \
     FKObject.cpp \
     FKFSDB.cpp \
     FKConsoleInterface.cpp \
-    \ #FKLocalCore.cpp \
     FKConsoleReader.cpp \
     FKPacker.cpp \
     FKConnector.cpp \
@@ -39,7 +38,6 @@ SOURCES += \
     FKPackage.cpp \
     FKPackageManager.cpp \
     FKRoomInviteData.cpp \
-    FKRoom.cpp \
     FKServerInfrastructure.cpp \
     FKClientInfrastructureReferent.cpp \
     FKServerConnectionManager.cpp \
@@ -70,7 +68,6 @@ HEADERS += \
     FKObject.h \
     FKFSDB.h \
     FKConsoleInterface.h \
-    \ #FKLocalCore.h \
     FKConsoleReader.h \
     FKPacker.h \
     FKConnector.h \
@@ -92,7 +89,6 @@ HEADERS += \
     FKPackageManager.h \
     FKRoomComponents.h \
     FKRoomInviteData.h \
-    FKRoom.h \
     FKServerInfrastructure.h \
     FKClientInfrastructureReferent.h \
     FKServerConnectionManager.h \

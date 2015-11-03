@@ -260,6 +260,7 @@ void FKServerComponent::startComponent(){
         connect(server,SIGNAL(disconnectedFromRealm()),SIGNAL(disconnectedFromRealm()));
         connect(server,SIGNAL(loggedIn()),SIGNAL(loggedIn()));
         connect(server,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+        connect(server,SIGNAL(roomInstruction(FKInstructionObject)),SIGNAL(roomInstruction(FKInstructionObject)));
         QString dbPath(FKPathResolver::serverDatabasePath());
         QDir(dbPath).mkpath(".");
         FKDataBase* db=new FKFSDB(server);

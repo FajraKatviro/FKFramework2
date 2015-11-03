@@ -6,13 +6,10 @@
 #include "FKAusviceData.h"
 #include "FKRoomData.h"
 #include "FKRoomInviteData.h"
-#include "FKRoomData.h"
-#include "FKFSDB.h"
-#include "FKRoomModule.h"
-#include "FKRoom.h"
 #include "FKConnector.h"
 
 #include "FKBasicEventSubjects.h"
+#include "FKInstructionSubjects.h"
 #include "FKLogger.h"
 
 /*!
@@ -21,7 +18,7 @@
 */
 
 FKServerInfrastructure::FKServerInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_roomModule(0),_room(0),_idgenerator(1),_id(-1){
+        FKInfrastructure(parent){
     FK_CBEGIN
     FK_CEND
 }
@@ -41,21 +38,18 @@ bool FKServerInfrastructure::isConnectedToRealm()const{
 
 void FKServerInfrastructure::dropInfrastructure(){
     for(auto i=_guests.begin();i!=_guests.end();++i){
-//        i.value()->dropUser();
-//        i.value()->deleteLater();
-        todo;
+        i.value()->deleteLater();
     }
     _guests.clear();
-    for(auto i=_clients.begin();i!=_clients.end();++i){
-//        i.value()->dropClient();
-//        i.value()->deleteLater();
+    foreach(auto client,_clients.keys()){
+        dropClient(client);
     }
-    _clients.clear();
     _realmConnection->dropConnection();
     _realmConnection->deleteLater();
     _realmConnection=0;
     _logged=false;
     cancelAnswer(FKInfrastructureType::Realm);
+    _registeredRoomTypes.clear();
 }
 
 void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString password){
@@ -169,16 +163,14 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
         if(!answer){
             msg=QString(tr("Invalid create room request recieved"));
         }else{
-            answer=createRoom(roomData);
-            if(answer){
-                msg=QString(tr("Failed create room of type %1")).arg(roomData.roomType());
-            }else{
-                msg=QString(tr("Created room of type %1")).arg(roomData.roomType());
-            }
+            FKInstructionObject loadInstruction(FKInstructionSubject::loadModule,roomData.roomType());
+            FKInstructionObject createInstruction(FKInstructionSubject::createContext,roomData);
+            emit roomInstruction(loadInstruction);
+            emit roomInstruction(createInstruction);
         }
     }
-    emit messageRequested(msg);
     if(!answer){
+        emit messageRequested(msg);
         FKBasicEvent ev(FKBasicEventSubject::stopRoom);
         _realmConnection->sendBasicEvent(&ev);
     }
@@ -398,6 +390,14 @@ void FKServerInfrastructure::dispatchEvent(FKEventObject* ev){
     ev->deleteLater();
 }
 
+void FKServerInfrastructure::handleRoomInstruction(FKInstructionObject instruction){
+    if(instruction.subject()==FKInstructionSubject::loadModule){
+        todo;
+    }else if(instruction.subject()==FKInstructionSubject::createContext){
+        todo;
+    }
+}
+
 bool FKServerInfrastructure::checkRealm(){
     if(!isConnectedToRealm()){
         emit messageRequested(QString(tr("Unable login: not connected to realm")));
@@ -414,38 +414,16 @@ bool FKServerInfrastructure::hasRoom() const{
     return _room;
 }
 
-bool FKServerInfrastructure::createRoom(const FKRoomData& roomData){
-    bool answer=false;
-    if(!_roomModule){
-        _roomModule=new FKRoomModule(this,roomData.roomType());
-        if(_roomModule->load()){
-            FKObject* room=_om->genObject(_roomModule->roomClass());
-            _room=qobject_cast<FKRoom*>(room);
-            if(!_room){
-                FK_MLOGV("Invalid room module",roomData.roomType())
-                if(room)_om->deleteObject(room);
-                _roomModule->deleteLater();
-                _roomModule=nullptr;
-            }else{
-                //_om->setRoomModule(_roomModule);
-                connect(_room,SIGNAL(roomDataChanged(qint32,QVariant)),SLOT(roomDataChanged(qint32,QVariant)));
-                connect(_room,SIGNAL(clientInviteResolved(FKRoomInviteData,QList<qint32>)),SLOT(clientInviteResolved(FKRoomInviteData,QList<qint32>)));
-                _room->setup(roomData);
-                FK_MLOG("room created on server")
-                answer=true;
-            }
-        }else{
-            FK_MLOGV("Unable load room module",roomData.roomType())
-            _roomModule->deleteLater();
-            _roomModule=nullptr;
-        }
-    }else{
-        FK_MLOG("room module is not empty")
-    }
-    return answer;
+qint32 FKServerInfrastructure::roomContextId() const{
+    return -1;
+}
+
+bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
+    todo; //???
 }
 
 void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){
+    todo; //refactoring
     if(client->isActive()){
         FKBasicEvent startSync(FKBasicEventSubject::login,QVariant::fromValue(client->users()));
         client->sendBasicEvent(&startSync);
@@ -456,8 +434,15 @@ void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){
 }
 
 void FKServerInfrastructure::dropClient(const QString& clientName){
-    todo; //remove from maps
-    notifyRealmClientDropped(clientName);
+    FKClientInfrastructureReferent* r=_clients.value(clientName,nullptr);
+    if(r){
+        r->dropConnection();
+        _clients.remove(clientName);
+        _users.remove(clientName);
+        foreach(auto i,r->users())_referents.remove(i);
+        r->deleteLater();
+        notifyRealmClientDropped(clientName);
+    }
 }
 
 void FKServerInfrastructure::notifyRealmClientDropped(const QString& clientName){

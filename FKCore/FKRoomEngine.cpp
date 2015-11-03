@@ -180,12 +180,6 @@ void FKRoomEngine::processInstruction(FKInstructionObject instruction){
     }else if(subject==FKInstructionSubject::removeClient  ){
         removeClientInstruction(instruction);
 
-    }else if(subject==FKInstructionSubject::setRoomObject ){
-        setRoomInstruction(instruction);
-
-    }else if(subject==FKInstructionSubject::setUserObject ){
-        setUserInstruction(instruction);
-
     }else{
         QString msg=QString(tr("Warning! Invalid instruction provided of type %1")).arg(QString::number(instruction.subject()));
         emit messageRequested(msg);

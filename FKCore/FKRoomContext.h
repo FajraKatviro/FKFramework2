@@ -6,7 +6,6 @@
 
 #include "FKIDGenerator.h"
 
-class FKRoom;
 class FKUser;
 class FKObject;
 class FKRoomInviteData;
@@ -16,7 +15,6 @@ class FKDataBase;
 
 class FKRoomContext : public QObject{
     Q_OBJECT
-    Q_PROPERTY(FKObject* roomObject READ roomObject NOTIFY roomObjectChanged)
     Q_PROPERTY(FKObject* userObject READ userObject NOTIFY userObjectChanged)
     Q_PROPERTY(QObject*  rootEntity READ rootEntity NOTIFY rootEntityChanged)
 public:
@@ -24,13 +22,10 @@ public:
     ~FKRoomContext();
 
     //QML interaction
-    FKObject* roomObject()const;
     FKObject* userObject()const;
     QObject*  rootEntity()const;
 
     //FKRoomEngine interaction
-    void setRoomObject(const qint32 objectId);
-    void setUserObject(const qint32 objectId);
     void setRootEntity(QObject* entity);
 
     virtual bool addClient(const FKRoomInviteData& invite);
@@ -55,7 +50,6 @@ public:
     void unshareObject(FKObject* obj,const QList<qint32>& recievers);
 signals:
     //QML notification
-    void roomObjectChanged();
     void userObjectChanged();
     void rootEntityChanged();
 
@@ -70,7 +64,6 @@ private:
     QHash<qint32,FKObject*> _objects;
     FKDataBase* _db=nullptr;
     QObject* _rootEntity=nullptr;
-    FKRoom* _room=nullptr;
     FKUser* _user=nullptr;
 };
 
