@@ -372,7 +372,7 @@ void FKRealm::removeRoomType(QString roomType){
     }
 }
 
-void FKRealm::createRoomRealmRequest(const QString& roomName, const QString& roomType){
+void FKRealm::createRoomRequest(const QString roomName, const QString roomType){
     QString error;
     bool check=true;
     if(roomType.isEmpty()){

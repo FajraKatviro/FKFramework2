@@ -87,7 +87,7 @@ UserInterface{
     onRegisterServerRoomTypeRequested: core.server.registerRoomType(roomType)
     onRemoveServerRoomTypeRequested: core.server.removeRoomType(roomType)
     //onCreateRoomRequested: core.createRoomRequest(roomName,roomType,users)
-    //onCreateRoomRequestedRealm: core.createRoomRequestRealm(roomName,roomType)
+    onCreateRoomRequestedRealm: core.realm.createRoomRequest(roomName,roomType)
     //onJoinRoomRequested: core.joinRoomRequest(roomName,users)
 
     welcomeString: qsTr("Welcome to FKApplication!")

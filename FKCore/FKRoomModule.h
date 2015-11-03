@@ -10,6 +10,7 @@ class FKRoomLoader;
 class FKPackageObject;
 typedef QSharedPointer<FKPackageObject> FKPackage;
 class FKPackageManager;
+class FKRoomContext;
 
 class FKRoomModule:public QObject{
     Q_OBJECT
@@ -21,6 +22,8 @@ public:
     FKVersionList version()const;
     QString roomClass()const;
     QString contextManager()const;
+    QString contextComponent()const;
+    FKRoomContext* createContextObject()const;
 
     FKPackage getPackage(const QString& package);
     QVariant resourceData(const QString& package, const QString& resource);
