@@ -21,7 +21,7 @@
 
 
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
-        FKInfrastructure(parent),_logged(false),_realmConnection(0),_serverConnection(0),_customServerId(-1){
+        FKInfrastructure(parent){
     FK_CBEGIN
     FK_CEND
 }
@@ -395,13 +395,22 @@ void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
     _customServerId=serverId;
 }
 
+void FKClientInfrastructure::setRealmConnectionSettings(const QString ip, const qint32 port){
+    _realmIP=ip;
+    _realmPort=port;
+}
+
+QString FKClientInfrastructure::realmIP() const{
+    return _realmIP;
+}
+
+qint32 FKClientInfrastructure::realmPort() const{
+    return _realmPort;
+}
+
 //QString FKClientInfrastructure::roomVisualizer() const{
 //    return _roomModule ? _roomModule->visualizer() : QString();
 //}
-
-FKRoomInfrastructure* FKClientInfrastructure::roomInfrastructure() const{
-    return _roomInfrastructure;
-}
 
 //qint32 FKClientInfrastructure::realmPort() const{
 //    return 0;

@@ -173,7 +173,7 @@ public:
     void addClass(){
         const QString className=T::staticMetaObject.className();
         if(classes.contains(className)){
-            qWarning(QString("dublicate class registration attempt %1").arg(className).toLatin1());
+            qWarning("dublicate class registration attempt %s",className.toLatin1().constData());
             return;
         }
         FKObjectInfoBase* newClass=new FKObjectInfo<T>();
@@ -184,7 +184,7 @@ public:
         if(className!=QString("FKObject")){
             const QString parentClass=T::staticMetaObject.superClass()->className();
             if(!classes.contains(parentClass)){
-                qWarning(QString("no parent class registered for %1").arg(className).toLatin1());
+                qWarning("no parent class registered for %s",className.toLatin1().constData());
             }
             FKObjectInfoBase* parent=classes.value(parentClass,0);
             for(auto i=parent->_actions.constBegin();i!=parent->_actions.constEnd();++i){
@@ -223,7 +223,7 @@ public:
         const QString className=T::staticMetaObject.className();
         auto info=classes.find(className);
         if(info==classes.end()){
-            qWarning(QString("unregistered class registration attempt %1").arg(className).toLatin1());
+            qWarning("unregistered class unregistration attempt %s",className.toLatin1().constData());
             return;
         }
         delete info.value();

@@ -101,6 +101,10 @@ public:
 //    virtual void startComponent()override;
 //    bool waitingForRealmAnswer()const;
 //    bool waitingForServerAnswer()const;
+
+    void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);
+    void realmConnection(FKConnector* connector);
+
 public slots:
 //    void ausvise(const QString id, const QString password);
 //    void createUserRecord(const QString& name);

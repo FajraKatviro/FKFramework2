@@ -377,6 +377,19 @@ FKClientComponent::~FKClientComponent(){
     FK_DBEGIN
     FK_DEND
 }
+
+void FKClientComponent::setRealmConnectionSettings(const QString realmIP, const qint32 realmPort){
+    if(!callMethod("setRealmConnectionSettings",realmIP,"QString",realmPort,"qint32")){
+        emit messageRequested(QString(tr("Unable set server realm connection settings")));
+    }
+}
+
+void FKClientComponent::realmConnection(FKConnector* connector){
+    connector->moveToThread(component()->thread());
+    if(!FK_THREAD_CALL_ARG(realmConnection,FKConnector*,connector)){
+        emit messageRequested(QString(tr("Unable set realm connection for client")));
+    }
+}
 FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");
@@ -443,7 +456,7 @@ bool FKSimpleCore::startClientInfrastructure(const int realmPort, const QString&
             FKLocalConnector* clientSideConnector=new FKLocalConnector;
             FKLocalConnector* realmSideConnector=new FKLocalConnector;
             realmSideConnector->join(clientSideConnector);
-            _clientComponent->realmConnection(serverSideConnector); //this must be first
+            _clientComponent->realmConnection(clientSideConnector); //this must be first
             _realmComponent->guestConnection(realmSideConnector); //this must be seconds
             return true;
         }else{

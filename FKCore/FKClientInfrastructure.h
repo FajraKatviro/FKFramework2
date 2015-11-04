@@ -7,10 +7,10 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+#include "FKVersionList.h"
+
 class FKConnector;
 class FKConnectionManager;
-class FKRoomInfrastructure;
-class FKRoomModule;
 class FKUpdateChannel;
 
 class FKClientInfrastructure : public FKInfrastructure{
@@ -58,8 +58,13 @@ public:
 //    qint32 realmPort()const;
 //    QString realmIP()const;
     QString roomVisualizer()const;
-    FKRoomInfrastructure* roomInfrastructure()const;
 public slots:
+
+
+    void setRealmConnectionSettings(const QString ip,const qint32 port);
+    QString realmIP()const;
+    qint32 realmPort()const;
+
     void realmConnection(FKConnector* connector);
     void serverConnection(FKConnector* connector);
 signals:
@@ -83,17 +88,18 @@ private slots:
 private:
     void requestLoginServer();
     void startUser(const qint32 objectId);
-    bool _logged;
+    bool _logged=false;
     bool _serverLogged=false;
     QString _clientId;
     QString _dynamicPassword;
-    FKConnectionManager* _realmConnection;
-    FKConnectionManager* _serverConnection;
-    FKRoomInfrastructure* _roomInfrastructure=nullptr;
+    FKConnectionManager* _realmConnection=nullptr;
+    FKConnectionManager* _serverConnection=nullptr;
     QStringList _userPool;
     QStringList _roomList;
-    qint32 _customServerId;
-    FKRoomModule* _roomModule=nullptr;
+    qint32 _customServerId=0;
+
+    qint32 _realmPort=-1;
+    QString _realmIP;
 
     struct{
         QList<QSharedPointer<FKUpdateChannel>> channels;

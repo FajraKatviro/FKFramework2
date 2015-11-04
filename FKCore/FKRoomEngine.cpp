@@ -162,7 +162,6 @@ void FKRoomEngine::processEvent(FKEventObject *ev){
 
 void FKRoomEngine::processInstruction(FKInstructionObject instruction){
     qint32 subject=instruction.subject();
-    FK_MLOG("got instruction")
     if(      subject==FKInstructionSubject::loadModule    ){
         loadModuleInstruction(instruction);
 

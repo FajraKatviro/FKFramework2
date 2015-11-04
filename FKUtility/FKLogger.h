@@ -1,4 +1,4 @@
-#ifndef FK_LOGGER //исключим повторные объявления
+#ifndef FK_LOGGER
 #define FK_LOGGER
 
 /*
@@ -41,7 +41,7 @@ FK_DEND
 
 #ifdef FK_DEBUG //если включен режим специальной отладки
 
-#include <QDebug> //подключим нужные модули (возможно, кое-что тут лишнее)
+#include <QDebug> //подключим нужные модули
 #include <QObject>
 #include <QMap>
 #include <QString>
@@ -103,7 +103,8 @@ public:
 #endif
 
 #ifndef FK_NO_TODO
-#define todo qDebug(QString("Non-complete code reached: %1 line, %2").arg(QString::number(__LINE__)).arg(__FILE__).toLatin1())
+//#include <QDebug>
+#define todo qDebug("Non-complete code reached: %d line, %s",__LINE__,__FILE__)
 #endif
 
 #endif
