@@ -189,7 +189,7 @@ void FKRealmConnectionManagerS::processBasicEvent(FKBasicEvent* ev){
     }else if(subject==FKBasicEventSubject::dropClient){
         realm()->clientDisonnectedFromServer(_id,value);
     }else if(subject==FKBasicEventSubject::stopRoom){
-        todo;//realm()->roomStopped(_id,value);
+        realm()->roomStopped(_id,value);
     }else{
         FK_MLOGV("Unexpected basic event subject from server to realm",subject)
         realm()->stopServerConnection(_id);

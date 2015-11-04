@@ -136,10 +136,10 @@ public:
 public slots:
     virtual bool startRealmInfrastructure(const qint32 port=0);
     virtual bool startServerInfrastructure(const qint32 port=0, const qint32 realmPort=0,const QString& realmIP=QString());
-    //virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString())=0;
+    virtual bool startClientInfrastructure(const int realmPort=0,const QString& realmIP=QString());
     virtual bool stopRealmInfrastructure();
     virtual bool stopServerInfrastructure();
-    //virtual bool stopClientInfrastructure()=0;
+    virtual bool stopClientInfrastructure();
     void quitApplication();
     void initComponents();
 signals:

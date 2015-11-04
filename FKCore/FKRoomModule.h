@@ -20,7 +20,6 @@ public:
     bool load();
 
     FKVersionList version()const;
-    QString roomClass()const;
     QString contextManager()const;
     QString contextComponent()const;
     FKRoomContext* createContextObject()const;

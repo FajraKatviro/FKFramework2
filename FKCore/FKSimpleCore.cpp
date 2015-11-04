@@ -434,6 +434,27 @@ bool FKSimpleCore::startServerInfrastructure(const qint32 port, const qint32 rea
     return false;
 }
 
+bool FKSimpleCore::startClientInfrastructure(const int realmPort, const QString& realmIP){
+    if(_realmComponent->isRunning()){
+        if(!_clientComponent->isRunning()){
+            _clientComponent->startComponent();
+            _clientComponent->setRealmConnectionSettings(realmIP,realmPort);
+
+            FKLocalConnector* clientSideConnector=new FKLocalConnector;
+            FKLocalConnector* realmSideConnector=new FKLocalConnector;
+            realmSideConnector->join(clientSideConnector);
+            _clientComponent->realmConnection(serverSideConnector); //this must be first
+            _realmComponent->guestConnection(realmSideConnector); //this must be seconds
+            return true;
+        }else{
+            emit messageRequested(QString(tr("Unable start client: already started")));
+        }
+    }else{
+        emit messageRequested(QString(tr("Unable start local app client: no realm started")));
+    }
+    return false;
+}
+
 bool FKSimpleCore::stopRealmInfrastructure(){
     if(_realmComponent->isRunning()){
         _realmComponent->stopComponent();
@@ -450,6 +471,16 @@ bool FKSimpleCore::stopServerInfrastructure(){
         return true;
     }else{
         emit messageRequested(QString(tr("Unable stop server: not started")));
+    }
+    return false;
+}
+
+bool FKSimpleCore::stopClientInfrastructure(){
+    if(_clientComponent->isRunning()){
+        _clientComponent->stopComponent();
+        return true;
+    }else{
+        emit messageRequested(QString(tr("Unable stop client: not started")));
     }
     return false;
 }

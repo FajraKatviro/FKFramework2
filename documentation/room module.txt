@@ -1,0 +1,5 @@
+Room module consist of binary plugin and content package
+If custom QML type provided, resource file should contain corresponding .qml file
+Binary plugin provides following custom features:
+1.Context manager (ConsoleRoomContextManager default). Function contextManager() returns QML type name.
+2.Context component.

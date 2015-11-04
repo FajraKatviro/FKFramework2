@@ -29,6 +29,10 @@ QObject*FKRoomContext::rootEntity() const{
     return _rootEntity;
 }
 
+void FKRoomContext::initSettings(const FKRoomData& settings){
+    _roomSettings=settings;
+}
+
 void FKRoomContext::setRootEntity(QObject* entity){
     if(_rootEntity!=entity){
         _rootEntity=entity;

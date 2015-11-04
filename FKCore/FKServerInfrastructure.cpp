@@ -11,6 +11,8 @@
 
 #include "FKBasicEventSubjects.h"
 #include "FKInstructionSubjects.h"
+#include "FKRoomSettings.h"
+#include "FKRoomContextFlags.h"
 #include "FKLogger.h"
 
 /*!
@@ -153,17 +155,19 @@ void FKServerInfrastructure::removeRoomTypeRespond(const QVariant& value){
 }
 
 void FKServerInfrastructure::createRoomRequested(const QVariant& data){
-    QString msg;
+    QString msg(tr("Create room request recieved"));
+    emit messageRequested(msg);
     bool answer;
     if(hasRoom()){
         msg=QString(tr("Create room request recieved, but room does exists"));
         answer=false;
     }else{
-        const FKRoomData roomData(data);
+        FKRoomData roomData(data);
         answer=roomData.isValid();
         if(!answer){
             msg=QString(tr("Invalid create room request recieved"));
         }else{
+            roomData.setValue(FKRoomSettings::contextFlags,QVariant::fromValue(FKRoomContextFlag::server));
             FKInstructionObject loadInstruction(FKInstructionSubject::loadModule,roomData.roomType());
             FKInstructionObject createInstruction(roomContextId(),FKInstructionSubject::createContext,roomData.toVariant());
             emit roomInstruction(loadInstruction);
@@ -369,6 +373,7 @@ void FKServerInfrastructure::roomStopped(){
         FK_MLOG("Warning! Unable send room stopped event to realm: server is not logged in")
         return;
     }
+    _roomVersion=FKVersionList();
     FKBasicEvent ev(FKBasicEventSubject::stopRoom);
     _realmConnection->sendBasicEvent(&ev);
 }
@@ -453,6 +458,7 @@ void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){
 }
 
 void FKServerInfrastructure::dropClient(const QString& clientName){
+    todo;
     FKClientInfrastructureReferent* r=_clients.value(clientName,nullptr);
     if(r){
         r->dropConnection();

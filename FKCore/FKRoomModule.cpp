@@ -40,10 +40,6 @@ FKVersionList FKRoomModule::version() const{
     return _room->version();
 }
 
-QString FKRoomModule::roomClass() const{
-    return _room->className();
-}
-
 QString FKRoomModule::contextManager() const{
     todo;
     return "qrc:/RoomContextManager.qml";

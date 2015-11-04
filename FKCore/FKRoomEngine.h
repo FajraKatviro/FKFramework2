@@ -66,7 +66,7 @@ private:
     qint32 _serverContextId=-1;
     QObject* _contextManager=nullptr;
     QQmlComponent* _contextComponent;
-    FKRoomModule* _roomModule;
+    FKRoomModule* _roomModule=nullptr;
 };
 
 #endif // FKROOMENGINE_H

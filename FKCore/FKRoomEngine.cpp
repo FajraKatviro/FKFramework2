@@ -12,6 +12,7 @@
 #include "FKRoomData.h"
 
 #include "FKInstructionSubjects.h"
+#include "FKRoomSettings.h"
 #include "FKLogger.h"
 
 /*!
@@ -87,12 +88,13 @@ void FKRoomEngine::releaseModule(){
 }
 
 FKRoomContext* FKRoomEngine::createContext(const qint32 rootId,const FKRoomData& roomData){
-    qint8 flags=FKRoomContextFlag::server; todo; //get flag type
+    qint8 flags=roomData.value(FKRoomSettings::contextFlags).value<qint8>();
     FKRoomContext* newContext=nullptr;
     if(_roomModule){
         if(!_contexts.contains(rootId)){
             newContext=_roomModule->createContextObject();
             newContext->setParent(this);
+            newContext->initSettings(roomData);
             QObject* contextInterface=_contextComponent->create(qmlContext(this));
             contextInterface->setParent(newContext);
             contextInterface->setProperty("roomContext",QVariant::fromValue(newContext));
@@ -160,7 +162,7 @@ void FKRoomEngine::processEvent(FKEventObject *ev){
 
 void FKRoomEngine::processInstruction(FKInstructionObject instruction){
     qint32 subject=instruction.subject();
-
+    FK_MLOG("got instruction")
     if(      subject==FKInstructionSubject::loadModule    ){
         loadModuleInstruction(instruction);
 

@@ -20,6 +20,7 @@ namespace FKRoomSettings{
     const qint32 enemyNeighbours=14;//allow multiple users from single client act for enemy teams
     const qint32 totalUsers=15;     //info only
     const qint32 totalActors=16;    //info only
+    const qint32 contextFlags=17;
     const qint32 customSettings=1000;
 }
 

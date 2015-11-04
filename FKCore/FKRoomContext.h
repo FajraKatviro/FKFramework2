@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QHash>
 
+#include "FKRoomData.h"
 #include "FKInstructionObject.h"
 #include "FKIDGenerator.h"
 
@@ -27,6 +28,7 @@ public:
     QObject*  rootEntity()const;
 
     //FKRoomEngine interaction
+    virtual void initSettings(const FKRoomData& settings);
     void setRootEntity(QObject* entity);
 
     virtual bool addClient(const FKRoomInviteData& invite);
@@ -69,6 +71,7 @@ private:
     FKDataBase* _db=nullptr;
     QObject* _rootEntity=nullptr;
     FKUser* _user=nullptr;
+    FKRoomData _roomSettings;
 };
 
 #endif // FKROOMCONTEXT_H
