@@ -378,6 +378,30 @@ FKClientComponent::~FKClientComponent(){
     FK_DEND
 }
 
+void FKClientComponent::startComponent(){
+    if(!component()){
+        FKClientInfrastructure* client=static_cast<FKClientInfrastructure*>(componentFactory()->newInstance());
+        connect(client,SIGNAL(waitingForRealmAnswerChanged()),SIGNAL(waitingForRealmAnswerChanged()));
+        connect(client,SIGNAL(waitingForServerAnswerChanged()),SIGNAL(waitingForServerAnswerChanged()));
+        connect(client,SIGNAL(connectedToRealm()),SIGNAL(clientConnectedToRealm()));
+        connect(client,SIGNAL(disconnectedFromRealm()),SIGNAL(clientDisconnectedFromRealm()));
+        connect(client,SIGNAL(loggedIn()),SIGNAL(clientLoggedIn()));
+        connect(client,SIGNAL(connectedToServer()),SIGNAL(clientConnectedToServer()));
+        connect(client,SIGNAL(disconnectedFromServer()),SIGNAL(clientDisconnectedFromServer()));
+        connect(client,SIGNAL(loggedInServer()),SIGNAL(clientLoggedInServer()));
+        connect(client,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
+        connect(client,SIGNAL(roomInstruction(FKInstructionObject)),SIGNAL(roomInstruction(FKInstructionObject)));
+        QString dbPath(FKPathResolver::clientDatabasePath());
+        QDir(dbPath).mkpath(".");
+        FKDataBase* db=new FKFSDB(client);
+        db->setPath(dbPath);
+        client->setDataBase(db);
+        FKThreadedComponent::startComponent(client);
+        emit messageRequested(QString(tr("Started")));
+        emit started();
+    }
+}
+
 void FKClientComponent::setRealmConnectionSettings(const QString realmIP, const qint32 realmPort){
     if(!callMethod("setRealmConnectionSettings",realmIP,"QString",realmPort,"qint32")){
         emit messageRequested(QString(tr("Unable set server realm connection settings")));
@@ -543,24 +567,3 @@ void FKSimpleCore::clientMessage(QString msg){
     msg.prepend(QLatin1String("Client->"));
     emit messageRequested(msg);
 }
-
-
-
-//void FKAbstractCore::setClientInfrastructure(FKClientInfrastructure* infr){
-//    _infr=infr;
-//    connect(infr,SIGNAL(waitingForAnswerChanged(FKInfrastructureType)),SLOT(waitingForAnswerChanged(FKInfrastructureType)));
-//    connect(infr,SIGNAL(connectedToRealm()),SIGNAL(clientConnectedToRealm()));
-//    connect(infr,SIGNAL(disconnectedFromRealm()),SIGNAL(clientDisconnectedFromRealm()));
-//    connect(infr,SIGNAL(loggedIn()),SIGNAL(clientLoggedIn()));
-//    connect(infr,SIGNAL(connectedToServer()),SIGNAL(clientConnectedToServer()));
-//    connect(infr,SIGNAL(disconnectedFromServer()),SIGNAL(clientDisconnectedFromServer()));
-//    connect(infr,SIGNAL(loggedInServer()),SIGNAL(clientLoggedInServer()));
-//    connect(infr,SIGNAL(messageRequested(QString)),SIGNAL(messageRequested(QString)));
-//    //connect(infr,SIGNAL(userPoolChanged()),SIGNAL(userPoolChanged()));
-//    //connect(infr,SIGNAL(activeUsersChanged()),SIGNAL(userListChanged()));
-//    //connect(infr,SIGNAL(customServerRequested(qint32,QString)),SLOT(createCustomServer(qint32,QString)));
-//    connect(infr,SIGNAL(connectToServerRequest(QString,qint32)),SLOT(connectClientToServer(QString,qint32)));
-//    connect(infr,SIGNAL(updateListChanged()),SIGNAL(clientGotUpdateList()));
-//    connect(infr,SIGNAL(roomModuleChanged()),SIGNAL(uiSourceChanged()));
-//    connect(infr,SIGNAL(roomModuleChanged()),SIGNAL(roomChanged()));
-//}

@@ -9,8 +9,7 @@ class FKDataBase;
 enum class FKInfrastructureType:qint8{
     Realm,
     Server,
-    Client,
-    User
+    Client
 };
 Q_DECLARE_METATYPE(FKInfrastructureType)
 

@@ -18,6 +18,7 @@ signals:
     void startRealmRequested();
     void stopRealmRequested();
     void startClientInfrastructureRequested();
+    void stopClientInfrastructureRequested();
     void startServerInfrastructureRequested();
     void stopServerInfrastructureRequested();
     void dropServerRequested(const qint32 serverId);

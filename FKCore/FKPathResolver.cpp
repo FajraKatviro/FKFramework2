@@ -50,3 +50,10 @@ QString FKPathResolver::databasePath(){
             arg(QCoreApplication::applicationDirPath()).
             arg(FKPathResolver::databaseFolder);
 }
+
+QString FKPathResolver::clientDatabasePath(){
+    return QString("%1/../%2/%3").
+            arg(QCoreApplication::applicationDirPath()).
+            arg(FKPathResolver::databaseFolder).
+            arg(FKPathResolver::clientFolder);
+}

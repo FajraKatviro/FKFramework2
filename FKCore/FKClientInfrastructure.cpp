@@ -23,6 +23,7 @@
 FKClientInfrastructure::FKClientInfrastructure(QObject *parent):
         FKInfrastructure(parent){
     FK_CBEGIN
+    connect(this,&FKClientInfrastructure::waitingForAnswerChanged,this,&FKClientInfrastructure::splitWaitingAnswer);
     FK_CEND
 }
 
@@ -395,6 +396,14 @@ void FKClientInfrastructure::setCustomServerId(const qint32 serverId){
     _customServerId=serverId;
 }
 
+bool FKClientInfrastructure::waitingForRealmAnswer() const{
+    return FKInfrastructure::waitingForAnswer(FKInfrastructureType::Realm);
+}
+
+bool FKClientInfrastructure::waitingForServerAnswer() const{
+    return FKInfrastructure::waitingForAnswer(FKInfrastructureType::Server);
+}
+
 void FKClientInfrastructure::setRealmConnectionSettings(const QString ip, const qint32 port){
     _realmIP=ip;
     _realmPort=port;
@@ -460,6 +469,14 @@ void FKClientInfrastructure::serverConnectorStatusChanged(){
         _serverLogged=false;
         emit disconnectedFromServer();
         cancelAnswer(FKInfrastructureType::Server);
+    }
+}
+
+void FKClientInfrastructure::splitWaitingAnswer(FKInfrastructureType t){
+    if(t==FKInfrastructureType::Realm){
+        emit waitingForRealmAnswerChanged();
+    }else if(t==FKInfrastructureType::Server){
+        emit waitingForServerAnswerChanged();
     }
 }
 

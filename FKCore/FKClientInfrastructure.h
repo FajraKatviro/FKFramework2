@@ -59,7 +59,8 @@ public:
 //    QString realmIP()const;
     QString roomVisualizer()const;
 public slots:
-
+    bool waitingForRealmAnswer()const;
+    bool waitingForServerAnswer()const;
 
     void setRealmConnectionSettings(const QString ip,const qint32 port);
     QString realmIP()const;
@@ -82,9 +83,13 @@ signals:
     //void customServerRequested(const qint32 serverId,const QString password);
 
     void roomModuleChanged();
+
+    void waitingForRealmAnswerChanged();
+    void waitingForServerAnswerChanged();
 private slots:
     void connectorStatusChanged();
     void serverConnectorStatusChanged();
+    void splitWaitingAnswer(FKInfrastructureType t);
 private:
     void requestLoginServer();
     void startUser(const qint32 objectId);

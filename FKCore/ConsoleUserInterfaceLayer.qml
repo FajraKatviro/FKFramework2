@@ -74,6 +74,7 @@ UserInterface{
     onStopServerInfrastructureRequested: core.stopServerInfrastructure()
     onDropServerRequested: core.realm.dropServer(serverId)
     onStartClientInfrastructureRequested: core.startClientInfrastructure()
+    onStopClientInfrastructureRequested: core.stopClientInfrastructure()
     //onCreateUserRequested: core.createUserRecord(userName)
     //onDeleteUserRequested: core.deleteUserRecord(userName)
     //onClientUsersRequested: showMessage(core.userList())

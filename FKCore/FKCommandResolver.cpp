@@ -64,6 +64,8 @@ void FKCommandResolver::processInput(QString input){
         showRoomTypes(input);
     }else if(isCommand(input,FKCommands::stopRealm,true)){
         emit stopRealmRequested();
+    }else if(isCommand(input,FKCommands::stopClient,true)){
+        emit stopClientInfrastructureRequested();
     }else if(isCommand(input,FKCommands::stopServer)){
         stopServerInfrastructure(input);
     }else{
@@ -101,6 +103,7 @@ void FKCommandResolver::printHelp(){
                  QString(tr("%1\tshow registered servers for started realm. Use %2 option to show on-line or %3 to show avaliable servers only\n")).arg(FKCommands::showServers.rightJustified(commandWidth)).arg(FKCommandOptions::online).arg(FKCommandOptions::avaliable)+
                  QString(tr("%1\tshow registered clients for started realm\n")).arg(FKCommands::showClients.rightJustified(commandWidth))+
                  QString(tr("%1\tstart client infrastructure\n")).arg(FKCommands::startClient.rightJustified(commandWidth))+
+                 QString(tr("%1\tstop client infrastructure\n")).arg(FKCommands::stopClient.rightJustified(commandWidth))+
                  QString(tr("%1\tstart server infrastructure\n")).arg(FKCommands::startServer.rightJustified(commandWidth))+
                  QString(tr("%1\tstop server infrastructure. Use %2 option to drop connected server from realm side\n")).arg(FKCommands::stopServer.rightJustified(commandWidth)).arg(FKCommandOptions::realm)+
                  QString(tr("%1\tsubmit current client on connected realm\n")).arg(FKCommands::loginClient.rightJustified(commandWidth))+

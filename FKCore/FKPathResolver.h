@@ -13,6 +13,7 @@ namespace FKPathResolver{
     const QString roomsFolder("rooms");
     const QString realmFolder("realm");
     const QString serverFolder("server");
+    const QString clientFolder("client");
     const QString databaseFolder("data");
 
     QString FKCORESHARED_EXPORT roomFilePath(const QString& path, const qint8 platform);
@@ -20,6 +21,7 @@ namespace FKPathResolver{
     QString FKCORESHARED_EXPORT roomFileBackupPath(const QString& path, qint8 platform, const QString& store);
     QString FKCORESHARED_EXPORT realmDatabasePath();
     QString FKCORESHARED_EXPORT serverDatabasePath();
+    QString FKCORESHARED_EXPORT clientDatabasePath();
     QString FKCORESHARED_EXPORT databasePath();
 }
 

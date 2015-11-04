@@ -81,6 +81,7 @@ protected slots:
 signals:
     void messageRequested(const QString msg);
     void started();
+
     void connectedToRealm();
     void disconnectedFromRealm();
     void waitingForRealmAnswerChanged();
@@ -93,14 +94,12 @@ private:
 
 class FKCORESHARED_EXPORT FKClientComponent:public FKThreadedComponent{
     Q_OBJECT
-    //Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
-    //Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
+    Q_PROPERTY(bool waitingForRealmAnswer READ waitingForRealmAnswer NOTIFY waitingForRealmAnswerChanged)
+    Q_PROPERTY(bool waitingForServerAnswer READ waitingForServerAnswer NOTIFY waitingForServerAnswerChanged)
 public:
     FKClientComponent(QObject* parent = nullptr);
     ~FKClientComponent();
-//    virtual void startComponent()override;
-//    bool waitingForRealmAnswer()const;
-//    bool waitingForServerAnswer()const;
+    virtual void startComponent()override;
 
     void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);
     void realmConnection(FKConnector* connector);
@@ -114,6 +113,8 @@ public slots:
 //    QStringList userList()const;
 signals:
     void messageRequested(const QString msg);
+    void started();
+
     void waitingForRealmAnswerChanged();
     void waitingForServerAnswerChanged();
 
@@ -123,7 +124,11 @@ signals:
     void connectedToServer();
     void disconnectedFromServer();
     void loggedInServer();
-    void gotUpdateList();
+
+    void roomInstruction(FKInstructionObject instruction);
+private:
+    bool waitingForRealmAnswer()const;
+    bool waitingForServerAnswer()const;
 };
 
 class FKCORESHARED_EXPORT FKSimpleCore:public QObject{
