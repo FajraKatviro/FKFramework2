@@ -7,6 +7,7 @@
 #include "FKRoomData.h"
 #include "FKRoomInviteData.h"
 #include "FKConnector.h"
+#include "FKEventObject.h"
 
 #include "FKBasicEventSubjects.h"
 #include "FKInstructionSubjects.h"
@@ -38,7 +39,7 @@ bool FKServerInfrastructure::isConnectedToRealm()const{
 
 void FKServerInfrastructure::dropInfrastructure(){
     for(auto i=_guests.begin();i!=_guests.end();++i){
-        i.value()->deleteLater();
+        (*i)->deleteLater();
     }
     _guests.clear();
     foreach(auto client,_clients.keys()){
@@ -66,7 +67,7 @@ void FKServerInfrastructure::requestLoginRealm(const qint32 id, const QString pa
     }
 
     FKBasicEvent ev(FKBasicEventSubject::login,FKAusviceData(id,password).toVariant());
-    _id=id;
+    _serverLoginId=id;
     _realmConnection->sendGuestEvent(&ev);
 }
 
@@ -164,29 +165,28 @@ void FKServerInfrastructure::createRoomRequested(const QVariant& data){
             msg=QString(tr("Invalid create room request recieved"));
         }else{
             FKInstructionObject loadInstruction(FKInstructionSubject::loadModule,roomData.roomType());
-            FKInstructionObject createInstruction(FKInstructionSubject::createContext,roomData);
+            FKInstructionObject createInstruction(roomContextId(),FKInstructionSubject::createContext,roomData.toVariant());
             emit roomInstruction(loadInstruction);
             emit roomInstruction(createInstruction);
         }
     }
     if(!answer){
-        emit messageRequested(msg);
-        FKBasicEvent ev(FKBasicEventSubject::stopRoom);
-        _realmConnection->sendBasicEvent(&ev);
+        roomStopped();
     }
 }
 
 void FKServerInfrastructure::clientInvited(const QVariant& data){
-    FKRoomInviteData invite(data);
-    if(invite.isValid()){
-        if(!_room){
-            notifyRealmClientDropped(invite.client());
-        }else{
-            _room->addUsers(invite);
-        }
-    }else{
-        FK_MLOG("Invalid invite client data recieved")
-    }
+    todo;
+//    FKRoomInviteData invite(data);
+//    if(invite.isValid()){
+//        if(!_room){
+//            notifyRealmClientDropped(invite.client());
+//        }else{
+//            _room->addUsers(invite);
+//        }
+//    }else{
+//        FK_MLOG("Invalid invite client data recieved")
+//    }
 }
 
 void FKServerInfrastructure::syncRequest(FKServerConnectionManager* guest, const QVariant& data){
@@ -243,7 +243,7 @@ void FKServerInfrastructure::messageFromRealm(const QString& msg){
 }
 
 qint32 FKServerInfrastructure::serverId() const{
-    return _id;
+    return _serverLoginId;
 }
 
 void FKServerInfrastructure::realmConnection(FKConnector* connector){
@@ -363,12 +363,18 @@ void FKServerInfrastructure::roomDataChanged(const qint32 propName, const QVaria
 //}
 
 void FKServerInfrastructure::roomStopped(){
+    emit messageRequested(QString(tr("Room stopped")));
+    todo; //stop guest users
     if(!_logged){
         FK_MLOG("Warning! Unable send room stopped event to realm: server is not logged in")
         return;
     }
     FKBasicEvent ev(FKBasicEventSubject::stopRoom);
     _realmConnection->sendBasicEvent(&ev);
+}
+
+void FKServerInfrastructure::proccessGuestUsers(){
+    todo;
 }
 
 void FKServerInfrastructure::dispatchEvent(FKEventObject* ev){
@@ -392,9 +398,22 @@ void FKServerInfrastructure::dispatchEvent(FKEventObject* ev){
 
 void FKServerInfrastructure::handleRoomInstruction(FKInstructionObject instruction){
     if(instruction.subject()==FKInstructionSubject::loadModule){
-        todo;
+        _roomVersion=instruction.value().value<FKVersionList>();
+        if(!_roomVersion.isValid()){
+            roomStopped();
+        }else{
+            emit messageRequested(QString(tr("Room module %1 loaded")).arg(_roomVersion.actual().string()));
+        }
     }else if(instruction.subject()==FKInstructionSubject::createContext){
-        todo;
+        if(instruction.reciever()==roomContextId()){
+            if(instruction.value().toBool()){
+                emit messageRequested(QString(tr("Room context created")));
+                proccessGuestUsers();
+            }else{
+                todo; //send unload module instruction
+                roomStopped();
+            }
+        }
     }
 }
 
@@ -411,7 +430,7 @@ bool FKServerInfrastructure::checkRealm(){
 }
 
 bool FKServerInfrastructure::hasRoom() const{
-    return _room;
+    return _roomVersion.isValid();
 }
 
 qint32 FKServerInfrastructure::roomContextId() const{
@@ -424,13 +443,13 @@ bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
 
 void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){
     todo; //refactoring
-    if(client->isActive()){
-        FKBasicEvent startSync(FKBasicEventSubject::login,QVariant::fromValue(client->users()));
-        client->sendBasicEvent(&startSync);
-        _room->enableUsers(client->users());
-        FKBasicEvent finishSync(FKBasicEventSubject::sync);
-        client->sendBasicEvent(&finishSync);
-    }
+//    if(client->isActive()){
+//        FKBasicEvent startSync(FKBasicEventSubject::login,QVariant::fromValue(client->users()));
+//        client->sendBasicEvent(&startSync);
+//        _room->enableUsers(client->users());
+//        FKBasicEvent finishSync(FKBasicEventSubject::sync);
+//        client->sendBasicEvent(&finishSync);
+//    }
 }
 
 void FKServerInfrastructure::dropClient(const QString& clientName){
@@ -448,12 +467,6 @@ void FKServerInfrastructure::dropClient(const QString& clientName){
 void FKServerInfrastructure::notifyRealmClientDropped(const QString& clientName){
     FKBasicEvent ev(FKBasicEventSubject::dropClient,clientName);
     _realmConnection->sendBasicEvent(&ev);
-}
-
-FKDataBase* FKServerInfrastructure::createRoomDatabase(){
-    FKDataBase* db=new FKFSDB(this);
-    db->setPath("../data/serverRoomDatabase");
-    return db;
 }
 
 /*!

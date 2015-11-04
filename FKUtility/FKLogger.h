@@ -103,7 +103,7 @@ public:
 #endif
 
 #ifndef FK_NO_TODO
-#define todo
+#define todo qDebug(QString("Non-complete code reached: %1 line, %2").arg(QString::number(__LINE__)).arg(__FILE__).toLatin1())
 #endif
 
 #endif

@@ -14,6 +14,7 @@ class QQmlComponent;
 class FKRoomModule;
 class FKEventObject;
 class FKBasicEvent;
+class FKRoomData;
 
 class FKCORESHARED_EXPORT FKRoomEngine : public QObject{
     Q_OBJECT
@@ -39,7 +40,7 @@ signals:
     void roomContextItemsChanged();
 
     void messageRequested(QString msg);
-    void instructionDispatched(FKInstructionObject notification);
+    void instructionDispatched(FKInstructionObject instruction);
 private slots:
     void cancelEvent(QObject* ev);
 private:
@@ -55,7 +56,7 @@ private:
     FKVersionList loadDefaultModule();
     FKVersionList loadModule(const QString moduleName);
     void releaseModule();
-    FKRoomContext* createContext(const qint32 rootId, qint8 flags);
+    FKRoomContext* createContext(const qint32 rootId,const FKRoomData& roomData);
     void releaseContext(const qint32 rootId);
 
     static QObject *getContextItem(QQmlListProperty<QObject>* prop,int index);

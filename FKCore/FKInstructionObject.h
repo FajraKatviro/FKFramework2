@@ -16,6 +16,7 @@ public:
     qint32 subject()const;
     QVariant value()const;
     QList<qint32> recievers()const;
+    qint32 reciever()const;
 private:
     QList<qint32> _recievers;
     qint32 _subject;

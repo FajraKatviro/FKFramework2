@@ -7,6 +7,8 @@
 #include <QSet>
 #include <QVariant>
 
+#include "FKVersionList.h"
+
 class FKConnector;
 class FKConnectionManager;
 class FKClientInfrastructureReferent;
@@ -72,17 +74,20 @@ private:
     bool checkRealm();
     bool hasRoom()const;
     qint32 roomContextId()const;
+    void roomStopped();
+    void proccessGuestUsers();
     bool checkInviteData(const FKRoomInviteData& data);
     void syncClient(FKClientInfrastructureReferent* client);
     void dropClient(const QString& clientName);
     void notifyRealmClientDropped(const QString& clientName);
-    bool _logged=nullptr;
-    bool _roomStarted=false;
+    bool _logged=false;
+    FKVersionList _roomVersion;
     FKConnectionManager* _realmConnection=nullptr;
     QSet<FKServerConnectionManager*> _guests;
     QMap<QString,FKClientInfrastructureReferent*> _clients; //this for chat message to client
     QMap<QString,qint32> _users; //this for chat message to user
     QMap<qint32,FKClientInfrastructureReferent*> _referents; //this for event dispatch
+    qint32 _serverLoginId=0;
     qint32 _realmPort=-1;
     qint32 _clientsPort=-1;
     QString _realmIP;

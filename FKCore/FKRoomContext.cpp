@@ -1,6 +1,5 @@
 #include "FKRoomContext.h"
 
-#include "FKRoom.h"
 #include "FKUser.h"
 #include "FKRoomInviteData.h"
 #include "FKInstructionSubjects.h"
@@ -12,7 +11,7 @@
 \brief Context manages single room session with it's objects and UI
 */
 
-FKRoomContext::FKRoomContext(QObject *parent) : QObject(parent){
+FKRoomContext::FKRoomContext(QObject *parent) : QObject(parent),_idGenerator(1){
     FK_CBEGIN
     FK_CEND
 }
@@ -22,21 +21,12 @@ FKRoomContext::~FKRoomContext(){
     FK_DEND
 }
 
-FKObject* FKRoomContext::roomObject() const{
-    return _room;
-}
-
-FKObject*FKRoomContext::userObject() const{
+FKObject* FKRoomContext::userObject() const{
     return _user;
 }
 
 QObject*FKRoomContext::rootEntity() const{
     return _rootEntity;
-}
-
-void FKRoomContext::setRoomObject(const qint32 objectId){
-    _room=qobject_cast<FKRoom*>(getObject(objectId));
-    emit roomObjectChanged();
 }
 
 void FKRoomContext::setRootEntity(QObject* entity){
@@ -83,11 +73,6 @@ void FKRoomContext::processEvent(FKEventObject* ev){
     }else{
         ev->deleteLater();
     }
-}
-
-void FKRoomContext::setUserObject(const qint32 objectId){
-    _user=qobject_cast<FKUser*>(getObject(objectId));
-    emit userObjectChanged();
 }
 
 FKObject* FKRoomContext::genObject(const QString& className){

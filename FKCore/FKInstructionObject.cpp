@@ -57,6 +57,10 @@ QList<qint32> FKInstructionObject::recievers() const{
     return _recievers;
 }
 
+qint32 FKInstructionObject::reciever() const{
+    return _recievers.isEmpty() ? 0 : _recievers.first();
+}
+
 QDataStream& operator<<(QDataStream& stream, const FKInstructionObject& lst){
     stream<<lst._recievers<<lst._subject<<lst._value;
     return stream;

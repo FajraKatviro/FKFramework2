@@ -64,7 +64,7 @@ signals:
 
 private:
     FKObject* genObject(const QString& className,const qint32 id,const bool createServant=false);
-    FKIDGenerator _idGenerator;
+    FKIDGenerator _idGenerator; //1-based
     QHash<qint32,FKObject*> _objects;
     FKDataBase* _db=nullptr;
     QObject* _rootEntity=nullptr;

@@ -9,6 +9,7 @@
 #include "FKRoomContext.h"
 #include "FKRoomContextFlags.h"
 #include "FKRoomInviteData.h"
+#include "FKRoomData.h"
 
 #include "FKInstructionSubjects.h"
 #include "FKLogger.h"
@@ -85,7 +86,8 @@ void FKRoomEngine::releaseModule(){
     _contextComponent->loadUrl(QUrl());
 }
 
-FKRoomContext* FKRoomEngine::createContext(const qint32 rootId, qint8 flags){
+FKRoomContext* FKRoomEngine::createContext(const qint32 rootId,const FKRoomData& roomData){
+    qint8 flags=FKRoomContextFlag::server; todo; //get flag type
     FKRoomContext* newContext=nullptr;
     if(_roomModule){
         if(!_contexts.contains(rootId)){
@@ -208,8 +210,7 @@ void FKRoomEngine::releaseModuleInstruction(const FKInstructionObject &instructi
 }
 
 void FKRoomEngine::createContextInstruction(const FKInstructionObject &instruction){
-    QPair<qint32,qint8> data=instruction.value().value<QPair<qint32,qint8>>();
-    FKRoomContext* newContext=createContext(data.first,data.second);
+    FKRoomContext* newContext=createContext(instruction.reciever(),FKRoomData(instruction.value()));
     FKInstructionObject result=FKInstructionObject(FKInstructionSubject::createContext,QVariant::fromValue(newContext));
     emit instructionDispatched(result);
 }
@@ -281,52 +282,6 @@ void FKRoomEngine::removeClientInstruction(const FKInstructionObject &instructio
     }
     if(!succeed.isEmpty()){
         FKInstructionObject successResult(succeed,FKInstructionSubject::removeClient,true);
-        emit instructionDispatched(successResult);
-    }
-}
-
-void FKRoomEngine::setRoomInstruction(const FKInstructionObject &instruction){
-    QList<qint32> recievers(instruction.recievers());
-    QList<qint32> succeed, failed;
-    qint32 objectId=instruction.value().toInt();
-    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
-        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
-        if(contextObject){
-            contextObject->setRoomObject(objectId);
-            succeed.append(*i);
-        }else{
-            failed.append(*i);
-        }
-    }
-    if(!failed.isEmpty()){
-        FKInstructionObject failResult(failed,FKInstructionSubject::setRoomObject,false);
-        emit instructionDispatched(failResult);
-    }
-    if(!succeed.isEmpty()){
-        FKInstructionObject successResult(succeed,FKInstructionSubject::setRoomObject,true);
-        emit instructionDispatched(successResult);
-    }
-}
-
-void FKRoomEngine::setUserInstruction(const FKInstructionObject &instruction){
-    QList<qint32> recievers(instruction.recievers());
-    QList<qint32> succeed, failed;
-    qint32 objectId=instruction.value().toInt();
-    for(auto i=recievers.constBegin();i!=recievers.constEnd();++i){
-        FKRoomContext* contextObject=_contexts.value(*i,nullptr);
-        if(contextObject){
-            contextObject->setUserObject(objectId);
-            succeed.append(*i);
-        }else{
-            failed.append(*i);
-        }
-    }
-    if(!failed.isEmpty()){
-        FKInstructionObject failResult(failed,FKInstructionSubject::setUserObject,false);
-        emit instructionDispatched(failResult);
-    }
-    if(!succeed.isEmpty()){
-        FKInstructionObject successResult(succeed,FKInstructionSubject::setUserObject,true);
         emit instructionDispatched(successResult);
     }
 }

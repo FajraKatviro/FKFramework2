@@ -348,6 +348,13 @@ void FKServerComponent::guestConnection(FKConnector* connector){
     }
 }
 
+void FKServerComponent::handleRoomInstruction(FKInstructionObject instruction){
+    if(!isRunning())return;
+    if(!FK_THREAD_CALL_ARG(handleRoomInstruction,FKInstructionObject,instruction)){
+        emit messageRequested(QString(tr("Unable handle room engine instruction")));
+    }
+}
+
 void FKServerComponent::componentThreadQuit(){
     FKThreadedComponent::componentThreadQuit();
     emit messageRequested(QString("Stopped"));
@@ -455,6 +462,9 @@ void FKSimpleCore::initComponents(){
     createComponents();
     installComponents();
     installComponentFactories();
+    emit realmComponentChanged();
+    emit serverComponentChanged();
+    emit clientComponentChanged();
 }
 
 void FKSimpleCore::createComponents(){

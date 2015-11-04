@@ -11,15 +11,18 @@ QtObject{
     property var core: CoreLayer{
         id: coreComponent
         userInterface: uiComponent
+        roomEngine: roomComponent
        // onRealmStarted: startServer()
        // onServerConnectedToRealm: ausviseServerInfrastructure(1,"pass")
     }
 
-    property var roomEngine: RoomEngine{
+    property var roomEngine: RoomEngineLayer{
         id: roomComponent
+        core: coreComponent
+        userInterface: uiComponent
     }
 
     Component.onCompleted:{
-         //   app.startRealm()
+         //   core.startRealm()
     }
 }

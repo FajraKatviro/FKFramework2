@@ -74,6 +74,8 @@ public slots:
     void setRealmConnectionSettings(const QString realmIP,const qint32 realmPort);
     void realmConnection(FKConnector* connector);
     void guestConnection(FKConnector* connector);
+
+    void handleRoomInstruction(FKInstructionObject instruction);
 protected slots:
     virtual void componentThreadQuit()override;
 signals:
