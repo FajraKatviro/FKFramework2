@@ -1,14 +1,12 @@
 #ifndef FKROOMINVITEDATA_H
 #define FKROOMINVITEDATA_H
 
-#include <QMap>
 #include <QString>
 #include <QMetaType>
 
 class QString;
 class QStringList;
 class QVariant;
-//class QMap;
 
 class FKRoomInviteData{
 public:

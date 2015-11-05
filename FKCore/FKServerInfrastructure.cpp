@@ -403,6 +403,7 @@ void FKServerInfrastructure::dispatchEvent(FKEventObject* ev){
 
 void FKServerInfrastructure::handleRoomInstruction(FKInstructionObject instruction){
     if(instruction.subject()==FKInstructionSubject::loadModule){
+        todo; //check repeat
         _roomVersion=instruction.value().value<FKVersionList>();
         if(!_roomVersion.isValid()){
             roomStopped();
@@ -419,6 +420,8 @@ void FKServerInfrastructure::handleRoomInstruction(FKInstructionObject instructi
                 roomStopped();
             }
         }
+    }else{
+        todo;
     }
 }
 

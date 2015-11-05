@@ -414,6 +414,14 @@ void FKClientComponent::realmConnection(FKConnector* connector){
         emit messageRequested(QString(tr("Unable set realm connection for client")));
     }
 }
+
+void FKClientComponent::handleRoomInstruction(FKInstructionObject instruction){
+    if(!isRunning())return;
+    if(!FK_THREAD_CALL_ARG(handleRoomInstruction,FKInstructionObject,instruction)){
+        emit messageRequested(QString(tr("Unable handle room engine instruction")));
+    }
+}
+
 FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
     FK_CBEGIN        
     qRegisterMetaTypeStreamOperators<FKVersionList>("FKVersionList");

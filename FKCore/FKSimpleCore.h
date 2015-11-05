@@ -111,6 +111,7 @@ public slots:
 //    void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);
 //    void joinRoomRequest(const QString roomName, const QStringList users);
 //    QStringList userList()const;
+    void handleRoomInstruction(FKInstructionObject instruction);
 signals:
     void messageRequested(const QString msg);
     void started();

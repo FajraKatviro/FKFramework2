@@ -3,15 +3,16 @@
 #include "FKConnectionManager.h"
 #include "FKClientInfrastructureConnectionManager.h"
 #include "FKBasicEvent.h"
-#include "FKRoomModule.h"
 #include "FKUpdateChannel.h"
+#include "FKInstructionObject.h"
 
 #include "FKAusviceData.h"
 #include "FKRoomInviteData.h"
-#include "FKRoomData.h"
+#include "FKRoomSettings.h"
+#include "FKRoomContextFlags.h"
+#include "FKInstructionSubjects.h"
 #include "FKBasicEventSubjects.h"
 #include "FKLogger.h"
-#include "FKVersionList.h"
 
 
 /*!
@@ -190,7 +191,7 @@ void FKClientInfrastructure::requestCreateRoom(const QString& roomName, const QS
     }else if(!_logged){
         error=QString(tr("Unable create room: client infrastructure is not logged"));
         check=false;
-    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
         error=QString(tr("Unable create room: another request in progress"));
         check=false;
     }
@@ -216,10 +217,10 @@ void FKClientInfrastructure::requestJoinRoom(const QString& roomName, const QStr
     }else if(!_logged){
         error=QString(tr("Unable join room: client infrastructure is not logged"));
         check=false;
-    }else if(_roomModule){
+    }else if(hasRoom()){
         error=QString(tr("Unable join room: another room exist on client"));
         check=false;
-    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+    }else if(!requestAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){ //yes, it is correct, create room answer waiting
         error=QString(tr("Unable join room: another request in progress"));
         check=false;
     }
@@ -269,50 +270,30 @@ void FKClientInfrastructure::respondRoomList(const QVariant& value){
     emit roomListChanged();
 }
 
-void FKClientInfrastructure::respondCreateRoom(const QVariant& value){
-    Q_UNUSED(value)
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
+void FKClientInfrastructure::respondCreateRoom(const QVariant& data){
+    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::createRoom)){
         FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondCreateRoom()")
     }
-
-    emit messageRequested(QString(tr("Fail create room")));
-}
-
-void FKClientInfrastructure::respondEnterRoom(const QVariant& value){
-    if(!submitAnswer(FKInfrastructureType::Realm,FKBasicEventSubject::joinRoom)){
-        FK_MLOG("Unexpected behaivour in FKClientInfrastructure::respondEnterRoom()")
-    }
-    FKRoomInviteData invite(value);
-    bool success=false;
-    if(invite.isValid()){
-        if(!_roomModule){
-            _roomModule=new FKRoomModule(this,invite.roomType());
-            if(_roomModule->load()){
-                success=true;
-            }else{
-                emit messageRequested(QString(tr("Unable load room module %1. Use chat room instead")).arg(invite.roomType()));
-                _roomModule->deleteLater();
-                _roomModule=new FKRoomModule(this);
-                if(_roomModule->load()){
-                    success=true;
-                }else{
-                    emit messageRequested(QString(tr("Unable load chat room module")));
-                    _roomModule->deleteLater();
-                    _roomModule=nullptr;
-                }
-            }
-        }else{
-            emit messageRequested(QString(tr("Unable load room module: another one is loaded")));
-        }
+    QString msg(tr("Create room request recieved"));
+    emit messageRequested(msg);
+    bool answer=false;
+    if(hasRoom()){
+        msg=QString(tr("Create room request recieved, but room does exists"));
+        answer=false;
     }else{
-        emit messageRequested(QString(tr("Fail enter room: invalid invite data")));
+        FKRoomInviteData roomData(data);
+        answer=roomData.isValid();
+        if(!answer){
+            msg=QString(tr("Invalid create room request recieved"));
+        }else{
+            _roomData=roomData;
+            FKInstructionObject loadInstruction(FKInstructionSubject::loadModule,roomData.roomType());
+            emit roomInstruction(loadInstruction);
+        }
     }
-
-    if(success){
-        //_roomInfrastructure=_roomModule->createRoomInfrastructure();
-        _dynamicPassword=invite.password();
-        emit roomModuleChanged();
-        emit connectToServerRequest(invite.address(),invite.port());
+    if(!answer){
+        emit messageRequested(QString(tr("Room creation failed")));
+        roomStopped();
     }
 }
 
@@ -445,6 +426,13 @@ void FKClientInfrastructure::serverConnection(FKConnector* connector){
     }
 }
 
+void FKClientInfrastructure::handleRoomInstruction(FKInstructionObject instruction){
+    const qint32 instructionType=instruction.subject();
+    if(instructionType==FKInstructionSubject::loadModule){
+        todo;
+    }
+}
+
 void FKClientInfrastructure::connectorStatusChanged(){
     if(_realmConnection->isActive()){
         emit connectedToRealm();
@@ -478,6 +466,10 @@ void FKClientInfrastructure::splitWaitingAnswer(FKInfrastructureType t){
     }else if(t==FKInfrastructureType::Server){
         emit waitingForServerAnswerChanged();
     }
+}
+
+bool FKClientInfrastructure::hasRoom()const{
+    return _roomData.isValid();
 }
 
 void FKClientInfrastructure::requestLoginServer(){

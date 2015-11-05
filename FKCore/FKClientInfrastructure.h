@@ -7,11 +7,13 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+#include "FKRoomInviteData.h"
 #include "FKVersionList.h"
 
 class FKConnector;
 class FKConnectionManager;
 class FKUpdateChannel;
+class FKInstructionObject;
 
 class FKClientInfrastructure : public FKInfrastructure{
     Q_OBJECT
@@ -41,7 +43,7 @@ public:
     void respondUserDeletion(const QVariant& value);
     void respondRoomList(const QVariant& value);
     void respondEnterRoom(const QVariant& value);
-    void respondCreateRoom(const QVariant& value);
+    void respondCreateRoom(const QVariant& data);
     //void respondExitRoom(const QVariant& value);
     //void respondCustomServer(const QVariant& value);
 
@@ -68,6 +70,8 @@ public slots:
 
     void realmConnection(FKConnector* connector);
     void serverConnection(FKConnector* connector);
+
+    void handleRoomInstruction(FKInstructionObject instruction);
 signals:
     void connectedToRealm();
     void disconnectedFromRealm();
@@ -91,6 +95,7 @@ private slots:
     void serverConnectorStatusChanged();
     void splitWaitingAnswer(FKInfrastructureType t);
 private:
+    bool hasRoom()const;
     void requestLoginServer();
     void startUser(const qint32 objectId);
     bool _logged=false;
@@ -105,6 +110,9 @@ private:
 
     qint32 _realmPort=-1;
     QString _realmIP;
+
+    FKRoomInviteData _roomData;
+    FKVersionList _roomVersion;
 
     struct{
         QList<QSharedPointer<FKUpdateChannel>> channels;
