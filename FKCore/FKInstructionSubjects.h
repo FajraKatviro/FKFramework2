@@ -12,6 +12,7 @@ namespace FKInstructionSubject{
     const qint32 deleteObject       = 6;
     const qint32 addClient          = 7;
     const qint32 removeClient       = 8;
+    const qint32 sync               = 9;
 }
 
 #endif // FKINSTRUCTIONSUBJECTS_H

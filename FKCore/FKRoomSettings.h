@@ -21,6 +21,7 @@ namespace FKRoomSettings{
     const qint32 totalUsers=15;     //info only
     const qint32 totalActors=16;    //info only
     const qint32 contextFlags=17;
+    const qint32 userList=18;
     const qint32 customSettings=1000;
 }
 

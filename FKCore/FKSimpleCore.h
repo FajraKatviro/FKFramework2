@@ -105,7 +105,7 @@ public:
     void realmConnection(FKConnector* connector);
 
 public slots:
-//    void ausvise(const QString id, const QString password);
+    void ausvise(const QString id, const QString password);
 //    void createUserRecord(const QString& name);
 //    void deleteUserRecord(const QString& name);
 //    void createRoomRequest(const QString roomName, const QString roomType, const QStringList users);

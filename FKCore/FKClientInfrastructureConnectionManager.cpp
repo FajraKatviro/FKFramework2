@@ -50,8 +50,8 @@ void FKClientInfrastructureConnectionManager::processBasicEvent(FKBasicEvent* ev
         _infr->respondRoomList(value);
     }else if(subject==FKBasicEventSubject::createRoom){
         _infr->respondCreateRoom(value);
-    }else if(subject==FKBasicEventSubject::joinRoom){
-        _infr->respondEnterRoom(value);
+    //}else if(subject==FKBasicEventSubject::joinRoom){
+    //    _infr->respondEnterRoom(value);
     }else{
         FK_MLOGV("Unexpected basic event from realm to client infrastructure",subject)
     }

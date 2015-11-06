@@ -447,6 +447,7 @@ qint32 FKServerInfrastructure::roomContextId() const{
 
 bool FKServerInfrastructure::checkInviteData(const FKRoomInviteData& data){
     todo; //???
+    return false;
 }
 
 void FKServerInfrastructure::syncClient(FKClientInfrastructureReferent* client){

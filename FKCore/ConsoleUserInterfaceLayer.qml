@@ -79,7 +79,7 @@ UserInterface{
     //onDeleteUserRequested: core.deleteUserRecord(userName)
     //onClientUsersRequested: showMessage(core.userList())
     //onRealmUsersRequested: showMessage(core.realmUserList())
-    //onClientLoginRequested: core.ausviseClientInfrastructure(clientName,password)
+    onClientLoginRequested: core.client.ausvise(clientName,password)
     onServerLoginRequested: core.server.ausvise(serverId,password)
     onCreateClientRequested: core.realm.createClientRecord(clientName,password)
     onDeleteClientRequested: core.realm.deleteClientRecord(clientName)

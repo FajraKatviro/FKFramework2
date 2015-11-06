@@ -7,13 +7,14 @@
 #include <QStringList>
 #include <QSharedPointer>
 
+#include "FKInstructionObject.h"
 #include "FKRoomInviteData.h"
 #include "FKVersionList.h"
 
 class FKConnector;
 class FKConnectionManager;
 class FKUpdateChannel;
-class FKInstructionObject;
+class FKRoomData;
 
 class FKClientInfrastructure : public FKInfrastructure{
     Q_OBJECT
@@ -24,7 +25,6 @@ public:
     bool isConnectedToRealm();
 
     void dropInfrastructure();
-    void requestLoginRealm(const QString& id, const QString& password);
     void submitLoginRealm(const QVariant& value);
 
     void submitLoginServer(const QVariant& value);
@@ -42,7 +42,6 @@ public:
     void respondUserCreation(const QVariant& value);
     void respondUserDeletion(const QVariant& value);
     void respondRoomList(const QVariant& value);
-    void respondEnterRoom(const QVariant& value);
     void respondCreateRoom(const QVariant& data);
     //void respondExitRoom(const QVariant& value);
     //void respondCustomServer(const QVariant& value);
@@ -71,6 +70,8 @@ public slots:
     void realmConnection(FKConnector* connector);
     void serverConnection(FKConnector* connector);
 
+    void requestLoginRealm(const QString id, const QString password);
+
     void handleRoomInstruction(FKInstructionObject instruction);
 signals:
     void connectedToRealm();
@@ -90,18 +91,19 @@ signals:
 
     void waitingForRealmAnswerChanged();
     void waitingForServerAnswerChanged();
+
+    void roomInstruction(FKInstructionObject instruction);
 private slots:
     void connectorStatusChanged();
     void serverConnectorStatusChanged();
     void splitWaitingAnswer(FKInfrastructureType t);
 private:
     bool hasRoom()const;
+    void roomStopped();
     void requestLoginServer();
-    void startUser(const qint32 objectId);
+    void startUser(const FKRoomData& data, const qint32 objectId);
     bool _logged=false;
     bool _serverLogged=false;
-    QString _clientId;
-    QString _dynamicPassword;
     FKConnectionManager* _realmConnection=nullptr;
     FKConnectionManager* _serverConnection=nullptr;
     QStringList _userPool;

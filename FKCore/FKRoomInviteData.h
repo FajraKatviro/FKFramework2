@@ -2,10 +2,10 @@
 #define FKROOMINVITEDATA_H
 
 #include <QString>
+#include <QStringList>
 #include <QMetaType>
 
 class QString;
-class QStringList;
 class QVariant;
 
 class FKRoomInviteData{

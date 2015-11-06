@@ -306,7 +306,7 @@ bool FKServerComponent::isConnectedToRealm(){
 
 void FKServerComponent::ausvise(const qint32 id, const QString password){
     if(!callMethod("requestLoginRealm",id,"qint32",password,"QString")){
-        emit messageRequested(QString(tr("Unable request server to log in")));
+        emit messageRequested(QString(tr("Unable request log in")));
     }
 }
 
@@ -415,11 +415,33 @@ void FKClientComponent::realmConnection(FKConnector* connector){
     }
 }
 
+void FKClientComponent::ausvise(const QString id, const QString password){
+    if(!callMethod("requestLoginRealm",id,"QString",password,"QString")){
+        emit messageRequested(QString(tr("Unable request log in")));
+    }
+}
+
 void FKClientComponent::handleRoomInstruction(FKInstructionObject instruction){
     if(!isRunning())return;
     if(!FK_THREAD_CALL_ARG(handleRoomInstruction,FKInstructionObject,instruction)){
         emit messageRequested(QString(tr("Unable handle room engine instruction")));
     }
+}
+
+bool FKClientComponent::waitingForRealmAnswer() const{
+    bool result;
+    if(!FK_THREAD_GETTER(bool,result,waitingForRealmAnswer)){
+        result=false;
+    }
+    return result;
+}
+
+bool FKClientComponent::waitingForServerAnswer() const{
+    bool result;
+    if(!FK_THREAD_GETTER(bool,result,waitingForServerAnswer)){
+        result=false;
+    }
+    return result;
 }
 
 FKSimpleCore::FKSimpleCore(QObject* parent):QObject(parent){
