@@ -13,6 +13,7 @@ struct FKRequestTypeBase{
     template <typename... Args>
     using requestCall=std::function<int(OperatorClass&,Args...)>;
     using replyCall=std::function<void(OperatorClass&,int)>;
+    using Impl=OperatorClass;
 };
 
 //template for respecialization
